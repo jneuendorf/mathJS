@@ -1,0 +1,10 @@
+{
+	"name": "JMath API",
+	"description": "A JavaScript math library",
+	"version": "0.0.1",
+	"logo": "../bunny.png",
+	"options": {
+		"linkNatives": true,
+		"tabtospace": 2
+	}
+}
