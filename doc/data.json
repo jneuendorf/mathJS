@@ -1,0 +1,709 @@
+{
+    "project": {
+        "name": "mathJS API",
+        "description": "A JavaScript math library",
+        "version": "0.0.1",
+        "logo": "../logo.png"
+    },
+    "files": {
+        "doc_base/Numbers/Complex.js": {
+            "name": "doc_base/Numbers/Complex.js",
+            "modules": {},
+            "classes": {
+                "Complex": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "doc_base/Numbers/Int.js": {
+            "name": "doc_base/Numbers/Int.js",
+            "modules": {},
+            "classes": {
+                "Int": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "doc_base/Numbers/Number.js": {
+            "name": "doc_base/Numbers/Number.js",
+            "modules": {},
+            "classes": {
+                "Number": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "doc_base/Set/Interval.js": {
+            "name": "doc_base/Set/Interval.js",
+            "modules": {},
+            "classes": {
+                "Interval": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "doc_base/Set/Set.js": {
+            "name": "doc_base/Set/Set.js",
+            "modules": {},
+            "classes": {
+                "Set": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "doc_base/Constants.js": {
+            "name": "doc_base/Constants.js",
+            "modules": {},
+            "classes": {
+                "CONSTANTS": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "doc_base/init.js": {
+            "name": "doc_base/init.js",
+            "modules": {
+                "mathJS": 1
+            },
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "doc_base/mathJS.js": {
+            "name": "doc_base/mathJS.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "doc_base/prototyping.js": {
+            "name": "doc_base/prototyping.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        }
+    },
+    "modules": {
+        "mathJS": {
+            "name": "mathJS",
+            "submodules": {},
+            "classes": {
+                "Complex": 1,
+                "Int": 1,
+                "Number": 1,
+                "Interval": 1,
+                "Set": 1,
+                "CONSTANTS": 1
+            },
+            "fors": {},
+            "namespaces": {},
+            "tag": "main",
+            "file": "doc_base/Constants.js",
+            "line": 3,
+            "itemtype": "main"
+        }
+    },
+    "classes": {
+        "Complex": {
+            "name": "Complex",
+            "shortname": "Complex",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "mathJS",
+            "file": "doc_base/Numbers/Complex.js",
+            "line": 3,
+            "abstract": "",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "real\nReal",
+                    "description": "part of the number. Either a mathJS.Number or primitive number.",
+                    "type": "Number"
+                },
+                {
+                    "name": "image\nReal",
+                    "description": "part of the number. Either a mathJS.Number or primitive number.",
+                    "type": "Number"
+                }
+            ],
+            "extends": "Number"
+        },
+        "Int": {
+            "name": "Int",
+            "shortname": "Int",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "mathJS",
+            "file": "doc_base/Numbers/Int.js",
+            "line": 3,
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "value",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "extends": "Number"
+        },
+        "Number": {
+            "name": "Number",
+            "shortname": "Number",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "mathJS",
+            "file": "doc_base/Numbers/Number.js",
+            "line": 3,
+            "abstract": "",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "value",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "extends": "Object"
+        },
+        "Interval": {
+            "name": "Interval",
+            "shortname": "Interval",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "mathJS",
+            "file": "doc_base/Set/Interval.js",
+            "line": 3,
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "leftBoundary",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "leftKind",
+                    "description": "Either \"open\" or \"bounded\" (case insensitive).",
+                    "type": "String"
+                },
+                {
+                    "name": "rightBoundary",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "rightKind",
+                    "description": "Either \"open\" or \"bounded\" (case insensitive).",
+                    "type": "String"
+                },
+                {
+                    "name": "set",
+                    "description": "",
+                    "type": "Set"
+                }
+            ],
+            "extends": "Set"
+        },
+        "Set": {
+            "name": "Set",
+            "shortname": "Set",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "mathJS",
+            "file": "doc_base/Set/Set.js",
+            "line": 3,
+            "description": "This class serves as interface."
+        },
+        "CONSTANTS": {
+            "name": "CONSTANTS",
+            "shortname": "CONSTANTS",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "mathJS",
+            "file": "doc_base/Constants.js",
+            "line": 3,
+            "description": "This is a class (not actually but logically) that contains all definitions of constants.\nThose constants can be con- or disjoined (see functions 'and' and 'or') but already con- or disjoined can't be con- or disjoined any further (so nesting is not supported)."
+        }
+    },
+    "classitems": [
+        {
+            "file": "doc_base/Numbers/Complex.js",
+            "line": 27,
+            "override": "This method creates an object with the keys 'real' and 'img' which have primitive numbers as their values.",
+            "static": 1,
+            "itemtype": "method",
+            "name": "_getValueFromParam",
+            "params": [
+                {
+                    "name": "real",
+                    "description": "",
+                    "type": "Complex|Number"
+                },
+                {
+                    "name": "img",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Object"
+            },
+            "class": "Complex"
+        },
+        {
+            "file": "doc_base/Numbers/Complex.js",
+            "line": 143,
+            "description": "This method check for mathmatical equality. This means new mathJS.Double(4.2).equals(4.2)",
+            "itemtype": "method",
+            "name": "equals",
+            "params": [
+                {
+                    "name": "n",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Boolean"
+            },
+            "class": "Complex"
+        },
+        {
+            "file": "doc_base/Numbers/Number.js",
+            "line": 19,
+            "description": "This method gets the value from a parameter. The validity is determined by this._valueIsValid().",
+            "static": 1,
+            "access": "protected",
+            "tagname": "",
+            "itemtype": "method",
+            "name": "_getValueFromParam",
+            "params": [
+                {
+                    "name": "param",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "skipCheck\nIf",
+                    "description": "`true` the given parameter is not (again) checked for validity. If the function that calls _getValueFromParam() has already checked the passed parameter this `skipCheck` should be set to true.",
+                    "type": "Boolean"
+                }
+            ],
+            "return": {
+                "description": "The primitive value or null.",
+                "type": "Number"
+            },
+            "class": "Number"
+        },
+        {
+            "file": "doc_base/Numbers/Number.js",
+            "line": 109,
+            "description": "This method check for mathmatical equality. This means new mathJS.Double(4.2).equals(4.2)",
+            "itemtype": "method",
+            "name": "equals",
+            "params": [
+                {
+                    "name": "n",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Boolean"
+            },
+            "class": "Number"
+        },
+        {
+            "file": "doc_base/Numbers/Number.js",
+            "line": 122,
+            "description": "This method adds 2 numbers and returns a new one.",
+            "itemtype": "method",
+            "name": "plus",
+            "params": [
+                {
+                    "name": "n",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "return": {
+                "description": "Calculated Number.",
+                "type": "Number"
+            },
+            "class": "Number"
+        },
+        {
+            "file": "doc_base/Numbers/Number.js",
+            "line": 135,
+            "description": "This method adds the given number to this instance.",
+            "itemtype": "method",
+            "name": "increase",
+            "params": [
+                {
+                    "name": "n",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "return": {
+                "description": "This instance.",
+                "type": "Number"
+            },
+            "class": "Number"
+        },
+        {
+            "file": "doc_base/Numbers/Number.js",
+            "line": 149,
+            "description": "See increase().",
+            "itemtype": "method",
+            "name": "plusSelf",
+            "class": "Number"
+        },
+        {
+            "file": "doc_base/Numbers/Number.js",
+            "line": 158,
+            "description": "This method substracts 2 numbers and returns a new one.",
+            "itemtype": "method",
+            "name": "minus",
+            "params": [
+                {
+                    "name": "n",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "return": {
+                "description": "Calculated Number.",
+                "type": "Number"
+            },
+            "class": "Number"
+        },
+        {
+            "file": "doc_base/Numbers/Number.js",
+            "line": 178,
+            "description": "This method multiplies 2 numbers and returns a new one.",
+            "itemtype": "method",
+            "name": "times",
+            "params": [
+                {
+                    "name": "n",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "return": {
+                "description": "Calculated Number.",
+                "type": "Number"
+            },
+            "class": "Number"
+        },
+        {
+            "file": "doc_base/Numbers/Number.js",
+            "line": 196,
+            "description": "This method divides 2 numbers and returns a new one.",
+            "itemtype": "method",
+            "name": "divide",
+            "params": [
+                {
+                    "name": "n",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "return": {
+                "description": "Calculated Number.",
+                "type": "Number"
+            },
+            "class": "Number"
+        },
+        {
+            "file": "doc_base/Numbers/Number.js",
+            "line": 214,
+            "description": "This method squares this instance and returns a new one.",
+            "itemtype": "method",
+            "name": "square",
+            "return": {
+                "description": "Calculated Number.",
+                "type": "Number"
+            },
+            "class": "Number"
+        },
+        {
+            "file": "doc_base/Numbers/Number.js",
+            "line": 231,
+            "description": "This method cubes this instance and returns a new one.",
+            "itemtype": "method",
+            "name": "cube",
+            "return": {
+                "description": "Calculated Number.",
+                "type": "Number"
+            },
+            "class": "Number"
+        },
+        {
+            "file": "doc_base/Numbers/Number.js",
+            "line": 248,
+            "description": "This method calculates the square root of this instance and returns a new one.",
+            "itemtype": "method",
+            "name": "sqrt",
+            "return": {
+                "description": "Calculated Number.",
+                "type": "Number"
+            },
+            "class": "Number"
+        },
+        {
+            "file": "doc_base/Numbers/Number.js",
+            "line": 265,
+            "description": "This method calculates the cubic root of this instance and returns a new one.",
+            "itemtype": "method",
+            "name": "curt",
+            "return": {
+                "description": "Calculated Number.",
+                "type": "Number"
+            },
+            "class": "Number"
+        },
+        {
+            "file": "doc_base/Numbers/Number.js",
+            "line": 281,
+            "description": "This method calculates any root of this instance and returns a new one.",
+            "itemtype": "method",
+            "name": "plus",
+            "params": [
+                {
+                    "name": "exponent",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "return": {
+                "description": "Calculated Number.",
+                "type": "Number"
+            },
+            "class": "Number"
+        },
+        {
+            "file": "doc_base/Numbers/Number.js",
+            "line": 298,
+            "description": "This method adds 2 numbers and returns a new one.",
+            "itemtype": "method",
+            "name": "plus",
+            "params": [
+                {
+                    "name": "n",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "return": {
+                "description": "Calculated Number.",
+                "type": "Number"
+            },
+            "class": "Number"
+        },
+        {
+            "file": "doc_base/Numbers/Number.js",
+            "line": 316,
+            "description": "This method adds 2 numbers and returns a new one.",
+            "itemtype": "method",
+            "name": "plus",
+            "params": [
+                {
+                    "name": "n",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "return": {
+                "description": "Calculated Number.",
+                "type": "Number"
+            },
+            "class": "Number"
+        },
+        {
+            "file": "doc_base/Set/Set.js",
+            "line": 94,
+            "description": "a.without b => returns: removed all common elements from a",
+            "class": "Set"
+        },
+        {
+            "file": "doc_base/Constants.js",
+            "line": 35,
+            "description": "This method gets the keys of a constant's object from a given value.",
+            "static": 1,
+            "itemtype": "method",
+            "name": "get",
+            "params": [
+                {
+                    "name": "obj",
+                    "description": "",
+                    "type": "Object"
+                },
+                {
+                    "name": "val",
+                    "description": "",
+                    "type": "Integer"
+                }
+            ],
+            "return": {
+                "description": "An array containing all keys of the according CONSTANTS object that are encoded in 'val'. The first index indicates if the keys are con- or disjoined (true means 'or', false means 'and')",
+                "type": "Array"
+            },
+            "class": "CONSTANTS"
+        },
+        {
+            "file": "doc_base/Constants.js",
+            "line": 90,
+            "description": "This method adds a new (!!) key to a given constant's object dynamically. If the key already exists an error is thrown.",
+            "static": 1,
+            "itemtype": "method",
+            "name": "add",
+            "params": [
+                {
+                    "name": "obj",
+                    "description": "",
+                    "type": "Object"
+                },
+                {
+                    "name": "val",
+                    "description": "",
+                    "type": "Integer"
+                }
+            ],
+            "return": {
+                "description": "An array containing all keys of the according CONSTANTS object that are encoded in 'val'. The first index indicates if the keys are con- or disjoined (true means 'or', false means 'and')",
+                "type": "Array"
+            },
+            "class": "CONSTANTS"
+        },
+        {
+            "file": "doc_base/mathJS.js",
+            "line": 95,
+            "description": "This function checks if a given parameter is a (plain) number.",
+            "itemtype": "method",
+            "name": "isNum",
+            "params": [
+                {
+                    "name": "num",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "return": {
+                "description": "Whether the given number is a Number (excluding +/-Infinity)",
+                "type": "Boolean"
+            },
+            "class": "",
+            "module": "mathJS"
+        },
+        {
+            "file": "doc_base/mathJS.js",
+            "line": 112,
+            "description": "This function returns a random (plain) integer between max and min (both inclusive). If max is less than min the parameters are swapped.",
+            "itemtype": "method",
+            "name": "randInt",
+            "params": [
+                {
+                    "name": "max",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "min",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "return": {
+                "description": "Random integer.",
+                "type": "Number"
+            },
+            "class": "",
+            "module": "mathJS"
+        },
+        {
+            "file": "doc_base/mathJS.js",
+            "line": 138,
+            "description": "This function returns a random number between max and min (both inclusive). If max is less than min the parameters are swapped.",
+            "itemtype": "method",
+            "name": "randNum",
+            "params": [
+                {
+                    "name": "max",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "min\nDefault",
+                    "description": "is 0.",
+                    "type": "Number"
+                }
+            ],
+            "return": {
+                "description": "Random number.",
+                "type": "Integer"
+            },
+            "class": "",
+            "module": "mathJS"
+        },
+        {
+            "file": "doc_base/prototyping.js",
+            "line": 106,
+            "itemtype": "method",
+            "name": "getMax",
+            "params": [
+                {
+                    "name": "propertyGetter\nThe",
+                    "description": "passed callback extracts the value being compared from the array elements.",
+                    "type": "Function"
+                }
+            ],
+            "return": {
+                "description": "An array of all maxima.",
+                "type": "Array"
+            },
+            "class": "",
+            "module": "mathJS"
+        }
+    ],
+    "warnings": [
+        {
+            "message": "unknown tag: abstract",
+            "line": " doc_base/Numbers/Complex.js:3"
+        },
+        {
+            "message": "unknown tag: override",
+            "line": " doc_base/Numbers/Complex.js:27"
+        },
+        {
+            "message": "unknown tag: abstract",
+            "line": " doc_base/Numbers/Number.js:3"
+        },
+        {
+            "message": "Missing item type\na.without b => returns: removed all common elements from a",
+            "line": " doc_base/Set/Set.js:94"
+        }
+    ]
+}

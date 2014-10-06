@@ -8,20 +8,48 @@
 class mathJS.Number
     ###########################################################################
     # STATIC
+    @_valueIsValid: (value) ->
+        return value instanceof mathJS.Number or mathJS.isNum(value)
+
+    ###*
+    * This method gets the value from a parameter. The validity is determined by this._valueIsValid().
+    * @static
+    * @protected
+    * @method _getValueFromParam
+    * @param {Number} param
+    * @param {Boolean} skipCheck
+    * If `true` the given parameter is not (again) checked for validity. If the function that calls _getValueFromParam() has already checked the passed parameter this `skipCheck` should be set to true.
+    * @return {Number} The primitive value or null.
+    *###
+    @_getValueFromParam: (param, skipCheck) ->
+        if not skipCheck and not @_valueIsValid(param)
+            return null
+
+        if param instanceof mathJS.Number
+            value = param.value
+        else if mathJS.isNum param
+            value = param
+
+        return value
+
     @_pool = []
 
     @fromPool: (val) ->
         if @_pool.length > 0
-            number = @_pool.pop()
-            number.value = val
-            return number
+            if @_valueIsValid val
+                number = @_pool.pop()
+                number.value = val
+                return number
+            return null
         else
-            return new Number(val)
+            return new @(val) # param check is done in constructor
 
     @parse: (str) ->
-        return @fromPool parseFloat(str)
+        if mathJS.isNum(parsed = parseFloat(str))
+            return @fromPool parsed
+        return parsed
 
-    @getRandom: (max, min) ->
+    @random: (max, min) ->
         return @fromPool mathJS.randNum(max, min)
 
 
@@ -30,14 +58,20 @@ class mathJS.Number
     constructor: (value) ->
         if not @_valueIsValid(value)
             fStr = arguments.callee.caller.toString()
-            throw new Error("mathJS: Expected plain number! Given #{value} at '#{fStr.substring(0, fStr.indexOf(")") + 1)}'")
+            throw new Error("mathJS: Expected plain number! Given #{value} in '#{fStr.substring(0, fStr.indexOf(")") + 1)}'")
 
-        Object.defineProperty @, "value", {
-            get: @_getValue.bind(@)
-            set: @_setValue.bind(@, value)
+        Object.defineProperties @, {
+            value:
+                get: @_getValue
+                set: @_setValue
+            fromPool:
+                value: @constructor.fromPool.bind(@constructor)
+                writable: false
+                enumarable: false
+                configurable: false
         }
 
-        @value = @_getValueFromParam(value)
+        @value = @_getValueFromParam(value, true)
 
     ###########################################################################
     # PRIVATE METHODS
@@ -46,62 +80,199 @@ class mathJS.Number
     # PROTECTED METHODS
     _setValue: (value) ->
         if @_valueIsValid(value)
-            @_value = @_getValueFromParam(value)
+            @_value = @_getValueFromParam(value, true)
         return @
 
     _getValue: () ->
         return @_value
 
-    _valueIsValid: (value) ->
-        return value? and (value instanceof @constructor or mathJS.isNum(value))
+    _valueIsValid: @_valueIsValid
 
-    ###*
-    * This method gets the value from a <b>valid</b> parameter. The validity is determined by this._valueIsValid().
-    * @method _getValueFromParam
-    * @param {Number} param
-    *
-    *###
-    _getValueFromParam: (param) ->
-        if param instanceof mathJS.Number
-            value = param.value
-        else if mathJS.isNum param
-            value = param
-
-        return value
+    _getValueFromParam: @_getValueFromParam
 
 
     ###########################################################################
     # PUBLIC METHODS
-    # getValue: () ->
-    #     return @_value
 
+    ###*
+    * This method check for mathmatical equality. This means new mathJS.Double(4.2).equals(4.2)
+    * @method equals
+    * @param {Number} n
+    * @return {Boolean}
+    *###
+    equals: (n) ->
+        return @_getValueFromParam(n) is @value
+
+    ###*
+    * This method adds 2 numbers and returns a new one.
+    * @method plus
+    * @param {Number} n
+    * @return {Number} Calculated Number.
+    *###
     plus: (n) ->
-        return @constructor.fromPool(@value + n)
+        return @fromPool(@value + @_getValueFromParam(n))
 
+    ###*
+    * This method adds the given number to this instance.
+    * @method increase
+    * @param {Number} n
+    * @return {Number} This instance.
+    *###
     increase: (n) ->
-        @value += n
+        @value += @_getValueFromParam(n)
         return @
 
+    ###*
+    * See increase().
+    * @method plusSelf
+    *###
+    plusSelf: @increase
+
+    ###*
+    * This method substracts 2 numbers and returns a new one.
+    * @method minus
+    * @param {Number} n
+    * @return {Number} Calculated Number.
+    *###
     minus: (n) ->
-        return @constructor.fromPool(@value - n)
+        return @fromPool(@value - n)
 
     decrease: (n) ->
-        @value -= n
+        @value -= @_getValueFromParam(n)
         return @
 
+    minusSelf: @decrease
+
+    ###*
+    * This method multiplies 2 numbers and returns a new one.
+    * @method times
+    * @param {Number} n
+    * @return {Number} Calculated Number.
+    *###
     times: (n) ->
-        return @constructor.fromPool(@value * n)
+        return @fromPool(@value * @_getValueFromParam(n))
 
-    clone: () ->
-        return @constructor.fromPool(@value)
+    timesSelf: (n) ->
+        @value *= @_getValueFromParam(n)
+        return @
 
+    ###*
+    * This method divides 2 numbers and returns a new one.
+    * @method divide
+    * @param {Number} n
+    * @return {Number} Calculated Number.
+    *###
     divide: (n) ->
-        return @constructor.fromPool(@value / n)
+        return @fromPool(@value / @_getValueFromParam(n))
+
+    divideSelf: (n) ->
+        @value /= @_getValueFromParam(n)
+        return @
+
+    ###*
+    * This method squares this instance and returns a new one.
+    * @method square
+    * @return {Number} Calculated Number.
+    *###
+    square: () ->
+        return @fromPool(@value * @value)
+
+    squareSelf: () ->
+        @value *= @value
+        return @
+
+    ###*
+    * This method cubes this instance and returns a new one.
+    * @method cube
+    * @return {Number} Calculated Number.
+    *###
+    cube: () ->
+        return @fromPool(@value * @value * @value)
+
+    cubeSelf: () ->
+        @value *= @value * @value
+        return @
+
+    ###*
+    * This method calculates the square root of this instance and returns a new one.
+    * @method sqrt
+    * @return {Number} Calculated Number.
+    *###
+    sqrt: () ->
+        return @fromPool mathJS.sqrt(@value)
+
+    sqrtSelf: () ->
+        @value = mathJS.sqrt @value
+        return @
+
+    ###*
+    * This method calculates the cubic root of this instance and returns a new one.
+    * @method curt
+    * @return {Number} Calculated Number.
+    *###
+    curt: () ->
+        return @pow(1 / 3)
+
+    curtSelf: () ->
+        return @powSelf(1 / 3)
+
+    ###*
+    * This method calculates any root of this instance and returns a new one.
+    * @method plus
+    * @param {Number} exponent
+    * @return {Number} Calculated Number.
+    *###
+    root: (exp) ->
+        return @pow(1 / exp)
+
+    rootSelf: (exp) ->
+        return @powSelf(1 / exp)
+
+    ###*
+    * This method adds 2 numbers and returns a new one.
+    * @method plus
+    * @param {Number} n
+    * @return {Number} Calculated Number.
+    *###
+    reciprocal: () ->
+        return @fromPool( 1 / @value )
+
+    reciprocalSelf: () ->
+        @value = 1 / @value
+        return @
+
+    ###*
+    * This method adds 2 numbers and returns a new one.
+    * @method plus
+    * @param {Number} n
+    * @return {Number} Calculated Number.
+    *###
+    pow: (n) ->
+        return @fromPool mathJS.pow @value, @_getValueFromParam(n)
+
+    powSelf: (n) ->
+        @value = mathJS.pow @value, @_getValueFromParam(n)
+        return @
 
     sign: () ->
         return mathJS.sign @value
+
+    toInt: () ->
+        return mathJS.Int.fromPool mathJS.floor(@value)
+
+    toDouble: () ->
+        return mathJS.Double.fromPool @value
+
+    toString: () ->
+        return @value.toString()
+
+    clone: () ->
+        return @fromPool @value
 
     # add instance to pool
     release: () ->
         @constructor._pool.push @
         return @constructor
+
+    # TODO: intercept destructor
+    # .....

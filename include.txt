@@ -1,25 +1,23 @@
-
 js/init
-# js/Constants
 
 js/globalFunctions
 js/prototyping
 js/mathJS
 
-js/interfaces/Eventable
+js/interfaces/Damageable
 
 js/Numbers/Number
 js/Numbers/Double
 js/Numbers/Fraction
 js/Numbers/Int
+js/Numbers/Complex
 
-# js/utils/Point
-# js/utils/Line
-
-js/Set
-js/SpecificSet
-js/ConditionalSet
+js/Set/Set
+js/Set/SpecificSet
+js/Set/ConditionalSet
 
 js/Function
+
+js/Vector
 
 js/start

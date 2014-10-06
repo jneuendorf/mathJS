@@ -1,4 +1,8 @@
 class mathJS.Vector
 
-  constructor: (args) ->
-    # body...
+    constructor: () ->
+        # body...
+
+
+# make name alias for Tuple
+class mathJS.Tuple extends mathJS.Vector
