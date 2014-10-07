@@ -4,6 +4,9 @@
  * @main mathJS
 *###
 
+if typeof DEBUG is "undefined"
+    window.DEBUG = true
+
 window.mathJS = {}
 # end js/init.coffee
 
@@ -363,37 +366,84 @@ mathJS.reciprocal = (n) ->
     return NaN
 # end js/mathJS.coffee
 
-# from js/interfaces/Damageable.coffee
-# ###*
-#  * An Interface that specifies methods for damage interaction. Will be included as mixin.
-#  *
-#  * @class Damageable
-# *###
-# class TD.ITF.Damageable
-# 	###*
-# 	 * There can be no default implementation because when "enough damage was taken" it's uncertain whom to notify.
-# 	 *
-# 	 * @method takeDamage
-# 	 * @param {Number} damage
-# 	 * @return {Damageable} This instance.
-# 	 *
-# 	*###
-# 	takeDamage: (damage) ->
-# 		throw new Error("Needs to be implemented!")
-#
-# 	###*
-# 	 * This is a default implementation for an interface method.
-# 	 *
-# 	 * @method dealDamageTo
-# 	 * @param {Damageable} damageable
-# 	 * @param {Number} damage
-# 	 * @return {Damageable} This instance.
-# 	 *
-# 	*###
-# 	dealDamageTo: (damageable, damage) ->
-# 		damageable?.takeDamage?(damage)
-# 		return @
-# end js/interfaces/Damageable.coffee
+# from js/interfaces/Comparable.coffee
+class mathJS.Comparable
+
+    ###*
+    * This method checks for mathmatical equality. This means new mathJS.Double(4.2).equals(4.2) is true.
+    * @method equals
+    * @param {Number} n
+    * @return {Boolean}
+    *###
+    equals: (n) ->
+        throw new Error("To be implemented!")
+
+    e: @::equals
+# end js/interfaces/Comparable.coffee
+
+# from js/interfaces/Orderable.coffee
+class mathJS.Orderable extends mathJS.Comparable
+
+    ###*
+    * This method check for mathmatical '<'. This means new mathJS.Double(4.2).lessThan(5.2) is true.
+    * @method lessThan
+    * @param {Number} n
+    * @return {Boolean}
+    *###
+    lessThan: (n) ->
+        throw new Error("To be implemented!")
+
+    ###*
+    * Alias for `lessThan`.
+    * @method lt
+    *###
+    lt: @::lessThan
+
+    ###*
+    * This method check for mathmatical '>'. This means new mathJS.Double(4.2).greaterThan(3.2) is true.
+    * @method greaterThan
+    * @param {Number} n
+    * @return {Boolean}
+    *###
+    greaterThan: (n) ->
+        throw new Error("To be implemented!")
+
+    ###*
+    * Alias for `greaterThan`.
+    * @method lt
+    *###
+    gt: @::greaterThan
+
+    ###*
+    * This method check for mathmatical equality. This means new mathJS.Double(4.2).lessThanOrEqualTo(3.2) is true.
+    * @method lessThanOrEqualTo
+    * @param {Number} n
+    * @return {Boolean}
+    *###
+    lessThanOrEqualTo: (n) ->
+        throw new Error("To be implemented!")
+
+    ###*
+    * Alias for `lessThanOrEqualTo`.
+    * @method lt
+    *###
+    lte: @::lessThanOrEqualTo
+
+    ###*
+    * This method check for mathmatical equality. This means new mathJS.Double(4.2).lessThanOrEqualTo(3.2) is true.
+    * @method greaterThanOrEqualTo
+    * @param {Number} n
+    * @return {Boolean}
+    *###
+    greaterThanOrEqualTo: (n) ->
+        throw new Error("To be implemented!")
+
+    ###*
+    * Alias for `greaterThanOrEqualTo`.
+    * @method lt
+    *###
+    gte: @::greaterThanOrEqualTo
+# end js/interfaces/Orderable.coffee
 
 # from js/Numbers/Number.coffee
 ###*
@@ -403,7 +453,7 @@ mathJS.reciprocal = (n) ->
  * @param {Number} value
  * @extends Object
 *###
-class mathJS.Number
+class mathJS.Number extends mathJS.Comparable
     ###########################################################################
     # STATIC
     @_valueIsValid: (value) ->
@@ -492,14 +542,66 @@ class mathJS.Number
     ###########################################################################
     # PUBLIC METHODS
 
+    # IMPLEMENTING COMPARABLE
     ###*
-    * This method check for mathmatical equality. This means new mathJS.Double(4.2).equals(4.2)
+    * This method checks for mathmatical equality. This means new mathJS.Double(4.2).equals(4.2) is true.
     * @method equals
     * @param {Number} n
     * @return {Boolean}
     *###
     equals: (n) ->
-        return @_getValueFromParam(n) is @value
+        return @value is @_getValueFromParam(n)
+
+    e: @::equals
+
+    ###*
+    * This method check for mathmatical '<'. This means new mathJS.Double(4.2).lessThan(5.2) is true.
+    * @method lessThan
+    * @param {Number} n
+    * @return {Boolean}
+    *###
+    lessThan: (n) ->
+        return @value < @_getValueFromParam(n)
+
+    ###*
+    * Alias for `lessThan`.
+    * @method lt
+    *###
+    lt: @::lessThan
+
+    ###*
+    * This method check for mathmatical '>'. This means new mathJS.Double(4.2).greaterThan(3.2) is true.
+    * @method greaterThan
+    * @param {Number} n
+    * @return {Boolean}
+    *###
+    greaterThan: (n) ->
+        return @value > @_getValueFromParam(n)
+
+    ###*
+    * Alias for `greaterThan`.
+    * @method lt
+    *###
+    gt: @::greaterThan
+
+    ###*
+    * This method check for mathmatical equality. This means new mathJS.Double(4.2).lessThanOrEqualTo(3.2) is true.
+    * @method lessThanOrEqualTo
+    * @param {Number} n
+    * @return {Boolean}
+    *###
+    lessThanOrEqualTo: (n) ->
+        return @value <= @_getValueFromParam(n)
+
+    ###*
+    * Alias for `lessThanOrEqualTo`.
+    * @method lt
+    *###
+    lte: @::lessThanOrEqualTo
+
+
+    # IMPLEMENTING COMPARABLE
+    
 
     ###*
     * This method adds 2 numbers and returns a new one.
@@ -1032,20 +1134,35 @@ class mathJS.Complex extends mathJS.Number
 
 # from js/Set/Set.coffee
 ###*
-* This class serves as interface.
 * @class Set
+* @constructor
+* @param {Function|Class} type
+* @param {Set} universe
+* Optional. If given, the created Set will be interpreted as a sub set of the universe.
+* @param {mixed} elems...
+* Optional. This and the following parameters serve as elements for the new Set. They will be in the new Set immediately.
 *###
-class mathJS.Set
+class mathJS.Set extends mathJS.Comparable
     ###########################################################################
     # STATIC
 
+    @disjoint: (set1, set2) ->
+        return set1.intersects set2
+
     ###########################################################################
     # CONSTRUCTOR
-    constructor: (type) ->
-        @type = type
-        # TODO: if @type::equals => good, otherwise => bad
-        @elems = []
-        @subsets = []
+    constructor: (type, universe, leftBoundary, rightBoundary, elems...) ->
+        if type instanceof mathJS.Comparable
+            @type = type
+            @universe = universe
+            @leftBoundary = leftBoundary
+            @rightBoundary = rightBoundary
+            if elems.length > 0
+                @subsets = [new mathJS.DiscreteSet(type, universe, elems...)]
+            else
+                @subsets = []
+        else
+            throw new Error("Wrong (incomparable) type given ('#{type.name}'')! Sets must consist of comparable elements!")
 
     ###########################################################################
     # PROTECTED METHODS
@@ -1071,51 +1188,89 @@ class mathJS.Set
 
     ###########################################################################
     # PUBLIC METHODS
+    clone: () ->
+        return
+
     equals: (set) ->
         throw new Error("todo!")
 
-    add: (elem) ->
-        elem = @_getValueFromParam(elem)
-
-        if elem?
-            for subset in @subsets
-                # element already in some subset => return
-                if subset.contains elem
-                    return @
-
-            # element is in no subset and not in elements
-            for e in @elems when e.equals?(elem) or e is elem
-                return @
-
-            # at this point we know that the element is not in the set
-            @elems.push elem
-
-        return @
-
-    remove: (elem) ->
+    addElem: (elem) ->
         if elem instanceof @type
+            return @union(new mathJS.DiscreteSet(@type, elem))
+        return @
+        # elem = @_getValueFromParam(elem)
+        #
+        # if elem?
+        #     for subset in @subsets
+        #         # element already in some subset => return
+        #         if subset.contains elem
+        #             return @
+        #
+        #     # element is in no subset and not in elements
+        #     for e in @elems when e.equals?(elem) or e is elem
+        #         return @
+        #
+        #     # at this point we know that the element is not in the set
+        #     @elems.push elem
+        #
+        # return @
 
-            subset.remove elem for subset in @subsets
+    addElems: (elems) ->
+        set = new mathJS.EmptySet()
+        for elem in elems when elem instanceof @type
+            set.addElem elem
 
-            elems = []
-            for e in @elems
-                if e.equals(elem) or e is elem
-                    continue
-                elems.push e
 
-            @elems = elems
 
+    removeElem: (elem) ->
+        if elem instanceof @type
+            return @without(new mathJS.DiscreteSet(@type, elem))
+            # subset.remove elem for subset in @subsets
+            #
+            # elems = []
+            # for e in @elems
+            #     if e.equals(elem) or e is elem
+            #         continue
+            #     elems.push e
+            #
+            # @elems = elems
         return @
 
     contains: (elem) ->
-        return elem instanceof @type and elem in @elems
+        if elem instanceof @type
+            for subset in @subsets
+                if subset.contains elem
+                    return true
+        return false
+
+    in: @::contains
 
     union: (set) ->
+        # TODO: how to avoid doubles?
+        # see if the set matches any already existing set
+        if @intersects set
+            # remove duplicates from given set
+            set = set.without @
+            @subsets.push set
+        # disjoint sets
+        else
+            @subsets.push set
 
-    intersect: () ->
+        return @
+
+    intersect: (set) ->
+        return
+
+    intersects: (set) ->
+        return @intersection.size() > 0
+
+    disjoint: (set) ->
+        return @intersection.size() is 0
 
     complement: () ->
-
+        if @universe?
+            return asdf
+        return new mathJS.EmptySet()
     ###*
     * a.without b => returns: removed all common elements from a
     *###
@@ -1128,6 +1283,8 @@ class mathJS.Set
             if size is Infinity
                 return size
         return size
+
+    cardinality: @::size
 
 #
 #
@@ -1277,12 +1434,194 @@ class mathJS.Set
 #         return res
 # end js/Set/Set.coffee
 
-# from js/Set/SpecificSet.coffee
-class mathJS.SpecificSet extends mathJS.Set
+# from js/Set/EmptySet.coffee
+class mathJS.EmpytSet extends mathJS.Set
 
-    constructor: (args) ->
-        # body...
-# end js/Set/SpecificSet.coffee
+
+    constructor: () ->
+
+    clone: () ->
+        return new mathJS.EmpytSet()
+
+    equals: (set) ->
+        return set instanceof mathJS.EmpytSet
+
+    addElem: (elem) ->
+        if DEBUG
+            console.warn 
+        @makeToDiscreteSet()
+        return @
+
+    size: () ->
+        return 0
+
+
+    makeToDiscreteSet: () ->
+        @.__proto__ = mathJS.DiscreteSet.prototype
+        return @
+
+    makeToConditionalSet: () ->
+        @.__proto__ = mathJS.ConditionalSet.prototype
+        return @
+# end js/Set/EmptySet.coffee
+
+# from js/Set/DiscreteSet.coffee
+###*
+* This class is a Setof explicitely listed elements (with no needed logic).
+* @class DiscreteSet
+* @constructor
+* @param {Function|Class} type
+* @param {Set} universe
+* Optional. If given, the created Set will be interpreted as a sub set of the universe.
+* @param {mixed} elems...
+* Optional. This and the following parameters serve as elements for the new Set. They will be in the new Set immediately.
+* @extends Set
+*###
+class mathJS.DiscreteSet extends mathJS.Set
+
+    ###########################################################################
+    # CONSTRUCTOR
+    constructor: (type, universe, elems...) ->
+        if type instanceof mathJS.Comparable
+            @type = type
+            @universe = universe
+            @subsets = []
+        else
+            throw new Error("Wrong (incomparable) type given ('#{type.name}'')! Sets must consist of comparable elements!")
+
+    ###########################################################################
+    # PROTECTED METHODS
+    _getValueFromParam: (value) ->
+        # 'normal' case
+        if value instanceof @type
+            return value
+
+        # make primitives also valid for numeric sets
+
+        isNum = mathJS.isNum(value)
+
+        # double or number  -> allow any number
+        if (@type is mathJS.Double or @type is mathJS.Number) and isNum
+            return new @type(value)
+
+        # int -> allow only ints
+        if @type is mathJS.Int and isNum and ~~value is value
+            return new @type(value)
+
+        return null
+
+
+    ###########################################################################
+    # PUBLIC METHODS
+    getElements: () ->
+        return @elems
+
+    ###*
+    * @Override
+    *###
+    equals: (set) ->
+        throw new Error("todo!")
+
+    addElem: (elem) ->
+        if elem instanceof @type
+            return @union(new mathJS.DiscreteSet(@type, elem))
+        return @
+        # elem = @_getValueFromParam(elem)
+        #
+        # if elem?
+        #     for subset in @subsets
+        #         # element already in some subset => return
+        #         if subset.contains elem
+        #             return @
+        #
+        #     # element is in no subset and not in elements
+        #     for e in @elems when e.equals?(elem) or e is elem
+        #         return @
+        #
+        #     # at this point we know that the element is not in the set
+        #     @elems.push elem
+        #
+        # return @
+
+    removeElem: (elem) ->
+        if elem instanceof @type
+            return @without(new mathJS.DiscreteSet(@type, elem))
+            # subset.remove elem for subset in @subsets
+            #
+            # elems = []
+            # for e in @elems
+            #     if e.equals(elem) or e is elem
+            #         continue
+            #     elems.push e
+            #
+            # @elems = elems
+        return @
+
+    contains: (elem) ->
+        if elem instanceof @type
+            for e in @elems when e.equals(elem)
+                return true
+        return false
+
+    in: @::contains
+
+    unionSelf: (set) ->
+        if set instanceof mathJS.DiscreteSet
+            # some common elements
+            if (intersection = @intersect(set)).size() > 0
+                @elems.push.apply @elems, set.without intersection
+            # disjoint sets => add 'em all
+            else
+                @elems.push.apply @elems, set.elems
+        else if set instanceof mathJS.ConditionalSet
+
+        else if set instanceof mathJS.EmptySet
+            return
+        # TODO: how to avoid doubles?
+        # see if the set matches any already existing set
+        # if @intersects set
+        #     # remove duplicates from given set
+        #     set = set.without @
+        #     @subsets.push set
+        # # disjoint sets
+        # else
+        #     @subsets.push set
+        #
+        # return @
+
+    intersect: (set) ->
+        if set instanceof mathJS.DiscreteSet
+            elems = []
+            for x in @elems
+                for y in set.elems
+                    if x.equals y
+                        elems.push x
+            if elems.length > 0
+                res = new mathJS.DiscreteSet(@type, @universe)
+
+
+
+        else if set instanceof mathJS.ConditionalSet
+
+        else if set instanceof mathJS.EmptySet
+            return new mathJS.EmptySet()
+        return null
+
+
+
+    complement: () ->
+        if @universe?
+            return
+        return new mathJS.EmptySet()
+    ###*
+    * a.without b => returns: removed all common elements from a
+    *###
+    without: (set) ->
+
+
+    size: () ->
+        return @elems.length
+# end js/Set/DiscreteSet.coffee
 
 # from js/Set/ConditionalSet.coffee
 class mathJS.ConditionalSet extends mathJS.Set

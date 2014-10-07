@@ -7,7 +7,7 @@ doc: make
 	yuidoc -o doc doc_base
 
 production: make
-	uglifyjs source.js -o source.js -c drop_console=true
+	uglifyjs source.js -o source.js -c drop_console=true -d DEBUG=false
 
 cs:
 	tar cfv coffee.tar *.coffee

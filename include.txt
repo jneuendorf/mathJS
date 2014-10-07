@@ -4,7 +4,8 @@ js/globalFunctions
 js/prototyping
 js/mathJS
 
-js/interfaces/Damageable
+js/interfaces/Comparable
+js/interfaces/Orderable
 
 js/Numbers/Number
 js/Numbers/Double
@@ -13,7 +14,8 @@ js/Numbers/Int
 js/Numbers/Complex
 
 js/Set/Set
-js/Set/SpecificSet
+js/Set/EmptySet
+js/Set/DiscreteSet
 js/Set/ConditionalSet
 
 js/Function

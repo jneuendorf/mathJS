@@ -5,7 +5,7 @@
  * @param {Number} value
  * @extends Object
 *###
-class mathJS.Number
+class mathJS.Number extends mathJS.Orderable
     ###########################################################################
     # STATIC
     @_valueIsValid: (value) ->
@@ -94,14 +94,66 @@ class mathJS.Number
     ###########################################################################
     # PUBLIC METHODS
 
+    # IMPLEMENTING COMPARABLE
     ###*
-    * This method check for mathmatical equality. This means new mathJS.Double(4.2).equals(4.2)
+    * This method checks for mathmatical equality. This means new mathJS.Double(4.2).equals(4.2) is true.
     * @method equals
     * @param {Number} n
     * @return {Boolean}
     *###
     equals: (n) ->
-        return @_getValueFromParam(n) is @value
+        return @value is @_getValueFromParam(n)
+
+    e: @::equals
+
+    ###*
+    * This method check for mathmatical '<'. This means new mathJS.Double(4.2).lessThan(5.2) is true.
+    * @method lessThan
+    * @param {Number} n
+    * @return {Boolean}
+    *###
+    lessThan: (n) ->
+        return @value < @_getValueFromParam(n)
+
+    ###*
+    * Alias for `lessThan`.
+    * @method lt
+    *###
+    lt: @::lessThan
+
+    ###*
+    * This method check for mathmatical '>'. This means new mathJS.Double(4.2).greaterThan(3.2) is true.
+    * @method greaterThan
+    * @param {Number} n
+    * @return {Boolean}
+    *###
+    greaterThan: (n) ->
+        return @value > @_getValueFromParam(n)
+
+    ###*
+    * Alias for `greaterThan`.
+    * @method lt
+    *###
+    gt: @::greaterThan
+
+    ###*
+    * This method check for mathmatical equality. This means new mathJS.Double(4.2).lessThanOrEqualTo(3.2) is true.
+    * @method lessThanOrEqualTo
+    * @param {Number} n
+    * @return {Boolean}
+    *###
+    lessThanOrEqualTo: (n) ->
+        return @value <= @_getValueFromParam(n)
+
+    ###*
+    * Alias for `lessThanOrEqualTo`.
+    * @method lt
+    *###
+    lte: @::lessThanOrEqualTo
+
+
+    # IMPLEMENTING COMPARABLE
+
 
     ###*
     * This method adds 2 numbers and returns a new one.

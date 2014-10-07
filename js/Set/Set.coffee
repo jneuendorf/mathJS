@@ -1,18 +1,33 @@
 ###*
-* This class serves as interface.
 * @class Set
+* @constructor
+* @param {Function|Class} type
+* @param {Set} universe
+* Optional. If given, the created Set will be interpreted as a sub set of the universe.
+* @param {mixed} elems...
+* Optional. This and the following parameters serve as elements for the new Set. They will be in the new Set immediately.
 *###
-class mathJS.Set
+class mathJS.Set extends mathJS.Comparable
     ###########################################################################
     # STATIC
 
+    @disjoint: (set1, set2) ->
+        return set1.intersects set2
+
     ###########################################################################
     # CONSTRUCTOR
-    constructor: (type) ->
-        @type = type
-        # TODO: if @type::equals => good, otherwise => bad
-        @elems = []
-        @subsets = []
+    constructor: (type, universe, leftBoundary, rightBoundary, elems...) ->
+        if type instanceof mathJS.Comparable
+            @type = type
+            @universe = universe
+            @leftBoundary = leftBoundary
+            @rightBoundary = rightBoundary
+            if elems.length > 0
+                @subsets = [new mathJS.DiscreteSet(type, universe, elems...)]
+            else
+                @subsets = []
+        else
+            throw new Error("Wrong (incomparable) type given ('#{type.name}'')! Sets must consist of comparable elements!")
 
     ###########################################################################
     # PROTECTED METHODS
@@ -38,51 +53,89 @@ class mathJS.Set
 
     ###########################################################################
     # PUBLIC METHODS
+    clone: () ->
+        return
+
     equals: (set) ->
         throw new Error("todo!")
 
-    add: (elem) ->
-        elem = @_getValueFromParam(elem)
-
-        if elem?
-            for subset in @subsets
-                # element already in some subset => return
-                if subset.contains elem
-                    return @
-
-            # element is in no subset and not in elements
-            for e in @elems when e.equals?(elem) or e is elem
-                return @
-
-            # at this point we know that the element is not in the set
-            @elems.push elem
-
-        return @
-
-    remove: (elem) ->
+    addElem: (elem) ->
         if elem instanceof @type
+            return @union(new mathJS.DiscreteSet(@type, elem))
+        return @
+        # elem = @_getValueFromParam(elem)
+        #
+        # if elem?
+        #     for subset in @subsets
+        #         # element already in some subset => return
+        #         if subset.contains elem
+        #             return @
+        #
+        #     # element is in no subset and not in elements
+        #     for e in @elems when e.equals?(elem) or e is elem
+        #         return @
+        #
+        #     # at this point we know that the element is not in the set
+        #     @elems.push elem
+        #
+        # return @
 
-            subset.remove elem for subset in @subsets
+    addElems: (elems) ->
+        set = new mathJS.EmptySet()
+        for elem in elems when elem instanceof @type
+            set.addElem elem
 
-            elems = []
-            for e in @elems
-                if e.equals(elem) or e is elem
-                    continue
-                elems.push e
 
-            @elems = elems
 
+    removeElem: (elem) ->
+        if elem instanceof @type
+            return @without(new mathJS.DiscreteSet(@type, elem))
+            # subset.remove elem for subset in @subsets
+            #
+            # elems = []
+            # for e in @elems
+            #     if e.equals(elem) or e is elem
+            #         continue
+            #     elems.push e
+            #
+            # @elems = elems
         return @
 
     contains: (elem) ->
-        return elem instanceof @type and elem in @elems
+        if elem instanceof @type
+            for subset in @subsets
+                if subset.contains elem
+                    return true
+        return false
+
+    in: @::contains
 
     union: (set) ->
+        # TODO: how to avoid doubles?
+        # see if the set matches any already existing set
+        if @intersects set
+            # remove duplicates from given set
+            set = set.without @
+            @subsets.push set
+        # disjoint sets
+        else
+            @subsets.push set
 
-    intersect: () ->
+        return @
+
+    intersect: (set) ->
+        return
+
+    intersects: (set) ->
+        return @intersection.size() > 0
+
+    disjoint: (set) ->
+        return @intersection.size() is 0
 
     complement: () ->
-
+        if @universe?
+            return asdf
+        return new mathJS.EmptySet()
     ###*
     * a.without b => returns: removed all common elements from a
     *###
@@ -95,6 +148,8 @@ class mathJS.Set
             if size is Infinity
                 return size
         return size
+
+    cardinality: @::size
 
 #
 #
