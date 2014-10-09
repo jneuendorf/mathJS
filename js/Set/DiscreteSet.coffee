@@ -14,33 +14,15 @@ class mathJS.DiscreteSet extends mathJS.Set
     ###########################################################################
     # CONSTRUCTOR
     constructor: (type, universe, elems...) ->
-        if type instanceof mathJS.Comparable
-            @type = type
-            @universe = universe
-            @subsets = []
-        else
-            throw new Error("Wrong (incomparable) type given ('#{type.name}'')! Sets must consist of comparable elements!")
+        # if type instanceof mathJS.Comparable
+        #     @type = type
+        #     @universe = universe
+        #     @subsets = []
+        # else
+        #     throw new Error("Wrong (incomparable) type given ('#{type.name}')! Sets must consist of comparable elements!")
 
     ###########################################################################
     # PROTECTED METHODS
-    _getValueFromParam: (value) ->
-        # 'normal' case
-        if value instanceof @type
-            return value
-
-        # make primitives also valid for numeric sets
-
-        isNum = mathJS.isNum(value)
-
-        # double or number  -> allow any number
-        if (@type is mathJS.Double or @type is mathJS.Number) and isNum
-            return new @type(value)
-
-        # int -> allow only ints
-        if @type is mathJS.Int and isNum and ~~value is value
-            return new @type(value)
-
-        return null
 
 
     ###########################################################################
@@ -152,4 +134,5 @@ class mathJS.DiscreteSet extends mathJS.Set
 
 
     size: () ->
-        return @elems.length
+        # return @elems.length
+        return 42

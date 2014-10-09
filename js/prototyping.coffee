@@ -65,6 +65,8 @@ Array::removeAt = (idx) ->
 	@splice(idx, 1)
 	return @
 
+
+
 ###*
  * @method getMax
  * @param {Function} propertyGetter

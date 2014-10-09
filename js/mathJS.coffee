@@ -1,5 +1,7 @@
 #################################################################################################
 # THIS FILE CONTAINS ALL PROPERITES AND FUNCTIONS THAT ARE BOUND DIRECTLY TO mathJS
+
+# CONSTRANTS
 Object.defineProperties mathJS, {
     e:
         value: Math.E
@@ -50,6 +52,13 @@ Object.defineProperties mathJS, {
     #     value: new mathJS.Set()
     #     writable: false
 }
+
+mathJS.isPrimitive = (x) ->
+    return typeof x is "string" or typeof x is "number" or typeof x is "boolean"
+
+mathJS.isComparable = (x) ->
+    return x instanceof mathJS.Comparable or x.instanceof?(mathJS.Comparable) or mathJS.isPrimitive x
+
 
 mathJS.ceil = Math.ceil
 

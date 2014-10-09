@@ -1,7 +1,7 @@
 class mathJS.Orderable extends mathJS.Comparable
 
     ###*
-    * This method check for mathmatical '<'. This means new mathJS.Double(4.2).lessThan(5.2) is true.
+    * This method checks for mathmatical '<'. This means new mathJS.Double(4.2).lessThan(5.2) is true.
     * @method lessThan
     * @param {Number} n
     * @return {Boolean}
@@ -16,7 +16,7 @@ class mathJS.Orderable extends mathJS.Comparable
     lt: @::lessThan
 
     ###*
-    * This method check for mathmatical '>'. This means new mathJS.Double(4.2).greaterThan(3.2) is true.
+    * This method checks for mathmatical '>'. This means new mathJS.Double(4.2).greaterThan(3.2) is true.
     * @method greaterThan
     * @param {Number} n
     * @return {Boolean}
@@ -31,7 +31,7 @@ class mathJS.Orderable extends mathJS.Comparable
     gt: @::greaterThan
 
     ###*
-    * This method check for mathmatical equality. This means new mathJS.Double(4.2).lessThanOrEqualTo(3.2) is true.
+    * This method checks for mathmatical '<='. This means new mathJS.Double(4.2).lessThanOrEqualTo(5.2) is true.
     * @method lessThanOrEqualTo
     * @param {Number} n
     * @return {Boolean}
@@ -46,7 +46,7 @@ class mathJS.Orderable extends mathJS.Comparable
     lte: @::lessThanOrEqualTo
 
     ###*
-    * This method check for mathmatical equality. This means new mathJS.Double(4.2).lessThanOrEqualTo(3.2) is true.
+    * This method checks for mathmatical '>='. This means new mathJS.Double(4.2).greaterThanOrEqualTo(3.2) is true.
     * @method greaterThanOrEqualTo
     * @param {Number} n
     * @return {Boolean}

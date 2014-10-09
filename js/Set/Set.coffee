@@ -4,10 +4,11 @@
 * @param {Function|Class} type
 * @param {Set} universe
 * Optional. If given, the created Set will be interpreted as a sub set of the universe.
-* @param {mixed} elems...
-* Optional. This and the following parameters serve as elements for the new Set. They will be in the new Set immediately.
+* @param {Set|Array} elems
+* Optional. This parameter serves as elements for the new Set. They will be in the new Set immediately.
+* Values can be a Set or an array of comparable elements (that means if `mathJS.isComparable() === true`).
 *###
-class mathJS.Set extends mathJS.Comparable
+class mathJS.Set extends mixOf mathJS.Poolable, mathJS.Comparable, mathJS.Parseable
     ###########################################################################
     # STATIC
 
@@ -16,47 +17,84 @@ class mathJS.Set extends mathJS.Comparable
 
     ###########################################################################
     # CONSTRUCTOR
-    constructor: (type, universe, leftBoundary, rightBoundary, elems...) ->
-        if type instanceof mathJS.Comparable
-            @type = type
-            @universe = universe
-            @leftBoundary = leftBoundary
-            @rightBoundary = rightBoundary
-            if elems.length > 0
-                @subsets = [new mathJS.DiscreteSet(type, universe, elems...)]
-            else
-                @subsets = []
-        else
-            throw new Error("Wrong (incomparable) type given ('#{type.name}'')! Sets must consist of comparable elements!")
+    constructor: (leftBoundary, rightBoundary, elems) ->
+        @leftBoundary = leftBoundary
+        @rightBoundary = rightBoundary
+
+        @_discreteSet = new mathJS.DiscreteSet()
+        @_conditionalSet = new mathJS.DiscreteSet() # => empty set
+
+
+        Object.defineProperties @, {
+            _universe:
+                value: null
+                enumarable: false
+            universe:
+                get: () ->
+                    return @_universe
+                set: (universe) ->
+                    if universe instanceof mathJS.Set or universe is null
+                        @_universe = universe
+                    return @
+                enumerable: true
+        }
+
+        if elems?
+            if elems instanceof mathJS.Set
+                _unionSelf elems
+            else if elems instanceof Array
+                true
+            # single element (but no set)
+            else if mathJS.isComparable elems
+                true
+
+        # calc size for caching
+        @_cachedSize = @size()
+
+        # if type instanceof mathJS.Comparable
+        #     @type = type
+        #     @universe = universe
+        #     @leftBoundary = leftBoundary
+        #     @rightBoundary = rightBoundary
+        #     if elems.length > 0
+        #         @subsets = [new mathJS.DiscreteSet(type, universe, elems...)]
+        #     else
+        #         @subsets = []
+        #     # calc size for caching
+        #     @cachedSize = @size()
+        # else
+        #     throw new Error("Wrong (incomparable) type given ('#{type.name}'')! Sets must consist of comparable elements!")
+
+    ###########################################################################
+    # PRIVATE METHODS
 
     ###########################################################################
     # PROTECTED METHODS
-    _getValueFromParam: (value) ->
-        # 'normal' case
-        if value instanceof @type
-            return value
+    _addElem: (elem) ->
+        if mathJS.isComparable elem
+            true
 
-        # make primitives also valid for numeric sets
+    # like union but in place => it changes this set
+    _unionSelf: () ->
 
-        isNum = mathJS.isNum(value)
 
-        # double or number  -> allow any number
-        if (@type is mathJS.Double or @type is mathJS.Number) and isNum
-            return new @type(value)
 
-        # int -> allow only ints
-        if @type is mathJS.Int and isNum and ~~value is value
-            return new @type(value)
-
-        return null
+    addElems: (elems) ->
+        set = new mathJS.EmptySet()
+        for elem in elems when elem instanceof @type
+            set.addElem elem
 
 
     ###########################################################################
     # PUBLIC METHODS
+
     clone: () ->
+        # TODO
+        throw new Error("todo!")
         return
 
     equals: (set) ->
+        # TODO
         throw new Error("todo!")
 
     addElem: (elem) ->
@@ -80,10 +118,10 @@ class mathJS.Set extends mathJS.Comparable
         #
         # return @
 
-    addElems: (elems) ->
-        set = new mathJS.EmptySet()
-        for elem in elems when elem instanceof @type
-            set.addElem elem
+    # addElems: (elems) ->
+    #     set = new mathJS.EmptySet()
+    #     for elem in elems when elem instanceof @type
+    #         set.addElem elem
 
 
 
@@ -141,15 +179,25 @@ class mathJS.Set extends mathJS.Comparable
     *###
     without: (set) ->
 
+    cartesianProduct: (set) ->
+
+    times: @::cartesianProduct
+
     size: () ->
-        size = @elems.length
-        for subset in @subsets
-            size += subset.size()
-            if size is Infinity
-                return size
-        return size
+        return @_discreteSet.size() + @_conditionalSet.size()
+
+    isEmpty: () ->
+        return @size() > 0
 
     cardinality: @::size
+
+    makeToDiscreteSet: () ->
+        @.__proto__ = mathJS.DiscreteSet.prototype
+        return @
+
+    makeToConditionalSet: () ->
+        @.__proto__ = mathJS.ConditionalSet.prototype
+        return @
 
 #
 #

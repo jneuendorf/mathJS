@@ -1,1 +1,1978 @@
-(function(){var __slice=[].slice,__hasProp={}.hasOwnProperty,__extends=function(child,parent){function ctor(){this.constructor=child}for(var key in parent)__hasProp.call(parent,key)&&(child[key]=parent[key]);return ctor.prototype=parent.prototype,child.prototype=new ctor,child.__super__=parent.prototype,child};window.mathJS={},window.mixOf=function(){var Mixed,base,method,mixin,mixins,name,_i,_ref;for(base=arguments[0],mixins=2<=arguments.length?__slice.call(arguments,1):[],Mixed=function(_super){function Mixed(){return Mixed.__super__.constructor.apply(this,arguments)}return __extends(Mixed,_super),Mixed}(base),_i=mixins.length-1;_i>=0;_i+=-1){mixin=mixins[_i],_ref=mixin.prototype;for(name in _ref)method=_ref[name],Mixed.prototype[name]=method}return Mixed},Array.prototype.reverseCopy=function(){var item,res,_i;for(res=[],_i=this.length-1;_i>=0;_i+=-1)item=this[_i],res.push(item);return res},Array.prototype.sample=function(n,forceArray){var arr,elem,i,res;if(null==n&&(n=1),null==forceArray&&(forceArray=!1),1===n)return forceArray?[this[Math.floor(Math.random()*this.length)]]:this[Math.floor(Math.random()*this.length)];for(n>this.length&&(n=this.length),i=0,res=[],arr=this.clone();i++<n;)elem=arr.sample(1),res.push(elem),arr.remove(elem);return res},Array.prototype.shuffle=function(){var arr,elem,i,_i,_len;for(arr=this.sample(this.length),i=_i=0,_len=arr.length;_len>_i;i=++_i)elem=arr[i],this[i]=elem;return this},Array.prototype.first=function(){return this[0]},Array.prototype.last=function(){return this[this.length-1]},Array.prototype.average=function(){var elem,elems,sum,_i,_len;for(sum=0,elems=0,_i=0,_len=this.length;_len>_i;_i++)elem=this[_i],Math.isNum(elem)&&(sum+=elem,elems++);return sum/elems},Array.prototype.median=Array.prototype.average,Array.prototype.clone=Array.prototype.slice,Array.prototype.remove=function(elem){var idx;return idx=this.indexOf(elem),idx>-1&&this.splice(idx,1),this},Array.prototype.removeAll=function(elements){var elem,_i,_len;for(null==elements&&(elements=[]),_i=0,_len=elements.length;_len>_i;_i++)elem=elements[_i],this.remove(elem);return this},Array.prototype.removeAt=function(idx){return this.splice(idx,1),this},Array.prototype.getMax=function(propertyGetter){var elem,max,res,val,_i,_len;for(max=null,res=[],null==propertyGetter&&(propertyGetter=function(item){return item}),_i=0,_len=this.length;_len>_i;_i++)elem=this[_i],val=propertyGetter(elem),val>max||null===max?(max=val,res=[elem]):val===max&&res.push(elem);return res},Array.prototype.getMin=function(propertyGetter){var elem,min,res,val,_i,_len;for(min=null,res=[],null==propertyGetter&&(propertyGetter=function(item){return item}),_i=0,_len=this.length;_len>_i;_i++)elem=this[_i],val=propertyGetter(elem),min>val||null===min?(min=val,res=[elem]):val===min&&res.push(elem);return res},String.prototype.camel=function(spaces){var i,str,_i,_ref;if(null==spaces&&(spaces=!1),str=this.toLowerCase(),spaces){for(str=str.split(" "),i=_i=1,_ref=str.length;_ref>=1?_ref>_i:_i>_ref;i=_ref>=1?++_i:--_i)str[i]=str[i].charAt(0).toUpperCase()+str[i].substr(1);str=str.join("")}return str},String.prototype.antiCamel=function(){var i,res,temp,_i,_ref;for(res=this.charAt(0),i=_i=1,_ref=this.length;_ref>=1?_ref>_i:_i>_ref;i=_ref>=1?++_i:--_i)temp=this.charAt(i),temp===temp.toUpperCase()&&(res+=" "),res+=temp;return res},String.prototype.firstToUpperCase=function(){return this.charAt(0).toUpperCase()+this.slice(1)},String.prototype.snakeToCamelCase=function(){var char,prevChar,res,_i,_len;for(res="",_i=0,_len=this.length;_len>_i;_i++)char=this[_i],"_"!==char&&(res+="_"!==prevChar?char:char.toUpperCase()),prevChar=char;return res},String.prototype.camelToSnakeCase=function(){var char,prevChar,res,_i,_len;for(res="",prevChar=null,_i=0,_len=this.length;_len>_i;_i++)char=this[_i],res+=char===char.toLowerCase()?char:prevChar===prevChar.toLowerCase()?"_"+char.toLowerCase():char,prevChar=char;return res},Object.defineProperties(mathJS,{e:{value:Math.E,writable:!1},pi:{value:Math.PI,writable:!1},ln2:{value:Math.LN2,writable:!1},ln10:{value:Math.LN10,writable:!1},log2e:{value:Math.LOG2E,writable:!1},log10e:{value:Math.LOG10E,writable:!1},infty:{value:1/0,writable:!1},infinity:{value:1/0,writable:!1},epsilon:{value:Number.EPSILON,writable:!1},maxValue:{value:Number.MAX_VALUE,writable:!1},minValue:{value:Number.MIN_VALUE,writable:!1}}),mathJS.ceil=Math.ceil,mathJS.floor=function(n){return~~n},mathJS.floatToInt=mathJS.floor,mathJS.square=function(n){return mathJS.isNum(n)?n*n:0/0},mathJS.cube=function(n){return mathJS.isNum(n)?n*n*n:0/0},mathJS.pow=Math.pow,mathJS.sqrt=Math.sqrt,mathJS.curt=function(n){return mathJS.isNum(n)?mathJS.pow(n,1/3):0/0},mathJS.root=function(n,exp){return mathJS.isNum(n)&&mathJS.isNum(exp)?mathJS.pow(n,1/exp):0/0},mathJS.parseNumber=function(){return null},mathJS.isNum=function(n){return null!=n&&isFinite(n)},mathJS.isInt=function(r){return mathJS.isNum(r)&&mathJS.floor(r)===r},mathJS.randInt=function(max,min){var temp;return null==max&&(max=1),null==min&&(min=0),min>max&&(temp=min,min=max,max=temp),Math.floor(Math.random()*(max+1-min))+min},mathJS.randNum=function(max,min){var temp;return null==max&&(max=1),null==min&&(min=0),min>max&&(temp=min,min=max,max=temp),Math.random()*(max+1-min)+min},mathJS.radToDeg=function(rad){return 57.29577951308232*rad},mathJS.degToRad=function(deg){return.017453292519943295*deg},mathJS.sign=function(n){return mathJS.isNum(n)?0>n?-1:1:0/0},mathJS.log=function(n,base){return null==base&&(base=10),Math.log(n)/Math.log(base)},mathJS.logBase=mathJS.log,mathJS.reciprocal=function(n){return mathJS.isNum(n)?1/n:0/0},mathJS.Comparable=function(){function Comparable(){}return Comparable.prototype.equals=function(){throw new Error("To be implemented!")},Comparable.prototype.e=Comparable.prototype.equals,Comparable}(),mathJS.Orderable=function(_super){function Orderable(){return Orderable.__super__.constructor.apply(this,arguments)}return __extends(Orderable,_super),Orderable.prototype.lessThan=function(){throw new Error("To be implemented!")},Orderable.prototype.lt=Orderable.prototype.lessThan,Orderable.prototype.greaterThan=function(){throw new Error("To be implemented!")},Orderable.prototype.gt=Orderable.prototype.greaterThan,Orderable.prototype.lessThanOrEqualTo=function(){throw new Error("To be implemented!")},Orderable.prototype.lte=Orderable.prototype.lessThanOrEqualTo,Orderable.prototype.greaterThanOrEqualTo=function(){throw new Error("To be implemented!")},Orderable.prototype.gte=Orderable.prototype.greaterThanOrEqualTo,Orderable}(mathJS.Comparable),mathJS.Number=function(_super){function Number(value){var fStr;if(!this._valueIsValid(value))throw fStr=arguments.callee.caller.toString(),new Error("mathJS: Expected plain number! Given "+value+" in '"+fStr.substring(0,fStr.indexOf(")")+1)+"'");Object.defineProperties(this,{value:{get:this._getValue,set:this._setValue},fromPool:{value:this.constructor.fromPool.bind(this.constructor),writable:!1,enumarable:!1,configurable:!1}}),this.value=this._getValueFromParam(value,!0)}return __extends(Number,_super),Number._valueIsValid=function(value){return value instanceof mathJS.Number||mathJS.isNum(value)},Number._getValueFromParam=function(param,skipCheck){var value;return skipCheck||this._valueIsValid(param)?(param instanceof mathJS.Number?value=param.value:mathJS.isNum(param)&&(value=param),value):null},Number._pool=[],Number.fromPool=function(val){var number;return this._pool.length>0?this._valueIsValid(val)?(number=this._pool.pop(),number.value=val,number):null:new this(val)},Number.parse=function(str){var parsed;return mathJS.isNum(parsed=parseFloat(str))?this.fromPool(parsed):parsed},Number.random=function(max,min){return this.fromPool(mathJS.randNum(max,min))},Number.prototype._setValue=function(value){return this._valueIsValid(value)&&(this._value=this._getValueFromParam(value,!0)),this},Number.prototype._getValue=function(){return this._value},Number.prototype._valueIsValid=Number._valueIsValid,Number.prototype._getValueFromParam=Number._getValueFromParam,Number.prototype.equals=function(n){return this.value===this._getValueFromParam(n)},Number.prototype.e=Number.prototype.equals,Number.prototype.lessThan=function(n){return this.value<this._getValueFromParam(n)},Number.prototype.lt=Number.prototype.lessThan,Number.prototype.greaterThan=function(n){return this.value>this._getValueFromParam(n)},Number.prototype.gt=Number.prototype.greaterThan,Number.prototype.lessThanOrEqualTo=function(n){return this.value<=this._getValueFromParam(n)},Number.prototype.lte=Number.prototype.lessThanOrEqualTo,Number.prototype.plus=function(n){return this.fromPool(this.value+this._getValueFromParam(n))},Number.prototype.increase=function(n){return this.value+=this._getValueFromParam(n),this},Number.prototype.plusSelf=Number.increase,Number.prototype.minus=function(n){return this.fromPool(this.value-n)},Number.prototype.decrease=function(n){return this.value-=this._getValueFromParam(n),this},Number.prototype.minusSelf=Number.decrease,Number.prototype.times=function(n){return this.fromPool(this.value*this._getValueFromParam(n))},Number.prototype.timesSelf=function(n){return this.value*=this._getValueFromParam(n),this},Number.prototype.divide=function(n){return this.fromPool(this.value/this._getValueFromParam(n))},Number.prototype.divideSelf=function(n){return this.value/=this._getValueFromParam(n),this},Number.prototype.square=function(){return this.fromPool(this.value*this.value)},Number.prototype.squareSelf=function(){return this.value*=this.value,this},Number.prototype.cube=function(){return this.fromPool(this.value*this.value*this.value)},Number.prototype.cubeSelf=function(){return this.value*=this.value*this.value,this},Number.prototype.sqrt=function(){return this.fromPool(mathJS.sqrt(this.value))},Number.prototype.sqrtSelf=function(){return this.value=mathJS.sqrt(this.value),this},Number.prototype.curt=function(){return this.pow(1/3)},Number.prototype.curtSelf=function(){return this.powSelf(1/3)},Number.prototype.root=function(exp){return this.pow(1/exp)},Number.prototype.rootSelf=function(exp){return this.powSelf(1/exp)},Number.prototype.reciprocal=function(){return this.fromPool(1/this.value)},Number.prototype.reciprocalSelf=function(){return this.value=1/this.value,this},Number.prototype.pow=function(n){return this.fromPool(mathJS.pow(this.value,this._getValueFromParam(n)))},Number.prototype.powSelf=function(n){return this.value=mathJS.pow(this.value,this._getValueFromParam(n)),this},Number.prototype.sign=function(){return mathJS.sign(this.value)},Number.prototype.toInt=function(){return mathJS.Int.fromPool(mathJS.floor(this.value))},Number.prototype.toDouble=function(){return mathJS.Double.fromPool(this.value)},Number.prototype.toString=function(){return this.value.toString()},Number.prototype.clone=function(){return this.fromPool(this.value)},Number.prototype.release=function(){return this.constructor._pool.push(this),this.constructor},Number}(mathJS.Comparable),mathJS.Double=function(_super){function Double(){Double.__super__.constructor.apply(this,arguments)}return __extends(Double,_super),Double}(mathJS.Number),mathJS.Fraction=function(_super){function Fraction(enumerator,denominator){this.enumerator=enumerator,this.denominator=denominator,Object.defineProperty(this,"value",{get:function(){return this.enumerator/this.denominator}})}return __extends(Fraction,_super),Fraction}(mathJS.Number),mathJS.Int=function(_super){function Int(){Int.__super__.constructor.apply(this,arguments)}return __extends(Int,_super),function(){var inherited;return inherited=Int._getValueFromParam.bind(Int),Int._getValueFromParam=function(value){return~~inherited(value)}}(),Int.parse=function(str){var parsed;return mathJS.isNum(parsed=parseIn(str,10))?this.fromPool(parsed):parsed},Int.random=function(max,min){return this.fromPool(mathJS.randInt(max,min))},Int.prototype.plus=function(n){return this.constructor.fromPool(~~(this.value+this._getValueFromParam(n)))},Int.prototype.increase=function(n){return this.value+=~~this._getValueFromParam(n),this},Int.prototype.plusSelf=Int.increase,Int.prototype.minus=function(n){return this.constructor.fromPool(~~(this.value-n))},Int.prototype.decrease=function(n){return this.value=~~(this.value-this._getValueFromParam(n)),this},Int.prototype.minusSelf=Int.decrease,Int.prototype.times=function(n){return this.constructor.fromPool(~~(this.value*this._getValueFromParam(n)))},Int.prototype.timesSelf=function(n){return this.value=~~(this.value*this._getValueFromParam(n)),this},Int.prototype.divide=function(n){return this.constructor.fromPool(~~(this.value/this._getValueFromParam(n)))},Int.prototype.divideSelf=function(n){return this.value=~~(this.value/this._getValueFromParam(n)),this},Int.prototype.sqrt=function(){return this.constructor.fromPool(~~mathJS.sqrt(this.value))},Int.prototype.sqrtSelf=function(){return this.value=~~mathJS.sqrt(this.value),this},Int.prototype.pow=function(n){return this.constructor.fromPool(mathJS.pow(this.value,this._getValueFromParam(n)))},Int.prototype.powSelf=function(n){return this.value=mathJS.pow(this.value,this._getValueFromParam(n)),this},Int.prototype.toInt=function(){return mathJS.Int.fromPool(this.value)},Int}(mathJS.Number),mathJS.Complex=function(_super){function Complex(real,img){var fStr,values;if(values=this._getValueFromParam(real,img),null==values)throw fStr=arguments.callee.caller.toString(),new Error("mathJS: Expected 2 numbers or a complex number! Given ("+real+", "+img+") in '"+fStr.substring(0,fStr.indexOf(")")+1)+"'");Object.defineProperties(this,{real:{get:this._getReal,set:this._setReal},img:{get:this._getImg,set:this._setImg},fromPool:{value:this.constructor.fromPool.bind(this.constructor),writable:!1,enumarable:!1,configurable:!1}}),this.real=values.real,this.img=values.img}var PARSE_KEY;return __extends(Complex,_super),PARSE_KEY="0c",Complex._getValueFromParam=function(real,img){return real instanceof mathJS.Complex?{real:real.real,img:real.img}:real instanceof mathJS.Number&&img instanceof mathJS.Number?{real:real.value,img:img.value}:mathJS.isNum(real)&&mathJS.isNum(img)?{real:real,img:img}:null},Complex.fromPool=function(real,img){var number;return this._pool.length>0?this._valueIsValid(real)&&this._valueIsValid(img)?(number=this._pool.pop(),number.real=real,number.img=img,number):null:new this(real,img)},Complex.parse=function(str){var idx,img,parts,real;return idx=str.toLowerCase().indexOf(PARSE_KEY),idx>=0&&(parts=str.substring(idx+PARSE_KEY.length).split(","),mathJS.isNum(real=parseFloat(parts[0]))&&mathJS.isNum(img=parseFloat(parts[1])))?this.fromPool(real,img):0/0},Complex.random=function(max1,min1,max2,min2){return this.fromPool(mathJS.randNum(max1,min1),mathJS.randNum(max2,min2))},Complex.prototype._setReal=function(value){return this._valueIsValid(value)&&(this._real=value.value||value.real||value),this},Complex.prototype._getReal=function(){return this._real},Complex.prototype._setImg=function(value){return this._valueIsValid(value)&&(this._img=value.value||value.img||value),this},Complex.prototype._getImg=function(){return this._img},Complex.prototype._getValueFromParam=Complex._getValueFromParam,Complex.prototype.equals=function(r,i){var values;return values=this._getValueFromParam(r,i),null!=values?this.real===values.real&&this.img===values.img:!1},Complex.prototype.plus=function(r,i){var values;return values=this._getValueFromParam(r,i),null!=values?this.fromPool(this.real+values.real,this.img+values.img):0/0},Complex.prototype.increase=function(r,i){var values;return values=this._getValueFromParam(r,i),null!=values&&(this.real+=values.real,this.img+=values.img),this},Complex.prototype.plusSelf=Complex.increase,Complex.prototype.minus=function(){var values;return values=this._getValueFromParam(r,i),null!=values?this.fromPool(this.real-values.real,this.img-values.img):0/0},Complex.prototype.decrease=function(){var values;return values=this._getValueFromParam(r,i),null!=values&&(this.real-=values.real,this.img-=values.img),this},Complex.prototype.minusSelf=Complex.decrease,Complex.prototype.times=function(r,i){var values;return values=this._getValueFromParam(r,i),null!=values?this.fromPool(this.real*values.real,this.img*values.img):0/0},Complex.prototype.timesSelf=function(n){return this.value*=_getValueFromParam(n),this},Complex.prototype.divide=function(n){return this.fromPool(this.value/_getValueFromParam(n))},Complex.prototype.divideSelf=function(n){return this.value/=_getValueFromParam(n),this},Complex.prototype.square=function(){return this.fromPool(this.value*this.value)},Complex.prototype.squareSelf=function(){return this.value*=this.value,this},Complex.prototype.cube=function(){return this.fromPool(this.value*this.value*this.value)},Complex.prototype.squareSelf=function(){return this.value*=this.value*this.value,this},Complex.prototype.sqrt=function(){return this.fromPool(mathJS.sqrt(this.value))},Complex.prototype.sqrtSelf=function(){return this.value=mathJS.sqrt(this.value),this},Complex.prototype.pow=function(n){return this.fromPool(mathJS.pow(this.value,_getValueFromParam(n)))},Complex.prototype.powSelf=function(n){return this.value=mathJS.pow(this.value,_getValueFromParam(n)),this},Complex.prototype.sign=function(){return mathJS.sign(this.value)},Complex.prototype.toInt=function(){return mathJS.Int.fromPool(mathJS.floor(this.value))},Complex.prototype.toDouble=function(){return mathJS.Double.fromPool(this.value)},Complex.prototype.toString=function(){return""+PARSE_KEY+this.real.toString()+","+this.img.toString()},Complex.prototype.clone=function(){return this.fromPool(this.value)},Complex.prototype.release=function(){return this.constructor._pool.push(this),this.constructor},Complex}(mathJS.Number),mathJS.Set=function(_super){function Set(){var elems,leftBoundary,rightBoundary,type,universe;if(type=arguments[0],universe=arguments[1],leftBoundary=arguments[2],rightBoundary=arguments[3],elems=5<=arguments.length?__slice.call(arguments,4):[],!(type instanceof mathJS.Comparable))throw new Error("Wrong (incomparable) type given ('"+type.name+"'')! Sets must consist of comparable elements!");this.type=type,this.universe=universe,this.leftBoundary=leftBoundary,this.rightBoundary=rightBoundary,this.subsets=elems.length>0?[function(func,args,ctor){ctor.prototype=func.prototype;var child=new ctor,result=func.apply(child,args);return Object(result)===result?result:child}(mathJS.DiscreteSet,[type,universe].concat(__slice.call(elems)),function(){})]:[]}return __extends(Set,_super),Set.disjoint=function(set1,set2){return set1.intersects(set2)},Set.prototype._getValueFromParam=function(value){var isNum;return value instanceof this.type?value:(isNum=mathJS.isNum(value),this.type!==mathJS.Double&&this.type!==mathJS.Number||!isNum?this.type===mathJS.Int&&isNum&&~~value===value?new this.type(value):null:new this.type(value))},Set.prototype.clone=function(){},Set.prototype.equals=function(){throw new Error("todo!")},Set.prototype.addElem=function(elem){return elem instanceof this.type?this.union(new mathJS.DiscreteSet(this.type,elem)):this},Set.prototype.addElems=function(elems){var elem,set,_i,_len,_results;for(set=new mathJS.EmptySet,_results=[],_i=0,_len=elems.length;_len>_i;_i++)elem=elems[_i],elem instanceof this.type&&_results.push(set.addElem(elem));return _results},Set.prototype.removeElem=function(elem){return elem instanceof this.type?this.without(new mathJS.DiscreteSet(this.type,elem)):this},Set.prototype.contains=function(elem){var subset,_i,_len,_ref;if(elem instanceof this.type)for(_ref=this.subsets,_i=0,_len=_ref.length;_len>_i;_i++)if(subset=_ref[_i],subset.contains(elem))return!0;return!1},Set.prototype["in"]=Set.prototype.contains,Set.prototype.union=function(set){return this.intersects(set)?(set=set.without(this),this.subsets.push(set)):this.subsets.push(set),this},Set.prototype.intersect=function(){},Set.prototype.intersects=function(){return this.intersection.size()>0},Set.prototype.disjoint=function(){return 0===this.intersection.size()},Set.prototype.complement=function(){return null!=this.universe?asdf:new mathJS.EmptySet},Set.prototype.without=function(){},Set.prototype.size=function(){var size,subset,_i,_len,_ref;for(size=this.elems.length,_ref=this.subsets,_i=0,_len=_ref.length;_len>_i;_i++)if(subset=_ref[_i],size+=subset.size(),1/0===size)return size;return size},Set.prototype.cardinality=Set.prototype.size,Set}(mathJS.Comparable),mathJS.EmpytSet=function(_super){function EmpytSet(){}return __extends(EmpytSet,_super),EmpytSet.prototype.clone=function(){return new mathJS.EmpytSet},EmpytSet.prototype.equals=function(set){return set instanceof mathJS.EmpytSet},EmpytSet.prototype.addElem=function(){return this.makeToDiscreteSet(),this},EmpytSet.prototype.size=function(){return 0},EmpytSet.prototype.makeToDiscreteSet=function(){return this.__proto__=mathJS.DiscreteSet.prototype,this},EmpytSet.prototype.makeToConditionalSet=function(){return this.__proto__=mathJS.ConditionalSet.prototype,this},EmpytSet}(mathJS.Set),mathJS.DiscreteSet=function(_super){function DiscreteSet(){var elems,type,universe;if(type=arguments[0],universe=arguments[1],elems=3<=arguments.length?__slice.call(arguments,2):[],!(type instanceof mathJS.Comparable))throw new Error("Wrong (incomparable) type given ('"+type.name+"'')! Sets must consist of comparable elements!");this.type=type,this.universe=universe,this.subsets=[]}return __extends(DiscreteSet,_super),DiscreteSet.prototype._getValueFromParam=function(value){var isNum;return value instanceof this.type?value:(isNum=mathJS.isNum(value),this.type!==mathJS.Double&&this.type!==mathJS.Number||!isNum?this.type===mathJS.Int&&isNum&&~~value===value?new this.type(value):null:new this.type(value))},DiscreteSet.prototype.getElements=function(){return this.elems},DiscreteSet.prototype.equals=function(){throw new Error("todo!")},DiscreteSet.prototype.addElem=function(elem){return elem instanceof this.type?this.union(new mathJS.DiscreteSet(this.type,elem)):this},DiscreteSet.prototype.removeElem=function(elem){return elem instanceof this.type?this.without(new mathJS.DiscreteSet(this.type,elem)):this},DiscreteSet.prototype.contains=function(elem){var e,_i,_len,_ref;if(elem instanceof this.type)for(_ref=this.elems,_i=0,_len=_ref.length;_len>_i;_i++)if(e=_ref[_i],e.equals(elem))return!0;return!1},DiscreteSet.prototype["in"]=DiscreteSet.prototype.contains,DiscreteSet.prototype.unionSelf=function(set){var intersection;return set instanceof mathJS.DiscreteSet?(intersection=this.intersect(set)).size()>0?this.elems.push.apply(this.elems,set.without(intersection)):this.elems.push.apply(this.elems,set.elems):void(set instanceof mathJS.ConditionalSet||set instanceof mathJS.EmptySet)},DiscreteSet.prototype.intersect=function(set){var elems,res,x,y,_i,_j,_len,_len1,_ref,_ref1;if(set instanceof mathJS.DiscreteSet){for(elems=[],_ref=this.elems,_i=0,_len=_ref.length;_len>_i;_i++)for(x=_ref[_i],_ref1=set.elems,_j=0,_len1=_ref1.length;_len1>_j;_j++)y=_ref1[_j],x.equals(y)&&elems.push(x);elems.length>0&&(res=new mathJS.DiscreteSet(this.type,this.universe))}else if(set instanceof mathJS.ConditionalSet);else if(set instanceof mathJS.EmptySet)return new mathJS.EmptySet;return null},DiscreteSet.prototype.complement=function(){return null==this.universe?new mathJS.EmptySet:void 0},DiscreteSet.prototype.without=function(){},DiscreteSet.prototype.size=function(){return this.elems.length},DiscreteSet}(mathJS.Set),mathJS.ConditionalSet=function(_super){function ConditionalSet(){}return __extends(ConditionalSet,_super),ConditionalSet}(mathJS.Set),mathJS.Function=function(_super){function Function(fromSet,toSet,mapping){this.fromSet=fromSet,this.toSet=toSet,this.mapping=mapping}return __extends(Function,_super),Function}(mathJS.ConditionalSet),mathJS.Vector=function(){function Vector(){}return Vector}(),mathJS.Tuple=function(_super){function Tuple(){return Tuple.__super__.constructor.apply(this,arguments)}return __extends(Tuple,_super),Tuple}(mathJS.Vector),$(document).ready(function(){return void 0})}).call(this);
+// Generated by CoffeeScript 1.7.1
+
+/**
+ * @module mathJS
+ * @main mathJS
+*
+ */
+
+(function() {
+  var __slice = [].slice,
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  if (typeof DEBUG === "undefined") {
+    window.DEBUG = true;
+  }
+
+  window.mathJS = {};
+
+  window.mixOf = function() {
+    var Mixed, base, method, mixin, mixins, name, superClasses, _i, _ref;
+    base = arguments[0], mixins = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+    Mixed = (function(_super) {
+      __extends(Mixed, _super);
+
+      function Mixed() {
+        return Mixed.__super__.constructor.apply(this, arguments);
+      }
+
+      return Mixed;
+
+    })(base);
+    for (_i = mixins.length - 1; _i >= 0; _i += -1) {
+      mixin = mixins[_i];
+      for (name in mixin) {
+        method = mixin[name];
+        Mixed[name] = method;
+      }
+      _ref = mixin.prototype;
+      for (name in _ref) {
+        method = _ref[name];
+        Mixed.prototype[name] = method;
+      }
+    }
+    superClasses = Array.prototype.slice.call(arguments, 0);
+    Mixed.prototype["instanceof"] = function(cls) {
+      var c, _j, _len;
+      if (this instanceof cls) {
+        return true;
+      }
+      for (_j = 0, _len = superClasses.length; _j < _len; _j++) {
+        c = superClasses[_j];
+        if (c === cls) {
+          return true;
+        }
+      }
+      return false;
+    };
+    return Mixed;
+  };
+
+  Array.prototype.reverseCopy = function() {
+    var item, res, _i;
+    res = [];
+    for (_i = this.length - 1; _i >= 0; _i += -1) {
+      item = this[_i];
+      res.push(item);
+    }
+    return res;
+  };
+
+  Array.prototype.sample = function(n, forceArray) {
+    var arr, elem, i, res;
+    if (n == null) {
+      n = 1;
+    }
+    if (forceArray == null) {
+      forceArray = false;
+    }
+    if (n === 1) {
+      if (!forceArray) {
+        return this[Math.floor(Math.random() * this.length)];
+      }
+      return [this[Math.floor(Math.random() * this.length)]];
+    }
+    if (n > this.length) {
+      n = this.length;
+    }
+    i = 0;
+    res = [];
+    arr = this.clone();
+    while (i++ < n) {
+      console.log(arr);
+      elem = arr.sample(1);
+      res.push(elem);
+      arr.remove(elem);
+    }
+    return res;
+  };
+
+  Array.prototype.shuffle = function() {
+    var arr, elem, i, _i, _len;
+    arr = this.sample(this.length);
+    for (i = _i = 0, _len = arr.length; _i < _len; i = ++_i) {
+      elem = arr[i];
+      this[i] = elem;
+    }
+    return this;
+  };
+
+  Array.prototype.first = function() {
+    return this[0];
+  };
+
+  Array.prototype.last = function() {
+    return this[this.length - 1];
+  };
+
+  Array.prototype.average = function() {
+    var elem, elems, sum, _i, _len;
+    sum = 0;
+    elems = 0;
+    for (_i = 0, _len = this.length; _i < _len; _i++) {
+      elem = this[_i];
+      if (!(Math.isNum(elem))) {
+        continue;
+      }
+      sum += elem;
+      elems++;
+    }
+    return sum / elems;
+  };
+
+  Array.prototype.median = Array.prototype.average;
+
+  Array.prototype.clone = Array.prototype.slice;
+
+  Array.prototype.remove = function(elem) {
+    var idx;
+    idx = this.indexOf(elem);
+    if (idx > -1) {
+      this.splice(idx, 1);
+    }
+    return this;
+  };
+
+  Array.prototype.removeAll = function(elements) {
+    var elem, _i, _len;
+    if (elements == null) {
+      elements = [];
+    }
+    for (_i = 0, _len = elements.length; _i < _len; _i++) {
+      elem = elements[_i];
+      this.remove(elem);
+    }
+    return this;
+  };
+
+  Array.prototype.removeAt = function(idx) {
+    this.splice(idx, 1);
+    return this;
+  };
+
+
+  /**
+   * @method getMax
+   * @param {Function} propertyGetter
+   * The passed callback extracts the value being compared from the array elements.
+   * @return {Array} An array of all maxima.
+  *
+   */
+
+  Array.prototype.getMax = function(propertyGetter) {
+    var elem, max, res, val, _i, _len;
+    max = null;
+    res = [];
+    if (propertyGetter == null) {
+      propertyGetter = function(item) {
+        return item;
+      };
+    }
+    for (_i = 0, _len = this.length; _i < _len; _i++) {
+      elem = this[_i];
+      val = propertyGetter(elem);
+      if (val > max || max === null) {
+        max = val;
+        res = [elem];
+      } else if (val === max) {
+        res.push(elem);
+      }
+    }
+    return res;
+  };
+
+  Array.prototype.getMin = function(propertyGetter) {
+    var elem, min, res, val, _i, _len;
+    min = null;
+    res = [];
+    if (propertyGetter == null) {
+      propertyGetter = function(item) {
+        return item;
+      };
+    }
+    for (_i = 0, _len = this.length; _i < _len; _i++) {
+      elem = this[_i];
+      val = propertyGetter(elem);
+      if (val < min || min === null) {
+        min = val;
+        res = [elem];
+      } else if (val === min) {
+        res.push(elem);
+      }
+    }
+    return res;
+  };
+
+  String.prototype.camel = function(spaces) {
+    var i, str, _i, _ref;
+    if (spaces == null) {
+      spaces = false;
+    }
+    str = this.toLowerCase();
+    if (spaces) {
+      str = str.split(" ");
+      for (i = _i = 1, _ref = str.length; 1 <= _ref ? _i < _ref : _i > _ref; i = 1 <= _ref ? ++_i : --_i) {
+        str[i] = str[i].charAt(0).toUpperCase() + str[i].substr(1);
+      }
+      str = str.join("");
+    }
+    return str;
+  };
+
+  String.prototype.antiCamel = function() {
+    var i, res, temp, _i, _ref;
+    res = this.charAt(0);
+    for (i = _i = 1, _ref = this.length; 1 <= _ref ? _i < _ref : _i > _ref; i = 1 <= _ref ? ++_i : --_i) {
+      temp = this.charAt(i);
+      if (temp === temp.toUpperCase()) {
+        res += " ";
+      }
+      res += temp;
+    }
+    return res;
+  };
+
+  String.prototype.firstToUpperCase = function() {
+    return this.charAt(0).toUpperCase() + this.slice(1);
+  };
+
+  String.prototype.snakeToCamelCase = function() {
+    var char, prevChar, res, _i, _len;
+    res = "";
+    for (_i = 0, _len = this.length; _i < _len; _i++) {
+      char = this[_i];
+      if (char !== "_") {
+        if (prevChar !== "_") {
+          res += char;
+        } else {
+          res += char.toUpperCase();
+        }
+      }
+      prevChar = char;
+    }
+    return res;
+  };
+
+  String.prototype.camelToSnakeCase = function() {
+    var char, prevChar, res, _i, _len;
+    res = "";
+    prevChar = null;
+    for (_i = 0, _len = this.length; _i < _len; _i++) {
+      char = this[_i];
+      if (char === char.toLowerCase()) {
+        res += char;
+      } else {
+        if (prevChar === prevChar.toLowerCase()) {
+          res += "_" + char.toLowerCase();
+        } else {
+          res += char;
+        }
+      }
+      prevChar = char;
+    }
+    return res;
+  };
+
+  Object.defineProperties(mathJS, {
+    e: {
+      value: Math.E,
+      writable: false
+    },
+    pi: {
+      value: Math.PI,
+      writable: false
+    },
+    ln2: {
+      value: Math.LN2,
+      writable: false
+    },
+    ln10: {
+      value: Math.LN10,
+      writable: false
+    },
+    log2e: {
+      value: Math.LOG2E,
+      writable: false
+    },
+    log10e: {
+      value: Math.LOG10E,
+      writable: false
+    },
+    infty: {
+      value: Infinity,
+      writable: false
+    },
+    infinity: {
+      value: Infinity,
+      writable: false
+    },
+    epsilon: {
+      value: Number.EPSILON,
+      writable: false
+    },
+    maxValue: {
+      value: Number.MAX_VALUE,
+      writable: false
+    },
+    minValue: {
+      value: Number.MIN_VALUE,
+      writable: false
+    }
+  });
+
+  mathJS.isPrimitive = function(x) {
+    return typeof x === "string" || typeof x === "number" || typeof x === "boolean";
+  };
+
+  mathJS.isComparable = function(x) {
+    return x instanceof mathJS.Comparable || (typeof x["instanceof"] === "function" ? x["instanceof"](mathJS.Comparable) : void 0) || mathJS.isPrimitive(x);
+  };
+
+  mathJS.ceil = Math.ceil;
+
+  mathJS.floor = function(n) {
+    return ~~n;
+  };
+
+  mathJS.floatToInt = mathJS.floor;
+
+  mathJS.square = function(n) {
+    if (mathJS.isNum(n)) {
+      return n * n;
+    }
+    return NaN;
+  };
+
+  mathJS.cube = function(n) {
+    if (mathJS.isNum(n)) {
+      return n * n * n;
+    }
+    return NaN;
+  };
+
+  mathJS.pow = Math.pow;
+
+  mathJS.sqrt = Math.sqrt;
+
+  mathJS.curt = function(n) {
+    if (mathJS.isNum(n)) {
+      return mathJS.pow(n, 1 / 3);
+    }
+    return NaN;
+  };
+
+  mathJS.root = function(n, exp) {
+    if (mathJS.isNum(n) && mathJS.isNum(exp)) {
+      return mathJS.pow(n, 1 / exp);
+    }
+    return NaN;
+  };
+
+  mathJS.parseNumber = function(str) {
+    return null;
+  };
+
+
+  /**
+   * This function checks if a given parameter is a (plain) number.
+   * @method isNum
+   * @param {Number} num
+   * @return {Boolean} Whether the given number is a Number (excluding +/-Infinity)
+  *
+   */
+
+  mathJS.isNum = function(n) {
+    return (n != null) && isFinite(n);
+  };
+
+  mathJS.isInt = function(r) {
+    return mathJS.isNum(r) && mathJS.floor(r) === r;
+  };
+
+
+  /**
+   * This function returns a random (plain) integer between max and min (both inclusive). If max is less than min the parameters are swapped.
+   * @method randInt
+   * @param {Number} max
+   * @param {Number} min
+   * @return {Number} Random integer.
+  *
+   */
+
+  mathJS.randInt = function(max, min) {
+    var temp;
+    if (max == null) {
+      max = 1;
+    }
+    if (min == null) {
+      min = 0;
+    }
+    if (min > max) {
+      temp = min;
+      min = max;
+      max = temp;
+    }
+    return Math.floor(Math.random() * (max + 1 - min)) + min;
+  };
+
+
+  /**
+   * This function returns a random number between max and min (both inclusive). If max is less than min the parameters are swapped.
+   * @method randNum
+   * @param {Number} max
+   * @param {Number} min
+   * Default is 0.
+   * @return {Integer} Random number.
+  *
+   */
+
+  mathJS.randNum = function(max, min) {
+    var temp;
+    if (max == null) {
+      max = 1;
+    }
+    if (min == null) {
+      min = 0;
+    }
+    if (min > max) {
+      temp = min;
+      min = max;
+      max = temp;
+    }
+    return Math.random() * (max + 1 - min) + min;
+  };
+
+  mathJS.radToDeg = function(rad) {
+    return rad * 57.29577951308232;
+  };
+
+  mathJS.degToRad = function(deg) {
+    return deg * 0.017453292519943295;
+  };
+
+  mathJS.sign = function(n) {
+    if (mathJS.isNum(n)) {
+      if (n < 0) {
+        return -1;
+      }
+      return 1;
+    }
+    return NaN;
+  };
+
+  mathJS.log = function(n, base) {
+    if (base == null) {
+      base = 10;
+    }
+    return Math.log(n) / Math.log(base);
+  };
+
+  mathJS.logBase = mathJS.log;
+
+  mathJS.reciprocal = function(n) {
+    if (mathJS.isNum(n)) {
+      return 1 / n;
+    }
+    return NaN;
+  };
+
+  mathJS.Comparable = (function() {
+    function Comparable() {}
+
+
+    /**
+    * This method checks for mathmatical equality. This means new mathJS.Double(4.2).equals(4.2) is true.
+    * @method equals
+    * @param {Number} n
+    * @return {Boolean}
+    *
+     */
+
+    Comparable.prototype.equals = function(n) {
+      throw new Error("To be implemented!");
+    };
+
+    Comparable.prototype.e = Comparable.prototype.equals;
+
+    return Comparable;
+
+  })();
+
+  mathJS.Orderable = (function(_super) {
+    __extends(Orderable, _super);
+
+    function Orderable() {
+      return Orderable.__super__.constructor.apply(this, arguments);
+    }
+
+
+    /**
+    * This method checks for mathmatical '<'. This means new mathJS.Double(4.2).lessThan(5.2) is true.
+    * @method lessThan
+    * @param {Number} n
+    * @return {Boolean}
+    *
+     */
+
+    Orderable.prototype.lessThan = function(n) {
+      throw new Error("To be implemented!");
+    };
+
+
+    /**
+    * Alias for `lessThan`.
+    * @method lt
+    *
+     */
+
+    Orderable.prototype.lt = Orderable.prototype.lessThan;
+
+
+    /**
+    * This method checks for mathmatical '>'. This means new mathJS.Double(4.2).greaterThan(3.2) is true.
+    * @method greaterThan
+    * @param {Number} n
+    * @return {Boolean}
+    *
+     */
+
+    Orderable.prototype.greaterThan = function(n) {
+      throw new Error("To be implemented!");
+    };
+
+
+    /**
+    * Alias for `greaterThan`.
+    * @method lt
+    *
+     */
+
+    Orderable.prototype.gt = Orderable.prototype.greaterThan;
+
+
+    /**
+    * This method checks for mathmatical '<='. This means new mathJS.Double(4.2).lessThanOrEqualTo(5.2) is true.
+    * @method lessThanOrEqualTo
+    * @param {Number} n
+    * @return {Boolean}
+    *
+     */
+
+    Orderable.prototype.lessThanOrEqualTo = function(n) {
+      throw new Error("To be implemented!");
+    };
+
+
+    /**
+    * Alias for `lessThanOrEqualTo`.
+    * @method lt
+    *
+     */
+
+    Orderable.prototype.lte = Orderable.prototype.lessThanOrEqualTo;
+
+
+    /**
+    * This method checks for mathmatical '>='. This means new mathJS.Double(4.2).greaterThanOrEqualTo(3.2) is true.
+    * @method greaterThanOrEqualTo
+    * @param {Number} n
+    * @return {Boolean}
+    *
+     */
+
+    Orderable.prototype.greaterThanOrEqualTo = function(n) {
+      throw new Error("To be implemented!");
+    };
+
+
+    /**
+    * Alias for `greaterThanOrEqualTo`.
+    * @method lt
+    *
+     */
+
+    Orderable.prototype.gte = Orderable.prototype.greaterThanOrEqualTo;
+
+    return Orderable;
+
+  })(mathJS.Comparable);
+
+  mathJS.Parseable = (function() {
+    function Parseable() {}
+
+    Parseable.parse = function(str) {
+      throw new Error("To be implemented");
+    };
+
+    Parseable.prototype.toString = function(args) {
+      throw new Error("To be implemented");
+    };
+
+    return Parseable;
+
+  })();
+
+  mathJS.Poolable = (function() {
+    function Poolable() {}
+
+    Poolable._pool = [];
+
+    Poolable.fromPool = function() {
+      throw new Error("To be implemented");
+    };
+
+    Poolable["new"] = function() {
+      if (arguments.length > 0) {
+        return this.fromPool.apply(this, arguments);
+      }
+      return this.fromPool();
+    };
+
+    Poolable.prototype.release = function() {
+      this.constructor._pool.push(this);
+      return this.constructor;
+    };
+
+    return Poolable;
+
+  })();
+
+
+  /**
+   * @abstract
+   * @class Number
+   * @constructor
+   * @param {Number} value
+   * @extends Object
+  *
+   */
+
+  mathJS.Number = (function(_super) {
+    __extends(Number, _super);
+
+    Number._valueIsValid = function(value) {
+      return value instanceof mathJS.Number || mathJS.isNum(value);
+    };
+
+
+    /**
+    * This method gets the value from a parameter. The validity is determined by this._valueIsValid().
+    * @static
+    * @protected
+    * @method _getValueFromParam
+    * @param {Number} param
+    * @param {Boolean} skipCheck
+    * If `true` the given parameter is not (again) checked for validity. If the function that calls _getValueFromParam() has already checked the passed parameter this `skipCheck` should be set to true.
+    * @return {Number} The primitive value or null.
+    *
+     */
+
+    Number._getValueFromParam = function(param, skipCheck) {
+      var value;
+      if (!skipCheck && !this._valueIsValid(param)) {
+        return null;
+      }
+      if (param instanceof mathJS.Number) {
+        value = param.value;
+      } else if (mathJS.isNum(param)) {
+        value = param;
+      }
+      return value;
+    };
+
+
+    /**
+    * @Override mathJS.Poolable
+    * @static
+    * @method fromPool
+    *
+     */
+
+    Number.fromPool = function(val) {
+      var number;
+      if (this._pool.length > 0) {
+        if (this._valueIsValid(val)) {
+          number = this._pool.pop();
+          number.value = val;
+          return number;
+        }
+        return null;
+      } else {
+        return new this(val);
+      }
+    };
+
+
+    /**
+    * @Override mathJS.Parseable
+    * @static
+    * @method parse
+    *
+     */
+
+    Number.parse = function(str) {
+      var parsed;
+      if (mathJS.isNum(parsed = parseFloat(str))) {
+        return this.fromPool(parsed);
+      }
+      return parsed;
+    };
+
+    Number.random = function(max, min) {
+      return this.fromPool(mathJS.randNum(max, min));
+    };
+
+    function Number(value) {
+      var fStr;
+      if (!this._valueIsValid(value)) {
+        fStr = arguments.callee.caller.toString();
+        throw new Error("mathJS: Expected plain number! Given " + value + " in '" + (fStr.substring(0, fStr.indexOf(")") + 1)) + "'");
+      }
+      Object.defineProperties(this, {
+        value: {
+          get: this._getValue,
+          set: this._setValue
+        },
+        fromPool: {
+          value: this.constructor.fromPool.bind(this.constructor),
+          writable: false,
+          enumarable: false,
+          configurable: false
+        }
+      });
+      this.value = this._getValueFromParam(value, true);
+    }
+
+    Number.prototype._setValue = function(value) {
+      if (this._valueIsValid(value)) {
+        this._value = this._getValueFromParam(value, true);
+      }
+      return this;
+    };
+
+    Number.prototype._getValue = function() {
+      return this._value;
+    };
+
+    Number.prototype._valueIsValid = Number._valueIsValid;
+
+    Number.prototype._getValueFromParam = Number._getValueFromParam;
+
+
+    /**
+    * @Override mathJS.Comparable
+    * This method checks for mathmatical equality. This means new mathJS.Double(4.2).equals(4.2) is true.
+    * @method equals
+    * @param {Number} n
+    * @return {Boolean}
+    *
+     */
+
+    Number.prototype.equals = function(n) {
+      return this.value === this._getValueFromParam(n);
+    };
+
+
+    /**
+    * @Override mathJS.Orderable
+    * This method check for mathmatical '<'. This means new mathJS.Double(4.2).lessThan(5.2) is true.
+    * @method lessThan
+    *
+     */
+
+    Number.prototype.lessThan = function(n) {
+      return this.value < this._getValueFromParam(n);
+    };
+
+
+    /**
+    * @Override mathJS.Orderable
+    * This method check for mathmatical '>'. This means new mathJS.Double(4.2).greaterThan(3.2) is true.
+    * @method greaterThan
+    * @param {Number} n
+    * @return {Boolean}
+    *
+     */
+
+    Number.prototype.greaterThan = function(n) {
+      return this.value > this._getValueFromParam(n);
+    };
+
+
+    /**
+    * @Override mathJS.Orderable
+    * This method check for mathmatical equality. This means new mathJS.Double(4.2).lessThanOrEqualTo(3.2) is true.
+    * @method lessThanOrEqualTo
+    * @param {Number} n
+    * @return {Boolean}
+    *
+     */
+
+    Number.prototype.lessThanOrEqualTo = function(n) {
+      return this.value <= this._getValueFromParam(n);
+    };
+
+
+    /**
+    * This method check for mathmatical equality. This means new mathJS.Double(4.2).lessThanOrEqualTo(3.2) is true.
+    * @method greaterThanOrEqualTo
+    * @param {Number} n
+    * @return {Boolean}
+    *
+     */
+
+    Number.prototype.greaterThanOrEqualTo = function(n) {
+      return this.value >= this._getValueFromParam(n);
+    };
+
+
+    /**
+    * This method adds 2 numbers and returns a new one.
+    * @method plus
+    * @param {Number} n
+    * @return {Number} Calculated Number.
+    *
+     */
+
+    Number.prototype.plus = function(n) {
+      return this.fromPool(this.value + this._getValueFromParam(n));
+    };
+
+
+    /**
+    * This method adds the given number to this instance.
+    * @method increase
+    * @param {Number} n
+    * @return {Number} This instance.
+    *
+     */
+
+    Number.prototype.increase = function(n) {
+      this.value += this._getValueFromParam(n);
+      return this;
+    };
+
+
+    /**
+    * See increase().
+    * @method plusSelf
+    *
+     */
+
+    Number.prototype.plusSelf = Number.increase;
+
+
+    /**
+    * This method substracts 2 numbers and returns a new one.
+    * @method minus
+    * @param {Number} n
+    * @return {Number} Calculated Number.
+    *
+     */
+
+    Number.prototype.minus = function(n) {
+      return this.fromPool(this.value - n);
+    };
+
+    Number.prototype.decrease = function(n) {
+      this.value -= this._getValueFromParam(n);
+      return this;
+    };
+
+    Number.prototype.minusSelf = Number.decrease;
+
+
+    /**
+    * This method multiplies 2 numbers and returns a new one.
+    * @method times
+    * @param {Number} n
+    * @return {Number} Calculated Number.
+    *
+     */
+
+    Number.prototype.times = function(n) {
+      return this.fromPool(this.value * this._getValueFromParam(n));
+    };
+
+    Number.prototype.timesSelf = function(n) {
+      this.value *= this._getValueFromParam(n);
+      return this;
+    };
+
+
+    /**
+    * This method divides 2 numbers and returns a new one.
+    * @method divide
+    * @param {Number} n
+    * @return {Number} Calculated Number.
+    *
+     */
+
+    Number.prototype.divide = function(n) {
+      return this.fromPool(this.value / this._getValueFromParam(n));
+    };
+
+    Number.prototype.divideSelf = function(n) {
+      this.value /= this._getValueFromParam(n);
+      return this;
+    };
+
+
+    /**
+    * This method squares this instance and returns a new one.
+    * @method square
+    * @return {Number} Calculated Number.
+    *
+     */
+
+    Number.prototype.square = function() {
+      return this.fromPool(this.value * this.value);
+    };
+
+    Number.prototype.squareSelf = function() {
+      this.value *= this.value;
+      return this;
+    };
+
+
+    /**
+    * This method cubes this instance and returns a new one.
+    * @method cube
+    * @return {Number} Calculated Number.
+    *
+     */
+
+    Number.prototype.cube = function() {
+      return this.fromPool(this.value * this.value * this.value);
+    };
+
+    Number.prototype.cubeSelf = function() {
+      this.value *= this.value * this.value;
+      return this;
+    };
+
+
+    /**
+    * This method calculates the square root of this instance and returns a new one.
+    * @method sqrt
+    * @return {Number} Calculated Number.
+    *
+     */
+
+    Number.prototype.sqrt = function() {
+      return this.fromPool(mathJS.sqrt(this.value));
+    };
+
+    Number.prototype.sqrtSelf = function() {
+      this.value = mathJS.sqrt(this.value);
+      return this;
+    };
+
+
+    /**
+    * This method calculates the cubic root of this instance and returns a new one.
+    * @method curt
+    * @return {Number} Calculated Number.
+    *
+     */
+
+    Number.prototype.curt = function() {
+      return this.pow(1 / 3);
+    };
+
+    Number.prototype.curtSelf = function() {
+      return this.powSelf(1 / 3);
+    };
+
+
+    /**
+    * This method calculates any root of this instance and returns a new one.
+    * @method plus
+    * @param {Number} exponent
+    * @return {Number} Calculated Number.
+    *
+     */
+
+    Number.prototype.root = function(exp) {
+      return this.pow(1 / exp);
+    };
+
+    Number.prototype.rootSelf = function(exp) {
+      return this.powSelf(1 / exp);
+    };
+
+
+    /**
+    * This method adds 2 numbers and returns a new one.
+    * @method plus
+    * @param {Number} n
+    * @return {Number} Calculated Number.
+    *
+     */
+
+    Number.prototype.reciprocal = function() {
+      return this.fromPool(1 / this.value);
+    };
+
+    Number.prototype.reciprocalSelf = function() {
+      this.value = 1 / this.value;
+      return this;
+    };
+
+
+    /**
+    * This method adds 2 numbers and returns a new one.
+    * @method plus
+    * @param {Number} n
+    * @return {Number} Calculated Number.
+    *
+     */
+
+    Number.prototype.pow = function(n) {
+      return this.fromPool(mathJS.pow(this.value, this._getValueFromParam(n)));
+    };
+
+    Number.prototype.powSelf = function(n) {
+      this.value = mathJS.pow(this.value, this._getValueFromParam(n));
+      return this;
+    };
+
+    Number.prototype.sign = function() {
+      return mathJS.sign(this.value);
+    };
+
+    Number.prototype.toInt = function() {
+      return mathJS.Int.fromPool(mathJS.floor(this.value));
+    };
+
+    Number.prototype.toDouble = function() {
+      return mathJS.Double.fromPool(this.value);
+    };
+
+    Number.prototype.toString = function() {
+      return this.value.toString();
+    };
+
+    Number.prototype.clone = function() {
+      return this.fromPool(this.value);
+    };
+
+    Number.prototype.release = function() {
+      this.constructor._pool.push(this);
+      return this.constructor;
+    };
+
+    return Number;
+
+  })(mixOf(mathJS.Orderable, mathJS.Poolable, mathJS.Parseable));
+
+  mathJS.Double = (function(_super) {
+    __extends(Double, _super);
+
+    function Double(value) {
+      Double.__super__.constructor.apply(this, arguments);
+    }
+
+    return Double;
+
+  })(mathJS.Number);
+
+  mathJS.Fraction = (function(_super) {
+    __extends(Fraction, _super);
+
+    function Fraction(enumerator, denominator) {
+      this.enumerator = enumerator;
+      this.denominator = denominator;
+      Object.defineProperty(this, "value", {
+        get: function() {
+          return this.enumerator / this.denominator;
+        }
+      });
+    }
+
+    return Fraction;
+
+  })(mathJS.Number);
+
+
+  /**
+   * @class Int
+   * @constructor
+   * @param {Number} value
+   * @extends Number
+  *
+   */
+
+  mathJS.Int = (function(_super) {
+    __extends(Int, _super);
+
+    (function() {
+      var inherited;
+      inherited = Int._getValueFromParam.bind(Int);
+      return Int._getValueFromParam = function(value) {
+        return ~~inherited(value);
+      };
+    })();
+
+    Int.parse = function(str) {
+      var parsed;
+      if (mathJS.isNum(parsed = parseIn(str, 10))) {
+        return this.fromPool(parsed);
+      }
+      return parsed;
+    };
+
+    Int.random = function(max, min) {
+      return this.fromPool(mathJS.randInt(max, min));
+    };
+
+    function Int(value) {
+      Int.__super__.constructor.apply(this, arguments);
+    }
+
+    Int.prototype.plus = function(n) {
+      return this.constructor.fromPool(~~(this.value + this._getValueFromParam(n)));
+    };
+
+    Int.prototype.increase = function(n) {
+      this.value += ~~this._getValueFromParam(n);
+      return this;
+    };
+
+    Int.prototype.plusSelf = Int.increase;
+
+    Int.prototype.minus = function(n) {
+      return this.constructor.fromPool(~~(this.value - n));
+    };
+
+    Int.prototype.decrease = function(n) {
+      this.value = ~~(this.value - this._getValueFromParam(n));
+      return this;
+    };
+
+    Int.prototype.minusSelf = Int.decrease;
+
+    Int.prototype.times = function(n) {
+      return this.constructor.fromPool(~~(this.value * this._getValueFromParam(n)));
+    };
+
+    Int.prototype.timesSelf = function(n) {
+      this.value = ~~(this.value * this._getValueFromParam(n));
+      return this;
+    };
+
+    Int.prototype.divide = function(n) {
+      return this.constructor.fromPool(~~(this.value / this._getValueFromParam(n)));
+    };
+
+    Int.prototype.divideSelf = function(n) {
+      this.value = ~~(this.value / this._getValueFromParam(n));
+      return this;
+    };
+
+    Int.prototype.sqrt = function() {
+      return this.constructor.fromPool(~~(mathJS.sqrt(this.value)));
+    };
+
+    Int.prototype.sqrtSelf = function() {
+      this.value = ~~mathJS.sqrt(this.value);
+      return this;
+    };
+
+    Int.prototype.pow = function(n) {
+      return this.constructor.fromPool(mathJS.pow(this.value, this._getValueFromParam(n)));
+    };
+
+    Int.prototype.powSelf = function(n) {
+      this.value = mathJS.pow(this.value, this._getValueFromParam(n));
+      return this;
+    };
+
+    Int.prototype.toInt = function() {
+      return mathJS.Int.fromPool(this.value);
+    };
+
+    return Int;
+
+  })(mathJS.Number);
+
+
+  /**
+   * @abstract
+   * @class Complex
+   * @constructor
+   * @param {Number} real
+   * Real part of the number. Either a mathJS.Number or primitive number.
+   * @param {Number} image
+   * Real part of the number. Either a mathJS.Number or primitive number.
+   * @extends Number
+  *
+   */
+
+  mathJS.Complex = (function(_super) {
+    var PARSE_KEY;
+
+    __extends(Complex, _super);
+
+    PARSE_KEY = "0c";
+
+
+    /**
+    * @Override
+    * This method creates an object with the keys 'real' and 'img' which have primitive numbers as their values.
+    * @static
+    * @method _getValueFromParam
+    * @param {Complex|Number} real
+    * @param {Number} img
+    * @return {Object}
+    *
+     */
+
+    Complex._getValueFromParam = function(real, img) {
+      if (real instanceof mathJS.Complex) {
+        return {
+          real: real.real,
+          img: real.img
+        };
+      }
+      if (real instanceof mathJS.Number && img instanceof mathJS.Number) {
+        return {
+          real: real.value,
+          img: img.value
+        };
+      }
+      if (mathJS.isNum(real) && mathJS.isNum(img)) {
+        return {
+          real: real,
+          img: img
+        };
+      }
+      return null;
+    };
+
+    Complex.fromPool = function(real, img) {
+      var number;
+      if (this._pool.length > 0) {
+        if (this._valueIsValid(real) && this._valueIsValid(img)) {
+          number = this._pool.pop();
+          number.real = real;
+          number.img = img;
+          return number;
+        }
+        return null;
+      } else {
+        return new this(real, img);
+      }
+    };
+
+    Complex.parse = function(str) {
+      var idx, img, parts, real;
+      idx = str.toLowerCase().indexOf(PARSE_KEY);
+      if (idx >= 0) {
+        parts = str.substring(idx + PARSE_KEY.length).split(",");
+        if (mathJS.isNum(real = parseFloat(parts[0])) && mathJS.isNum(img = parseFloat(parts[1]))) {
+          return this.fromPool(real, img);
+        }
+      }
+      return NaN;
+    };
+
+    Complex.random = function(max1, min1, max2, min2) {
+      return this.fromPool(mathJS.randNum(max1, min1), mathJS.randNum(max2, min2));
+    };
+
+    function Complex(real, img) {
+      var fStr, values;
+      values = this._getValueFromParam(real, img);
+      if (values == null) {
+        fStr = arguments.callee.caller.toString();
+        throw new Error("mathJS: Expected 2 numbers or a complex number! Given (" + real + ", " + img + ") in '" + (fStr.substring(0, fStr.indexOf(")") + 1)) + "'");
+      }
+      Object.defineProperties(this, {
+        real: {
+          get: this._getReal,
+          set: this._setReal
+        },
+        img: {
+          get: this._getImg,
+          set: this._setImg
+        },
+        fromPool: {
+          value: this.constructor.fromPool.bind(this.constructor),
+          writable: false,
+          enumarable: false,
+          configurable: false
+        }
+      });
+      this.real = values.real;
+      this.img = values.img;
+    }
+
+    Complex.prototype._setReal = function(value) {
+      if (this._valueIsValid(value)) {
+        this._real = value.value || value.real || value;
+      }
+      return this;
+    };
+
+    Complex.prototype._getReal = function() {
+      return this._real;
+    };
+
+    Complex.prototype._setImg = function(value) {
+      if (this._valueIsValid(value)) {
+        this._img = value.value || value.img || value;
+      }
+      return this;
+    };
+
+    Complex.prototype._getImg = function() {
+      return this._img;
+    };
+
+    Complex.prototype._getValueFromParam = Complex._getValueFromParam;
+
+
+    /**
+    * This method check for mathmatical equality. This means new mathJS.Double(4.2).equals(4.2)
+    * @method equals
+    * @param {Number} n
+    * @return {Boolean}
+    *
+     */
+
+    Complex.prototype.equals = function(r, i) {
+      var values;
+      values = this._getValueFromParam(r, i);
+      if (values != null) {
+        return this.real === values.real && this.img === values.img;
+      }
+      return false;
+    };
+
+    Complex.prototype.plus = function(r, i) {
+      var values;
+      values = this._getValueFromParam(r, i);
+      if (values != null) {
+        return this.fromPool(this.real + values.real, this.img + values.img);
+      }
+      return NaN;
+    };
+
+    Complex.prototype.increase = function(r, i) {
+      var values;
+      values = this._getValueFromParam(r, i);
+      if (values != null) {
+        this.real += values.real;
+        this.img += values.img;
+      }
+      return this;
+    };
+
+    Complex.prototype.plusSelf = Complex.increase;
+
+    Complex.prototype.minus = function(n) {
+      var values;
+      values = this._getValueFromParam(r, i);
+      if (values != null) {
+        return this.fromPool(this.real - values.real, this.img - values.img);
+      }
+      return NaN;
+    };
+
+    Complex.prototype.decrease = function(n) {
+      var values;
+      values = this._getValueFromParam(r, i);
+      if (values != null) {
+        this.real -= values.real;
+        this.img -= values.img;
+      }
+      return this;
+    };
+
+    Complex.prototype.minusSelf = Complex.decrease;
+
+    Complex.prototype.times = function(r, i) {
+      var values;
+      values = this._getValueFromParam(r, i);
+      if (values != null) {
+        return this.fromPool(this.real * values.real, this.img * values.img);
+      }
+      return NaN;
+    };
+
+    Complex.prototype.timesSelf = function(n) {
+      this.value *= _getValueFromParam(n);
+      return this;
+    };
+
+    Complex.prototype.divide = function(n) {
+      return this.fromPool(this.value / _getValueFromParam(n));
+    };
+
+    Complex.prototype.divideSelf = function(n) {
+      this.value /= _getValueFromParam(n);
+      return this;
+    };
+
+    Complex.prototype.square = function() {
+      return this.fromPool(this.value * this.value);
+    };
+
+    Complex.prototype.squareSelf = function() {
+      this.value *= this.value;
+      return this;
+    };
+
+    Complex.prototype.cube = function() {
+      return this.fromPool(this.value * this.value * this.value);
+    };
+
+    Complex.prototype.squareSelf = function() {
+      this.value *= this.value * this.value;
+      return this;
+    };
+
+    Complex.prototype.sqrt = function() {
+      return this.fromPool(mathJS.sqrt(this.value));
+    };
+
+    Complex.prototype.sqrtSelf = function() {
+      this.value = mathJS.sqrt(this.value);
+      return this;
+    };
+
+    Complex.prototype.pow = function(n) {
+      return this.fromPool(mathJS.pow(this.value, _getValueFromParam(n)));
+    };
+
+    Complex.prototype.powSelf = function(n) {
+      this.value = mathJS.pow(this.value, _getValueFromParam(n));
+      return this;
+    };
+
+    Complex.prototype.sign = function() {
+      return mathJS.sign(this.value);
+    };
+
+    Complex.prototype.toInt = function() {
+      return mathJS.Int.fromPool(mathJS.floor(this.value));
+    };
+
+    Complex.prototype.toDouble = function() {
+      return mathJS.Double.fromPool(this.value);
+    };
+
+    Complex.prototype.toString = function() {
+      return "" + PARSE_KEY + (this.real.toString()) + "," + (this.img.toString());
+    };
+
+    Complex.prototype.clone = function() {
+      return this.fromPool(this.value);
+    };
+
+    Complex.prototype.release = function() {
+      this.constructor._pool.push(this);
+      return this.constructor;
+    };
+
+    return Complex;
+
+  })(mathJS.Number);
+
+
+  /**
+  * @class Set
+  * @constructor
+  * @param {Function|Class} type
+  * @param {Set} universe
+  * Optional. If given, the created Set will be interpreted as a sub set of the universe.
+  * @param {Set|Array} elems
+  * Optional. This parameter serves as elements for the new Set. They will be in the new Set immediately.
+  * Values can be a Set or an array of comparable elements (that means if `mathJS.isComparable() === true`).
+  *
+   */
+
+  mathJS.Set = (function(_super) {
+    __extends(Set, _super);
+
+    Set.disjoint = function(set1, set2) {
+      return set1.intersects(set2);
+    };
+
+    function Set(leftBoundary, rightBoundary, elems) {
+      this.leftBoundary = leftBoundary;
+      this.rightBoundary = rightBoundary;
+      this._discreteSet = new mathJS.DiscreteSet();
+      this._conditionalSet = new mathJS.DiscreteSet();
+      Object.defineProperties(this, {
+        _universe: {
+          value: null,
+          enumarable: false
+        },
+        universe: {
+          get: function() {
+            return this._universe;
+          },
+          set: function(universe) {
+            if (universe instanceof mathJS.Set || universe === null) {
+              this._universe = universe;
+            }
+            return this;
+          },
+          enumerable: true
+        }
+      });
+      if (elems != null) {
+        if (elems instanceof mathJS.Set) {
+          _unionSelf(elems);
+        } else if (elems instanceof Array) {
+          true;
+        } else if (mathJS.isComparable(elems)) {
+          true;
+        }
+      }
+      this._cachedSize = this.size();
+    }
+
+    Set.prototype._addElem = function(elem) {
+      if (mathJS.isComparable(elem)) {
+        return true;
+      }
+    };
+
+    Set.prototype._unionSelf = function() {};
+
+    Set.prototype.addElems = function(elems) {
+      var elem, set, _i, _len, _results;
+      set = new mathJS.EmptySet();
+      _results = [];
+      for (_i = 0, _len = elems.length; _i < _len; _i++) {
+        elem = elems[_i];
+        if (elem instanceof this.type) {
+          _results.push(set.addElem(elem));
+        }
+      }
+      return _results;
+    };
+
+    Set.prototype.clone = function() {
+      throw new Error("todo!");
+    };
+
+    Set.prototype.equals = function(set) {
+      throw new Error("todo!");
+    };
+
+    Set.prototype.addElem = function(elem) {
+      if (elem instanceof this.type) {
+        return this.union(new mathJS.DiscreteSet(this.type, elem));
+      }
+      return this;
+    };
+
+    Set.prototype.removeElem = function(elem) {
+      if (elem instanceof this.type) {
+        return this.without(new mathJS.DiscreteSet(this.type, elem));
+      }
+      return this;
+    };
+
+    Set.prototype.contains = function(elem) {
+      var subset, _i, _len, _ref;
+      if (elem instanceof this.type) {
+        _ref = this.subsets;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          subset = _ref[_i];
+          if (subset.contains(elem)) {
+            return true;
+          }
+        }
+      }
+      return false;
+    };
+
+    Set.prototype["in"] = Set.prototype.contains;
+
+    Set.prototype.union = function(set) {
+      if (this.intersects(set)) {
+        set = set.without(this);
+        this.subsets.push(set);
+      } else {
+        this.subsets.push(set);
+      }
+      return this;
+    };
+
+    Set.prototype.intersect = function(set) {};
+
+    Set.prototype.intersects = function(set) {
+      return this.intersection.size() > 0;
+    };
+
+    Set.prototype.disjoint = function(set) {
+      return this.intersection.size() === 0;
+    };
+
+    Set.prototype.complement = function() {
+      if (this.universe != null) {
+        return asdf;
+      }
+      return new mathJS.EmptySet();
+    };
+
+
+    /**
+    * a.without b => returns: removed all common elements from a
+    *
+     */
+
+    Set.prototype.without = function(set) {};
+
+    Set.prototype.cartesianProduct = function(set) {};
+
+    Set.prototype.times = Set.prototype.cartesianProduct;
+
+    Set.prototype.size = function() {
+      return this._discreteSet.size() + this._conditionalSet.size();
+    };
+
+    Set.prototype.isEmpty = function() {
+      return this.size() > 0;
+    };
+
+    Set.prototype.cardinality = Set.prototype.size;
+
+    Set.prototype.makeToDiscreteSet = function() {
+      this.__proto__ = mathJS.DiscreteSet.prototype;
+      return this;
+    };
+
+    Set.prototype.makeToConditionalSet = function() {
+      this.__proto__ = mathJS.ConditionalSet.prototype;
+      return this;
+    };
+
+    return Set;
+
+  })(mixOf(mathJS.Poolable, mathJS.Comparable, mathJS.Parseable));
+
+  mathJS.EmptySet = (function(_super) {
+    __extends(EmptySet, _super);
+
+
+    /**
+    * @Override
+    * see mathJS.Poolable
+    * @static
+    * @method fromPool
+    *
+     */
+
+    EmptySet.fromPool = function() {
+      if (this._pool.length > 0) {
+        return this._pool.pop();
+      }
+      return new this();
+    };
+
+    EmptySet["new"] = function() {
+      return this.fromPool();
+    };
+
+    function EmptySet() {}
+
+    EmptySet.prototype.clone = function() {
+      return mathJS.EmptySet["new"]();
+    };
+
+    EmptySet.prototype.equals = function(set) {
+      return set instanceof mathJS.EmptySet;
+    };
+
+    EmptySet.prototype.addElem = function(elem) {
+      if (DEBUG) {
+        console.warn("prototype change!");
+      }
+      this.makeToDiscreteSet();
+      return this;
+    };
+
+    EmptySet.prototype.addElems = function(elems) {
+      var elem, set, _i, _len, _results;
+      set = mathJS.EmptySet["new"]();
+      _results = [];
+      for (_i = 0, _len = elems.length; _i < _len; _i++) {
+        elem = elems[_i];
+        if (elem instanceof this.type) {
+          _results.push(set.addElem(elem));
+        }
+      }
+      return _results;
+    };
+
+    EmptySet.prototype.removeElem = function(elem) {
+      if (elem instanceof this.type) {
+        return this.without(new mathJS.DiscreteSet(this.type, elem));
+      }
+      return this;
+    };
+
+    EmptySet.prototype.contains = function(elem) {
+      var subset, _i, _len, _ref;
+      if (elem instanceof this.type) {
+        _ref = this.subsets;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          subset = _ref[_i];
+          if (subset.contains(elem)) {
+            return true;
+          }
+        }
+      }
+      return false;
+    };
+
+    EmptySet.prototype.union = function(set) {
+      if (this.intersects(set)) {
+        set = set.without(this);
+        this.subsets.push(set);
+      } else {
+        this.subsets.push(set);
+      }
+      return this;
+    };
+
+    EmptySet.prototype.intersect = function(set) {
+      return mathJS.EmptySet["new"]();
+    };
+
+    EmptySet.prototype.intersects = function(set) {
+      return false;
+    };
+
+    EmptySet.prototype.disjoint = function(set) {
+      return true;
+    };
+
+    EmptySet.prototype.complement = function() {
+      if (this.universe != null) {
+        return this.universe;
+      }
+      return mathJS.EmptySet["new"]();
+    };
+
+
+    /**
+    * a.without b => returns: removed all common elements from a
+    *
+     */
+
+    EmptySet.prototype.without = function(set) {};
+
+    EmptySet.prototype.size = function() {
+      return 0;
+    };
+
+
+    /**
+    * @Override mathJS.Poolable
+    * see mathJS.Poolable
+    * @method release
+    *
+     */
+
+    EmptySet.prototype.release = function() {
+      this.constructor._pool.push(this);
+      return this.constructor;
+    };
+
+    return EmptySet;
+
+  })(mathJS.Set);
+
+
+  /**
+  * This class is a Setof explicitely listed elements (with no needed logic).
+  * @class DiscreteSet
+  * @constructor
+  * @param {Function|Class} type
+  * @param {Set} universe
+  * Optional. If given, the created Set will be interpreted as a sub set of the universe.
+  * @param {mixed} elems...
+  * Optional. This and the following parameters serve as elements for the new Set. They will be in the new Set immediately.
+  * @extends Set
+  *
+   */
+
+  mathJS.DiscreteSet = (function(_super) {
+    __extends(DiscreteSet, _super);
+
+    function DiscreteSet() {
+      var elems, type, universe;
+      type = arguments[0], universe = arguments[1], elems = 3 <= arguments.length ? __slice.call(arguments, 2) : [];
+    }
+
+    DiscreteSet.prototype.getElements = function() {
+      return this.elems;
+    };
+
+
+    /**
+    * @Override
+    *
+     */
+
+    DiscreteSet.prototype.equals = function(set) {
+      throw new Error("todo!");
+    };
+
+    DiscreteSet.prototype.addElem = function(elem) {
+      if (elem instanceof this.type) {
+        return this.union(new mathJS.DiscreteSet(this.type, elem));
+      }
+      return this;
+    };
+
+    DiscreteSet.prototype.removeElem = function(elem) {
+      if (elem instanceof this.type) {
+        return this.without(new mathJS.DiscreteSet(this.type, elem));
+      }
+      return this;
+    };
+
+    DiscreteSet.prototype.contains = function(elem) {
+      var e, _i, _len, _ref;
+      if (elem instanceof this.type) {
+        _ref = this.elems;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          e = _ref[_i];
+          if (e.equals(elem)) {
+            return true;
+          }
+        }
+      }
+      return false;
+    };
+
+    DiscreteSet.prototype["in"] = DiscreteSet.prototype.contains;
+
+    DiscreteSet.prototype.unionSelf = function(set) {
+      var intersection;
+      if (set instanceof mathJS.DiscreteSet) {
+        if ((intersection = this.intersect(set)).size() > 0) {
+          return this.elems.push.apply(this.elems, set.without(intersection));
+        } else {
+          return this.elems.push.apply(this.elems, set.elems);
+        }
+      } else if (set instanceof mathJS.ConditionalSet) {
+
+      } else if (set instanceof mathJS.EmptySet) {
+
+      }
+    };
+
+    DiscreteSet.prototype.intersect = function(set) {
+      var elems, res, x, y, _i, _j, _len, _len1, _ref, _ref1;
+      if (set instanceof mathJS.DiscreteSet) {
+        elems = [];
+        _ref = this.elems;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          x = _ref[_i];
+          _ref1 = set.elems;
+          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+            y = _ref1[_j];
+            if (x.equals(y)) {
+              elems.push(x);
+            }
+          }
+        }
+        if (elems.length > 0) {
+          res = new mathJS.DiscreteSet(this.type, this.universe);
+        }
+      } else if (set instanceof mathJS.ConditionalSet) {
+
+      } else if (set instanceof mathJS.EmptySet) {
+        return new mathJS.EmptySet();
+      }
+      return null;
+    };
+
+    DiscreteSet.prototype.complement = function() {
+      if (this.universe != null) {
+        return;
+      }
+      return new mathJS.EmptySet();
+    };
+
+
+    /**
+    * a.without b => returns: removed all common elements from a
+    *
+     */
+
+    DiscreteSet.prototype.without = function(set) {};
+
+    DiscreteSet.prototype.size = function() {
+      return 42;
+    };
+
+    return DiscreteSet;
+
+  })(mathJS.Set);
+
+  mathJS.ConditionalSet = (function(_super) {
+    __extends(ConditionalSet, _super);
+
+    function ConditionalSet(args) {}
+
+    return ConditionalSet;
+
+  })(mathJS.Set);
+
+  mathJS.Function = (function(_super) {
+    __extends(Function, _super);
+
+    function Function(fromSet, toSet, mapping) {
+      this.fromSet = fromSet;
+      this.toSet = toSet;
+      this.mapping = mapping;
+    }
+
+    return Function;
+
+  })(mathJS.ConditionalSet);
+
+  mathJS.Vector = (function() {
+    function Vector() {}
+
+    return Vector;
+
+  })();
+
+  mathJS.Tuple = (function(_super) {
+    __extends(Tuple, _super);
+
+    function Tuple() {
+      return Tuple.__super__.constructor.apply(this, arguments);
+    }
+
+    return Tuple;
+
+  })(mathJS.Vector);
+
+  $(document).ready(function() {
+    return console.log("dom ready");
+  });
+
+}).call(this);

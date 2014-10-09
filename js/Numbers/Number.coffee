@@ -5,8 +5,8 @@
  * @param {Number} value
  * @extends Object
 *###
-class mathJS.Number extends mathJS.Orderable
-    ###########################################################################
+class mathJS.Number extends mixOf mathJS.Orderable, mathJS.Poolable, mathJS.Parseable
+    ###########################################################################################
     # STATIC
     @_valueIsValid: (value) ->
         return value instanceof mathJS.Number or mathJS.isNum(value)
@@ -32,8 +32,12 @@ class mathJS.Number extends mathJS.Orderable
 
         return value
 
-    @_pool = []
 
+    ###*
+    * @Override mathJS.Poolable
+    * @static
+    * @method fromPool
+    *###
     @fromPool: (val) ->
         if @_pool.length > 0
             if @_valueIsValid val
@@ -44,6 +48,11 @@ class mathJS.Number extends mathJS.Orderable
         else
             return new @(val) # param check is done in constructor
 
+    ###*
+    * @Override mathJS.Parseable
+    * @static
+    * @method parse
+    *###
     @parse: (str) ->
         if mathJS.isNum(parsed = parseFloat(str))
             return @fromPool parsed
@@ -86,6 +95,7 @@ class mathJS.Number extends mathJS.Orderable
     _getValue: () ->
         return @_value
 
+    # link to static methods
     _valueIsValid: @_valueIsValid
 
     _getValueFromParam: @_getValueFromParam
@@ -96,6 +106,7 @@ class mathJS.Number extends mathJS.Orderable
 
     # IMPLEMENTING COMPARABLE
     ###*
+    * @Override mathJS.Comparable
     * This method checks for mathmatical equality. This means new mathJS.Double(4.2).equals(4.2) is true.
     * @method equals
     * @param {Number} n
@@ -104,24 +115,16 @@ class mathJS.Number extends mathJS.Orderable
     equals: (n) ->
         return @value is @_getValueFromParam(n)
 
-    e: @::equals
-
     ###*
+    * @Override mathJS.Orderable
     * This method check for mathmatical '<'. This means new mathJS.Double(4.2).lessThan(5.2) is true.
     * @method lessThan
-    * @param {Number} n
-    * @return {Boolean}
     *###
     lessThan: (n) ->
         return @value < @_getValueFromParam(n)
 
     ###*
-    * Alias for `lessThan`.
-    * @method lt
-    *###
-    lt: @::lessThan
-
-    ###*
+    * @Override mathJS.Orderable
     * This method check for mathmatical '>'. This means new mathJS.Double(4.2).greaterThan(3.2) is true.
     * @method greaterThan
     * @param {Number} n
@@ -131,12 +134,7 @@ class mathJS.Number extends mathJS.Orderable
         return @value > @_getValueFromParam(n)
 
     ###*
-    * Alias for `greaterThan`.
-    * @method lt
-    *###
-    gt: @::greaterThan
-
-    ###*
+    * @Override mathJS.Orderable
     * This method check for mathmatical equality. This means new mathJS.Double(4.2).lessThanOrEqualTo(3.2) is true.
     * @method lessThanOrEqualTo
     * @param {Number} n
@@ -146,13 +144,16 @@ class mathJS.Number extends mathJS.Orderable
         return @value <= @_getValueFromParam(n)
 
     ###*
-    * Alias for `lessThanOrEqualTo`.
-    * @method lt
+    * This method check for mathmatical equality. This means new mathJS.Double(4.2).lessThanOrEqualTo(3.2) is true.
+    * @method greaterThanOrEqualTo
+    * @param {Number} n
+    * @return {Boolean}
     *###
-    lte: @::lessThanOrEqualTo
+    greaterThanOrEqualTo: (n) ->
+        return @value >= @_getValueFromParam(n)
 
 
-    # IMPLEMENTING COMPARABLE
+    # END - IMPLEMENTING COMPARABLE
 
 
     ###*

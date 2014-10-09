@@ -2,10 +2,13 @@ js/init
 
 js/globalFunctions
 js/prototyping
+
 js/mathJS
 
 js/interfaces/Comparable
 js/interfaces/Orderable
+js/interfaces/Parseable
+js/interfaces/Poolable
 
 js/Numbers/Number
 js/Numbers/Double
