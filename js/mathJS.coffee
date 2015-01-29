@@ -46,6 +46,10 @@ Object.defineProperties mathJS, {
     minValue:
         value: Number.MIN_VALUE
         writable: false
+    id:
+        value: (x) ->
+            return x
+        writable: false
 
     # number sets / systems
     # N:
@@ -213,6 +217,7 @@ mathJS.degToRad = (deg) ->
     return deg * 0.017453292519943295 # = deg * (Math.PI / 180)
 
 mathJS.sign = (n) ->
+    n = n.value or n
     if mathJS.isNum(n)
         if n < 0
             return -1

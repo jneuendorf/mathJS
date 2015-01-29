@@ -1,0 +1,1 @@
+class mathJS.CalculationExceedanceError extends Error

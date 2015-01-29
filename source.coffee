@@ -43,50 +43,50 @@ window.mixOf = (base, mixins...) ->
 # from js/prototyping.coffee
 #######################################################################
 Array::reverseCopy = () ->
-	res = []
-	res.push(item) for item in @ by -1
-	return res
+    res = []
+    res.push(item) for item in @ by -1
+    return res
 
 Array::sample = (n = 1, forceArray = false) ->
-	if n is 1
-		if not forceArray
-			return @[ Math.floor(Math.random() * @length) ]
-		return [ @[ Math.floor(Math.random() * @length) ] ]
+    if n is 1
+        if not forceArray
+            return @[ Math.floor(Math.random() * @length) ]
+        return [ @[ Math.floor(Math.random() * @length) ] ]
 
-	if n > @length
-		n = @length
+    if n > @length
+        n = @length
 
-	i = 0
-	res = []
-	arr = @clone()
-	while i++ < n
-		console.log arr
-		elem = arr.sample(1)
-		res.push elem
-		arr.remove elem
+    i = 0
+    res = []
+    arr = @clone()
+    while i++ < n
+        console.log arr
+        elem = arr.sample(1)
+        res.push elem
+        arr.remove elem
 
-	return res
+    return res
 
 Array::shuffle = () ->
-	arr = @sample(@length)
-	for elem, i in arr
-		@[i] = elem
-	return @
+    arr = @sample(@length)
+    for elem, i in arr
+        @[i] = elem
+    return @
 
 Array::first = () ->
-	return @[0]
+    return @[0]
 
 Array::last = () ->
-	return @[@length - 1]
+    return @[@length - 1]
 
 Array::average = () ->
-	sum = 0
-	elems = 0
-	for elem in @ when Math.isNum(elem)
-		sum += elem
-		elems++
+    sum = 0
+    elems = 0
+    for elem in @ when Math.isNum(elem)
+        sum += elem
+        elems++
 
-	return sum / elems
+    return sum / elems
 
 # make alias
 Array::median = Array::average
@@ -94,19 +94,19 @@ Array::median = Array::average
 Array::clone = Array::slice
 
 Array::remove = (elem) ->
-	idx = @indexOf elem
-	if idx > -1
-		@splice(idx, 1)
-	return @
+    idx = @indexOf elem
+    if idx > -1
+        @splice(idx, 1)
+    return @
 
 Array::removeAll = (elements = []) ->
-	for elem in elements
-		@remove elem
-	return @
+    for elem in elements
+        @remove elem
+    return @
 
 Array::removeAt = (idx) ->
-	@splice(idx, 1)
-	return @
+    @splice(idx, 1)
+    return @
 
 
 
@@ -117,134 +117,134 @@ Array::removeAt = (idx) ->
  * @return {Array} An array of all maxima.
 *###
 Array::getMax = (propertyGetter) ->
-	max = null
-	res = []
-	if not propertyGetter?
-		propertyGetter = (item) ->
-			return item
+    max = null
+    res = []
+    if not propertyGetter?
+        propertyGetter = (item) ->
+            return item
 
-	for elem in @
-		val = propertyGetter(elem)
-		# new max found (or first compare) => restart list with new max value
-		if val > max or max is null
-			max = val
-			res = [elem]
-		# same as max found => add to list
-		else if val is max
-			res.push elem
+    for elem in @
+        val = propertyGetter(elem)
+        # new max found (or first compare) => restart list with new max value
+        if val > max or max is null
+            max = val
+            res = [elem]
+        # same as max found => add to list
+        else if val is max
+            res.push elem
 
-	return res
+    return res
 
 Array::getMin = (propertyGetter) ->
-	min = null
-	res = []
-	if not propertyGetter?
-		propertyGetter = (item) ->
-			return item
+    min = null
+    res = []
+    if not propertyGetter?
+        propertyGetter = (item) ->
+            return item
 
-	for elem in @
-		val = propertyGetter(elem)
-		# new min found (or first compare) => restart list with new min value
-		if val < min or min is null
-			min = val
-			res = [elem]
-		# same as min found => add to list
-		else if val is min
-			res.push elem
+    for elem in @
+        val = propertyGetter(elem)
+        # new min found (or first compare) => restart list with new min value
+        if val < min or min is null
+            min = val
+            res = [elem]
+        # same as min found => add to list
+        else if val is min
+            res.push elem
 
-	return res
+    return res
 
 Array::sortProp = (getProp, order = "asc") ->
-	if not getProp?
-		getProp = (item) ->
-			return item
+    if not getProp?
+        getProp = (item) ->
+            return item
 
-	if order is "asc"
-		cmpFunc = (a, b) ->
-			a = getProp(a)
-			b = getProp(b)
-			if a < b
-				return -1
-			if b > a
-				return 1
-			return 0
-	else
-		cmpFunc = (a, b) ->
-			a = getProp(a)
-			b = getProp(b)
-			if a > b
-				return -1
-			if b < a
-				return 1
-			return 0
+    if order is "asc"
+        cmpFunc = (a, b) ->
+            a = getProp(a)
+            b = getProp(b)
+            if a < b
+                return -1
+            if b > a
+                return 1
+            return 0
+    else
+        cmpFunc = (a, b) ->
+            a = getProp(a)
+            b = getProp(b)
+            if a > b
+                return -1
+            if b < a
+                return 1
+            return 0
 
-	return @sort cmpFunc
+    return @sort cmpFunc
 
 
 #######################################################################
 String::camel = (spaces) ->
-	if not spaces?
-		spaces = false
+    if not spaces?
+        spaces = false
 
-	str = @toLowerCase()
-	if spaces
-		str = str.split(" ")
-		for i in [1...str.length]
-			str[i] = str[i].charAt(0).toUpperCase() + str[i].substr(1)
-		str = str.join("")
+    str = @toLowerCase()
+    if spaces
+        str = str.split(" ")
+        for i in [1...str.length]
+            str[i] = str[i].charAt(0).toUpperCase() + str[i].substr(1)
+        str = str.join("")
 
-	return str
+    return str
 
 String::antiCamel = () ->
-	res = @charAt(0)
+    res = @charAt(0)
 
-	for i in [1...@length]
-		temp = @charAt(i)
-		# it's a capital letter -> insert space
-		if temp is temp.toUpperCase()
-			res += " "
-		res += temp
-	return res
+    for i in [1...@length]
+        temp = @charAt(i)
+        # it's a capital letter -> insert space
+        if temp is temp.toUpperCase()
+            res += " "
+        res += temp
+    return res
 
 String::firstToUpperCase = () ->
-	return @charAt(0).toUpperCase() + @slice(1)
+    return @charAt(0).toUpperCase() + @slice(1)
 
 String::snakeToCamelCase = () ->
-	res = ""
+    res = ""
 
-	for char in @
-		# not underscore
-		if char isnt "_"
-			# previous character was not an underscore => just add character
-			if prevChar isnt "_"
-				res += char
-			# previous character was an underscore => add upper case character
-			else
-				res += char.toUpperCase()
+    for char in @
+        # not underscore
+        if char isnt "_"
+            # previous character was not an underscore => just add character
+            if prevChar isnt "_"
+                res += char
+            # previous character was an underscore => add upper case character
+            else
+                res += char.toUpperCase()
 
-		prevChar = char
+        prevChar = char
 
-	return res
+    return res
 
 String::camelToSnakeCase = () ->
-	res = ""
-	prevChar = null
-	for char in @
-		# lower case => just add
-		if char is char.toLowerCase()
-			res += char
-		# upper case
-		else
-			# previous character was lower case => add underscore and lower case character
-			if prevChar is prevChar.toLowerCase()
-				res += "_" + char.toLowerCase()
-			# previous character was (also) upper case => just add
-			else
-				res += char
+    res = ""
+    prevChar = null
+    for char in @
+        # lower case => just add
+        if char is char.toLowerCase()
+            res += char
+        # upper case
+        else
+            # previous character was lower case => add underscore and lower case character
+            if prevChar is prevChar.toLowerCase()
+                res += "_" + char.toLowerCase()
+            # previous character was (also) upper case => just add
+            else
+                res += char
 
-		prevChar = char
+        prevChar = char
 
-	return res
+    return res
 # end js/prototyping.coffee
 
 # from js/mathJS.coffee
@@ -295,6 +295,10 @@ Object.defineProperties mathJS, {
         writable: false
     minValue:
         value: Number.MIN_VALUE
+        writable: false
+    id:
+        value: (x) ->
+            return x
         writable: false
 
     # number sets / systems
@@ -463,6 +467,7 @@ mathJS.degToRad = (deg) ->
     return deg * 0.017453292519943295 # = deg * (Math.PI / 180)
 
 mathJS.sign = (n) ->
+    n = n.value or n
     if mathJS.isNum(n)
         if n < 0
             return -1
@@ -486,6 +491,10 @@ mathJS.settings =
         maxIterations: 1000
         maxMatches: 60
 # end js/settings.coffee
+
+# from js/Errors/CalculationExceedanceError.coffee
+class mathJS.CalculationExceedanceError extends Error
+# end js/Errors/CalculationExceedanceError.coffee
 
 # from js/interfaces/Comparable.coffee
 class mathJS.Comparable
@@ -1305,7 +1314,7 @@ class mathJS.Complex extends mathJS.Number
 *###
 class mathJS.Variable
 
-    constructor: (symbol, type, value) ->
+    constructor: (symbol, type=mathJS.Number, value) ->
         @symbol = symbol
         @type = type
         @value = value
@@ -2223,6 +2232,167 @@ class mathJS.Function extends mathJS.ConditionalSet
         @toSet = toSet
         @mapping = mapping
 # end js/Function.coffee
+
+# from js/Calculus/Integral.coffee
+class mathJS.Integral
+
+    CLASS = @
+
+    @settings =
+        maxSteps: 1e10
+
+    @test = () ->
+        i = new mathJS.Integral(
+            (x) ->
+                return -2*x*x-3*x+10
+            -3
+            1
+        )
+        start = Date.now()
+        console.log i.solve(false, 0.00000000000001), Date.now() - start
+        start = Date.now()
+        i.solveAsync(
+            (res) ->
+                console.log res, "async took:", Date.now() - start
+            false
+            0.0000001
+        )
+        start2 = Date.now()
+        console.log i.solve(), Date.now() - start2
+
+        return "test done"
+
+    constructor: (integrand, leftBoundary=-Infinity, rightBoundary=Infinity, integrationVariable=new mathJS.Variable("x")) ->
+        @integrand = integrand
+        @leftBoundary = leftBoundary
+        @rightBoundary = rightBoundary
+        @integrationVariable = integrationVariable
+
+        @settings = null
+
+    # PRIVATE
+    _solvePrepareVars = (from, to, abs, stepSize) ->
+        # absolute integral?
+        if abs is false
+            modVal = mathJS.id
+        else
+            modVal = (x) ->
+                return Math.abs(x)
+
+        # get primitives
+        from = from.value or from
+        to = to.value or to
+
+        # swap if in wrong order
+        if to < from
+            tmp = to
+            to = from
+            from = tmp
+
+        if (diff = to - from) < stepSize
+            # stepSize = diff * stepSize * 0.1
+            stepSize = diff * 0.001
+
+        return {
+            modVal: modVal
+            from: from
+            to: to
+            stepSize: stepSize
+        }
+
+    # STATIC
+    @solve = (integrand, from, to, abs=false, stepSize=0.01, settings={}) ->
+        vars = _solvePrepareVars(from, to, abs, stepSize)
+
+        modVal = vars.modVal
+        from = vars.from
+        to = vars.to
+        stepSize = vars.stepSize
+
+        if (steps = (to - from) / stepSize) > settings.maxSteps or @settings.maxSteps
+            throw new mathJS.CalculationExceedanceError("Too many calculations (#{steps.toExponential()}) ahead! Either adjust mathJS.Integral.settings.maxSteps, set the Integral's instance's settings or pass settings to mathJS.Integral.solve() if you really need that many calculations")
+
+        res = 0
+
+        # cache 0.5 * stepSize
+        halfStepSize = 0.5 * stepSize
+
+        y1 = integrand(from)
+        if DEBUG
+            i = 0
+        for x2 in [(from + stepSize)..to] by stepSize
+            if DEBUG
+                i++
+            y2 = integrand(x2)
+
+            if mathJS.sign(y1) is mathJS.sign(y2)
+                # trapezoid formula
+                res += modVal((y1 + y2) * halfStepSize)
+            # else: round to zero -> no calculation needed
+
+            y1 = y2
+
+        if DEBUG
+            console.log "made", i, "calculations"
+
+        return res
+
+    ###*
+    * For better calculation performance of the integral decrease delay and numBlocks.
+    * For better overall performance increase them.
+    * @public
+    * @static
+    * @method solveAsync
+    * @param integrand {Function}
+    * @param from {Number}
+    * @param to {Number}
+    * @param callback {Function}
+    * @param abs {Boolean}
+    * Optional. Indicates whether areas below the graph are negative or not.
+    * Default is false.
+    * @param stepSize {Number}
+    * Optional. Defines the width of each trapezoid. Default is 0.01.
+    * @param delay {Number}
+    * Optional. Defines the time to pass between blocks of calculations.
+    * Default is 2ms.
+    * @param numBlocks {Number}
+    * Optional. Defines the number of calculation blocks.
+    * Default is 100.
+    *###
+    @solveAsync: (integrand, from, to, callback, abs, stepSize, delay=2, numBlocks=100) ->
+        if not callback?
+            return false
+
+        # split calculation into numBlocks blocks
+        blockSize = (to - from) / numBlocks
+        block = 0
+
+        res = 0
+
+        f = (from, to) ->
+            # done with all blocks => return result to callback
+            if block++ is numBlocks
+                return callback(res)
+
+            res += CLASS.solve(integrand, from, to, abs, stepSize)
+
+            setTimeout  () ->
+                            f(to, to + blockSize)
+                        , delay
+
+            return true
+
+        f(from, from + blockSize)
+
+        return @
+
+    # PUBLIC
+    solve: (abs, stepSize) ->
+        return CLASS.solve(@integrand, @leftBoundary, @rightBoundary, abs, stepSize)
+
+    solveAsync: (callback, abs, stepSize) ->
+        return CLASS.solveAsync(@integrand, @leftBoundary, @rightBoundary, callback, abs, stepSize)
+# end js/Calculus/Integral.coffee
 
 # from js/LinearAlgebra/Vector.coffee
 class mathJS.Vector

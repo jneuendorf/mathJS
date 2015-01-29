@@ -6,6 +6,8 @@ js/prototyping
 js/mathJS
 js/settings
 
+js/Errors/CalculationExceedanceError
+
 js/interfaces/Comparable
 js/interfaces/Orderable
 js/interfaces/Parseable
