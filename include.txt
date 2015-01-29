@@ -4,6 +4,7 @@ js/globalFunctions
 js/prototyping
 
 js/mathJS
+js/settings
 
 js/interfaces/Comparable
 js/interfaces/Orderable
@@ -16,13 +17,22 @@ js/Numbers/Fraction
 js/Numbers/Int
 js/Numbers/Complex
 
+js/Formals/Variable
+js/Formals/Operation
+js/Formals/Term
+js/Formals/Equation
+
+js/Set/SetSpec
 js/Set/Set
-js/Set/EmptySet
+# js/Set/EmptySet
 js/Set/DiscreteSet
 js/Set/ConditionalSet
+js/Set/Domains/N
 
 js/Function
 
-js/Vector
+js/Calculus/Integral
+
+js/LinearAlgebra/Vector
 
 js/start

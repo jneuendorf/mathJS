@@ -6,4 +6,5 @@
 if typeof DEBUG is "undefined"
     window.DEBUG = true
 
-window.mathJS = {}
+window.mathJS =
+    Domains: {}

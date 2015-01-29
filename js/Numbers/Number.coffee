@@ -155,7 +155,6 @@ class mathJS.Number extends mixOf mathJS.Orderable, mathJS.Poolable, mathJS.Pars
 
     # END - IMPLEMENTING COMPARABLE
 
-
     ###*
     * This method adds 2 numbers and returns a new one.
     * @method plus

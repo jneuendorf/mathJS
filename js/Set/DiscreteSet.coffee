@@ -13,13 +13,37 @@ class mathJS.DiscreteSet extends mathJS.Set
 
     ###########################################################################
     # CONSTRUCTOR
-    constructor: (type, universe, elems...) ->
-        # if type instanceof mathJS.Comparable
-        #     @type = type
-        #     @universe = universe
-        #     @subsets = []
-        # else
-        #     throw new Error("Wrong (incomparable) type given ('#{type.name}')! Sets must consist of comparable elements!")
+    constructor: (elems = []) ->
+        @leftBoundary = null
+        @rightBoundary = null
+        @condition = null
+        @elems = []
+
+        for elem in elems when mathJS.isComparable(elem) and not @contains(elem)
+            @elems.push elem
+
+        Object.defineProperties @, {
+            elems:
+                value: @elems
+                enumerable: false
+            _universe:
+                value: null
+                enumerable: false
+                writable: true
+            universe:
+                get: () ->
+                    return @_universe
+                set: (universe) ->
+                    if universe instanceof mathJS.Set or universe is null
+                        @_universe = universe
+                    return @
+                enumerable: true
+            size:
+                value: @elems.length
+                enumerable: false
+                writable: false
+                configurable: true # for overwriting in case of in-place union
+        }
 
     ###########################################################################
     # PROTECTED METHODS
@@ -27,81 +51,38 @@ class mathJS.DiscreteSet extends mathJS.Set
 
     ###########################################################################
     # PUBLIC METHODS
-    getElements: () ->
-        return @elems
+
+    isSubsetOf: (set) ->
+        for e in @elems
+            if not set.contains e
+                return false
+        return true
+
+    isSupersetOf: (set) ->
+        return set.isSubsetOf @
+
+    clone: () ->
+        return new mathJS.DiscreteSet(@elems)
 
     ###*
     * @Override
     *###
     equals: (set) ->
-        throw new Error("todo!")
-
-    addElem: (elem) ->
-        if elem instanceof @type
-            return @union(new mathJS.DiscreteSet(@type, elem))
-        return @
-        # elem = @_getValueFromParam(elem)
-        #
-        # if elem?
-        #     for subset in @subsets
-        #         # element already in some subset => return
-        #         if subset.contains elem
-        #             return @
-        #
-        #     # element is in no subset and not in elements
-        #     for e in @elems when e.equals?(elem) or e is elem
-        #         return @
-        #
-        #     # at this point we know that the element is not in the set
-        #     @elems.push elem
-        #
-        # return @
-
-    removeElem: (elem) ->
-        if elem instanceof @type
-            return @without(new mathJS.DiscreteSet(@type, elem))
-            # subset.remove elem for subset in @subsets
-            #
-            # elems = []
-            # for e in @elems
-            #     if e.equals(elem) or e is elem
-            #         continue
-            #     elems.push e
-            #
-            # @elems = elems
-        return @
+        return @isSubsetOf(set) and set.isSubsetOf(@)
 
     contains: (elem) ->
-        if elem instanceof @type
-            for e in @elems when e.equals(elem)
+        if mathJS.isComparable elem
+            for e in @elems when e is elem or e.equals?(elem)
                 return true
         return false
 
-    in: @::contains
-
-    unionSelf: (set) ->
+    union: (set) ->
         if set instanceof mathJS.DiscreteSet
-            # some common elements
-            if (intersection = @intersect(set)).size() > 0
-                @elems.push.apply @elems, set.without intersection
-            # disjoint sets => add 'em all
-            else
-                @elems.push.apply @elems, set.elems
+            # console.log "here we are!", @elems.concat set.elems
+            return new mathJS.DiscreteSet(@elems.concat set.elems)
         else if set instanceof mathJS.ConditionalSet
-
-        else if set instanceof mathJS.EmptySet
-            return
-        # TODO: how to avoid doubles?
-        # see if the set matches any already existing set
-        # if @intersects set
-        #     # remove duplicates from given set
-        #     set = set.without @
-        #     @subsets.push set
-        # # disjoint sets
-        # else
-        #     @subsets.push set
-        #
-        # return @
+            # throw new Error("Todo!") TODO
+            return "asdf"
 
     intersect: (set) ->
         if set instanceof mathJS.DiscreteSet
@@ -131,8 +112,3 @@ class mathJS.DiscreteSet extends mathJS.Set
     * a.without b => returns: removed all common elements from a
     *###
     without: (set) ->
-
-
-    size: () ->
-        # return @elems.length
-        return 42

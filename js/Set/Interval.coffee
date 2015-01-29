@@ -11,7 +11,7 @@
 * @param {Set} set
 * @extends Set
 *###
-class mathJS.Interval extends mathJS.Set
+class mathJS.Interval extends mathJS.ConditionalSet
 
     ###########################################################################
     # STATIC

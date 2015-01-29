@@ -57,7 +57,63 @@ mathJS.isPrimitive = (x) ->
     return typeof x is "string" or typeof x is "number" or typeof x is "boolean"
 
 mathJS.isComparable = (x) ->
-    return x instanceof mathJS.Comparable or x.instanceof?(mathJS.Comparable) or mathJS.isPrimitive x
+    # return x instanceof mathJS.Comparable or x.instanceof?(mathJS.Comparable) or mathJS.isPrimitive x
+    return x.equals instanceof Function or mathJS.isPrimitive x
+
+mathJS.instanceof = (instance, clss) ->
+    return instance instanceof clss or instance.instanceof?(clss)
+
+mathJS.equals = (x, y) ->
+    return x.equals?(y) or y.equals?(x) or x is y
+
+mathJS.greaterThan = (x, y) ->
+    return x.gt?(y) or y.lt?(x) or x > y
+
+mathJS.gt = mathJS.greaterThan
+
+mathJS.lessThan = (x, y) ->
+    return x.lt?(y) or y.gt?(x) or x < y
+
+mathJS.lt = mathJS.lessThan
+
+mathJS.ggT = () ->
+    if arguments[0] instanceof Array
+        vals = arguments[0]
+    else
+        vals = Array::slice.apply arguments
+
+    if vals.length is 2
+        if vals[1] is 0
+            return vals[0]
+        return mathJS.ggT(vals[1], vals[0] %% vals[1])
+    else if vals.length > 2
+        ggt = mathJS.ggT vals[0], vals[1]
+        for i in [2...vals.length]
+            ggt = mathJS.ggT(ggt, vals[i])
+        return ggt
+    return null
+
+mathJS.gcd = mathJS.ggT
+
+mathJS.kgV = () ->
+    if arguments[0] instanceof Array
+        vals = arguments[0]
+    else
+        vals = Array::slice.apply arguments
+
+    if vals.length is 2
+        return vals[0] * vals[1] // mathJS.ggT(vals[0], vals[1])
+    else if vals.length > 2
+        kgv = mathJS.kgV vals[0], vals[1]
+        for i in [2...vals.length]
+            kgv = mathJS.kgV(kgv, vals[i])
+        return kgv
+    return null
+
+mathJS.lcm = mathJS.kgV
+
+mathJS.coprime = (x, y) ->
+    return mathJS.gcd(x, y) is 1
 
 
 mathJS.ceil = Math.ceil
@@ -115,8 +171,11 @@ mathJS.parseNumber = (str) ->
 mathJS.isNum = (n) ->
     return n? and isFinite(n)
 
+mathJS.isMathJSNum = (n) ->
+    return n? and (isFinite(n) or n instanceof mathJS.Number or n.instanceof(mathJS.Number))
+
 mathJS.isInt = (r) ->
-    return mathJS.isNum(r) and mathJS.floor(r) is r
+    return mathJS.isNum(r) and ~~r is r
 
 ###*
  * This function returns a random (plain) integer between max and min (both inclusive). If max is less than min the parameters are swapped.

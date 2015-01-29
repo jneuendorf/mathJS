@@ -39,6 +39,13 @@ class mathJS.Int extends mathJS.Number
 
     ###########################################################################
     # PUBLIC METHODS
+    isEven: () ->
+        return @value %% 2 is 0
+
+    isOdd: () ->
+        return @value %% 2 is 1
+
+
     plus: (n) ->
         return @constructor.fromPool ~~(@value + @_getValueFromParam(n))
 
