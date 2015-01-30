@@ -488,8 +488,10 @@ mathJS.reciprocal = (n) ->
 # from js/settings.coffee
 mathJS.settings =
     set:
-        maxIterations: 1000
+        maxIterations: 1e3
         maxMatches: 60
+    integral:
+        maxSteps: 1e10
 # end js/settings.coffee
 
 # from js/Errors/CalculationExceedanceError.coffee
@@ -671,6 +673,12 @@ class mathJS.Number extends mixOf mathJS.Orderable, mathJS.Poolable, mathJS.Pars
 
     @random: (max, min) ->
         return @fromPool mathJS.randNum(max, min)
+
+    @toNumber: (n) ->
+        if n instanceof mathJS.Number
+            return n
+        return new mathJS.Number(n)
+
 
 
     ###########################################################################
@@ -2238,9 +2246,6 @@ class mathJS.Integral
 
     CLASS = @
 
-    @settings =
-        maxSteps: 1e10
-
     @test = () ->
         i = new mathJS.Integral(
             (x) ->
@@ -2309,8 +2314,8 @@ class mathJS.Integral
         to = vars.to
         stepSize = vars.stepSize
 
-        if (steps = (to - from) / stepSize) > settings.maxSteps or @settings.maxSteps
-            throw new mathJS.CalculationExceedanceError("Too many calculations (#{steps.toExponential()}) ahead! Either adjust mathJS.Integral.settings.maxSteps, set the Integral's instance's settings or pass settings to mathJS.Integral.solve() if you really need that many calculations")
+        if (steps = (to - from) / stepSize) > settings.maxSteps or mathJS.settings.integral.maxSteps
+            throw new mathJS.CalculationExceedanceError("Too many calculations (#{steps.toExponential()}) ahead! Either adjust mathJS.Integral.settings.maxSteps, set the Integral's instance's settings or pass settings to mathJS.Integral.solve() if you really need that many calculations.")
 
         res = 0
 

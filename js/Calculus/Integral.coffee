@@ -2,9 +2,6 @@ class mathJS.Integral
 
     CLASS = @
 
-    @settings =
-        maxSteps: 1e10
-
     @test = () ->
         i = new mathJS.Integral(
             (x) ->
@@ -73,7 +70,7 @@ class mathJS.Integral
         to = vars.to
         stepSize = vars.stepSize
 
-        if (steps = (to - from) / stepSize) > settings.maxSteps or @settings.maxSteps
+        if (steps = (to - from) / stepSize) > settings.maxSteps or mathJS.settings.integral.maxSteps
             throw new mathJS.CalculationExceedanceError("Too many calculations (#{steps.toExponential()}) ahead! Either adjust mathJS.Integral.settings.maxSteps, set the Integral's instance's settings or pass settings to mathJS.Integral.solve() if you really need that many calculations.")
 
         res = 0

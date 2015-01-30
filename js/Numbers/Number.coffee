@@ -61,6 +61,12 @@ class mathJS.Number extends mixOf mathJS.Orderable, mathJS.Poolable, mathJS.Pars
     @random: (max, min) ->
         return @fromPool mathJS.randNum(max, min)
 
+    @toNumber: (n) ->
+        if n instanceof mathJS.Number
+            return n
+        return new mathJS.Number(n)
+
+
 
     ###########################################################################
     # CONSTRUCTOR

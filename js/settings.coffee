@@ -1,4 +1,6 @@
 mathJS.settings =
     set:
-        maxIterations: 1000
+        maxIterations: 1e3
         maxMatches: 60
+    integral:
+        maxSteps: 1e10

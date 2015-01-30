@@ -610,8 +610,11 @@
 
   mathJS.settings = {
     set: {
-      maxIterations: 1000,
+      maxIterations: 1e3,
       maxMatches: 60
+    },
+    integral: {
+      maxSteps: 1e10
     }
   };
 
@@ -870,6 +873,13 @@
 
     Number.random = function(max, min) {
       return this.fromPool(mathJS.randNum(max, min));
+    };
+
+    Number.toNumber = function(n) {
+      if (n instanceof mathJS.Number) {
+        return n;
+      }
+      return new mathJS.Number(n);
     };
 
     function Number(value) {
@@ -2548,10 +2558,6 @@
 
     CLASS = Integral;
 
-    Integral.settings = {
-      maxSteps: 1e10
-    };
-
     Integral.test = function() {
       var i, start, start2;
       i = new mathJS.Integral(function(x) {
@@ -2628,8 +2634,8 @@
       from = vars.from;
       to = vars.to;
       stepSize = vars.stepSize;
-      if ((steps = (to - from) / stepSize) > settings.maxSteps || this.settings.maxSteps) {
-        throw new mathJS.CalculationExceedanceError("Too many calculations (" + (steps.toExponential()) + ") ahead! Either adjust mathJS.Integral.settings.maxSteps, set the Integral's instance's settings or pass settings to mathJS.Integral.solve() if you really need that many calculations");
+      if ((steps = (to - from) / stepSize) > settings.maxSteps || mathJS.settings.integral.maxSteps) {
+        throw new mathJS.CalculationExceedanceError("Too many calculations (" + (steps.toExponential()) + ") ahead! Either adjust mathJS.Integral.settings.maxSteps, set the Integral's instance's settings or pass settings to mathJS.Integral.solve() if you really need that many calculations.");
       }
       res = 0;
       halfStepSize = 0.5 * stepSize;

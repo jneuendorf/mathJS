@@ -3,10 +3,13 @@ YUI.add("yuidoc-meta", function(Y) {
     "classes": [
         "CONSTANTS",
         "Complex",
+        "DiscreteSet",
         "Int",
         "Interval",
         "Number",
-        "Set"
+        "Set",
+        "Term",
+        "Variable"
     ],
     "modules": [
         "mathJS"
