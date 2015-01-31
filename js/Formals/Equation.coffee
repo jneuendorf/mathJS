@@ -1,5 +1,5 @@
 class mathJS.Equation
 
-    constructor: (term1, term2) ->
-        @term1 = term1
-        @term2 = term2
+    constructor: (expression1, expression2) ->
+        @expression1 = expression1
+        @expression2 = expression2

@@ -1,6 +1,6 @@
 class mathJS.Operation
 
-    constructor: (name, precedence, associativity = "left", func, inverse) ->
+    constructor: (name, precedence, associativity="left", func, inverse) ->
         @name = name
         @precedence = precedence
         @associativity = associativity

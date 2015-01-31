@@ -7,8 +7,12 @@
 if typeof DEBUG is "undefined"
     window.DEBUG = true
 
+# create namespaces
 window.mathJS =
-    Domains: {}
+    Sets: {}
+    Domains: {} # contains instances of sets
+    Errors: {}
+    Geometry: {}
 # end js/init.coffee
 
 # from js/globalFunctions.coffee
@@ -1079,6 +1083,7 @@ class mathJS.Int extends mathJS.Number
  * Real part of the number. Either a mathJS.Number or primitive number.
  * @extends Number
 *###
+# TODO: maybe extend mathJS.Vector instead?! or mix 'em
 class mathJS.Complex extends mathJS.Number
 
     PARSE_KEY = "0c"
@@ -1343,7 +1348,7 @@ class mathJS.Variable
 # from js/Formals/Operation.coffee
 class mathJS.Operation
 
-    constructor: (name, precedence, associativity = "left", func, inverse) ->
+    constructor: (name, precedence, associativity="left", func, inverse) ->
         @name = name
         @precedence = precedence
         @associativity = associativity
@@ -1366,43 +1371,35 @@ mathJS.ops =
             )
 # end js/Formals/Operation.coffee
 
-# from js/Formals/Term.coffee
+# from js/Formals/Expression.coffee
 ###*
-* Tree structure of terms
-* @class Term
+* Tree structure of expressions. It consists of 2 term and 1 operation.
+* @class Expression
 
 *###
-class mathJS.Term
+class mathJS.Expression
 
     fromString: (str) ->
         # TODO: parse string
-        return new mathJS.Term()
+        return new mathJS.Expression()
 
-    constructor: () ->
-        l = arguments.length
-        # given parameters are an odd number of terms and an even number of operations (in between the terms)
-        if l >= 3 and l % 2 is 1
-            # gather terms
-            terms = []
-            for arg in arguments by 2
-                terms.push arg
-            @terms = terms
-            # gather operations
-            operations = []
-            for i in [1...l] when i % 2 is 1
-                operations.push arguments[i]
-            @operations = operations
+    constructor: (term1, operation, term2) ->
+        @term1 = term1
+        if operation? and term2?
+            @operation = operation
+            @term2 = term2
+            @_isLeaf = false
+        else
+            @operation = null
+            @term2 = null
+            @_isLeaf = true
 
-        # just one param => assume 'this' term is a leaf in the tree
-        else if l is 1
-            @terms = [arguments[0]]
-            # else
-            #     @terms = []
+
 
 
 
     eval: (values) ->
-        # go through terms and operations and check for precedence and associativity
+        # go through expressions and operations and check for precedence and associativity
         ops = @operations.clone()
 
         # look for highest precedence first
@@ -1424,7 +1421,7 @@ class mathJS.Term
 
         # in order, depth first
         res = null
-        for term in @terms
+        for term in @expressions
             true
 
 
@@ -1436,14 +1433,14 @@ class mathJS.Term
         #  2x+1      2    8x+4       4
         #  plus    none   plus      none
         # 2x   1     .   8x   4      .
-# end js/Formals/Term.coffee
+# end js/Formals/Expression.coffee
 
 # from js/Formals/Equation.coffee
 class mathJS.Equation
 
-    constructor: (term1, term2) ->
-        @term1 = term1
-        @term2 = term2
+    constructor: (expression1, expression2) ->
+        @expression1 = expression1
+        @expression2 = expression2
 # end js/Formals/Equation.coffee
 
 # from js/Set/SetSpec.coffee
@@ -1946,9 +1943,12 @@ class mathJS.ConditionalSet extends mathJS.Set
 # end js/Set/ConditionalSet.coffee
 
 # from js/Set/Domains/N.coffee
-class mathJS.Domains.N extends mathJS.Set
+class mathJS.Sets.N extends mathJS.Set
 
     CLASS = @
+
+    @new: () ->
+        return new CLASS()
 
     constructor: () ->
 
@@ -2020,17 +2020,14 @@ class mathJS.Domains.N extends mathJS.Set
 
     #################################################################################
     # STATIC
-    @contains = (x) ->
-        return mathJS.isInt(x) or new mathJS.Int(x).equals(x)
 
 
     #################################################################################
     # PUBLIC
-    contains: CLASS.contains
+    contains: (x) ->
+        return mathJS.isInt(x) or new mathJS.Int(x).equals(x)
 
-
-    clone: () ->
-        return new mathJS.Domains.N()
+    clone: @new
 
     equals: (set, n = mathJS.settings.set.maxIterations * 10) ->
         # TODO
@@ -2069,6 +2066,8 @@ class mathJS.Domains.N extends mathJS.Set
         checker = (elem) ->
             return self.checker(elem) or set.checker(elem)
 
+        generator = () ->
+
         # TODO: how to avoid doubles? implementations that use boolean arrays => XOR operations on elements
         # discrete set
         if set instanceof mathJS.DiscreteSet or set.instanceof?(mathJS.DiscreteSet)
@@ -2077,7 +2076,7 @@ class mathJS.Domains.N extends mathJS.Set
         else if set instanceof mathJS.Set or set.instanceof?(mathJS.Set)
             # check for domains. if set is a domain this or the set can directly be returned because they are immutable
             # N
-            if mathJS.instanceof(set, mathJS.Domains.N)
+            if mathJS.instanceof(set, mathJS.Set.N)
                 return @
             # Q, R # TODO: other domains like I, C
             if mathJS.instanceof(set, mathJS.Domains.Q) or mathJS.instanceof(set, mathJS.Domains.R)
@@ -2215,21 +2214,17 @@ class mathJS.Domains.N extends mathJS.Set
     #     return @size is 0
 
 
-# Object.defineProperties mathJS, {
-#     N:
-#         value: new mathJS.Domains.N()
-#         writable: false
-#         enumerable: true
-#         configurable: false
-# }
 
-# CACHE CLASS AND MAKE MATHJS.DOMAINS.N AN INSTANCE
+# MAKE MATHJS.DOMAINS.N AN INSTANCE
 do () ->
-    clss = mathJS.Domains.N
-
-    mathJS.Domains.N = new mathJS.Domains.N()
-    mathJS.Domains.N.new = () ->
-        return new clss()
+    # mathJS.Domains.N = new mathJS.Sets.N()
+    Object.defineProperties mathJS.Domains, {
+        N:
+            value: new mathJS.Sets.N()
+            writable: false
+            enumerable: true
+            configurable: false
+    }
 # end js/Set/Domains/N.coffee
 
 # from js/Function.coffee
@@ -2246,26 +2241,27 @@ class mathJS.Integral
 
     CLASS = @
 
-    @test = () ->
-        i = new mathJS.Integral(
-            (x) ->
-                return -2*x*x-3*x+10
-            -3
-            1
-        )
-        start = Date.now()
-        console.log i.solve(false, 0.00000000000001), Date.now() - start
-        start = Date.now()
-        i.solveAsync(
-            (res) ->
-                console.log res, "async took:", Date.now() - start
-            false
-            0.0000001
-        )
-        start2 = Date.now()
-        console.log i.solve(), Date.now() - start2
+    if DEBUG
+        @test = () ->
+            i = new mathJS.Integral(
+                (x) ->
+                    return -2*x*x-3*x+10
+                -3
+                1
+            )
+            start = Date.now()
+            console.log i.solve(false, 0.00000000000001), Date.now() - start
+            start = Date.now()
+            i.solveAsync(
+                (res) ->
+                    console.log res, "async took:", Date.now() - start
+                false
+                0.0000001
+            )
+            start2 = Date.now()
+            console.log i.solve(), Date.now() - start2
 
-        return "test done"
+            return "test done"
 
     constructor: (integrand, leftBoundary=-Infinity, rightBoundary=Infinity, integrationVariable=new mathJS.Variable("x")) ->
         @integrand = integrand

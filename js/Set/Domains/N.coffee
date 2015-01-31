@@ -1,6 +1,9 @@
-class mathJS.Domains.N extends mathJS.Set
+class mathJS.Sets.N extends mathJS.Set
 
     CLASS = @
+
+    @new: () ->
+        return new CLASS()
 
     constructor: () ->
 
@@ -72,17 +75,14 @@ class mathJS.Domains.N extends mathJS.Set
 
     #################################################################################
     # STATIC
-    @contains = (x) ->
-        return mathJS.isInt(x) or new mathJS.Int(x).equals(x)
 
 
     #################################################################################
     # PUBLIC
-    contains: CLASS.contains
+    contains: (x) ->
+        return mathJS.isInt(x) or new mathJS.Int(x).equals(x)
 
-
-    clone: () ->
-        return new mathJS.Domains.N()
+    clone: @new
 
     equals: (set, n = mathJS.settings.set.maxIterations * 10) ->
         # TODO
@@ -121,6 +121,8 @@ class mathJS.Domains.N extends mathJS.Set
         checker = (elem) ->
             return self.checker(elem) or set.checker(elem)
 
+        generator = () ->
+
         # TODO: how to avoid doubles? implementations that use boolean arrays => XOR operations on elements
         # discrete set
         if set instanceof mathJS.DiscreteSet or set.instanceof?(mathJS.DiscreteSet)
@@ -129,7 +131,7 @@ class mathJS.Domains.N extends mathJS.Set
         else if set instanceof mathJS.Set or set.instanceof?(mathJS.Set)
             # check for domains. if set is a domain this or the set can directly be returned because they are immutable
             # N
-            if mathJS.instanceof(set, mathJS.Domains.N)
+            if mathJS.instanceof(set, mathJS.Set.N)
                 return @
             # Q, R # TODO: other domains like I, C
             if mathJS.instanceof(set, mathJS.Domains.Q) or mathJS.instanceof(set, mathJS.Domains.R)
@@ -267,18 +269,14 @@ class mathJS.Domains.N extends mathJS.Set
     #     return @size is 0
 
 
-# Object.defineProperties mathJS, {
-#     N:
-#         value: new mathJS.Domains.N()
-#         writable: false
-#         enumerable: true
-#         configurable: false
-# }
 
-# CACHE CLASS AND MAKE MATHJS.DOMAINS.N AN INSTANCE
+# MAKE MATHJS.DOMAINS.N AN INSTANCE
 do () ->
-    clss = mathJS.Domains.N
-
-    mathJS.Domains.N = new mathJS.Domains.N()
-    mathJS.Domains.N.new = () ->
-        return new clss()
+    # mathJS.Domains.N = new mathJS.Sets.N()
+    Object.defineProperties mathJS.Domains, {
+        N:
+            value: new mathJS.Sets.N()
+            writable: false
+            enumerable: true
+            configurable: false
+    }

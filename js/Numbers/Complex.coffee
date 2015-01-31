@@ -8,6 +8,7 @@
  * Real part of the number. Either a mathJS.Number or primitive number.
  * @extends Number
 *###
+# TODO: maybe extend mathJS.Vector instead?! or mix 'em
 class mathJS.Complex extends mathJS.Number
 
     PARSE_KEY = "0c"

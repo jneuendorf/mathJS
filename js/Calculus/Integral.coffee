@@ -2,26 +2,27 @@ class mathJS.Integral
 
     CLASS = @
 
-    @test = () ->
-        i = new mathJS.Integral(
-            (x) ->
-                return -2*x*x-3*x+10
-            -3
-            1
-        )
-        start = Date.now()
-        console.log i.solve(false, 0.00000000000001), Date.now() - start
-        start = Date.now()
-        i.solveAsync(
-            (res) ->
-                console.log res, "async took:", Date.now() - start
-            false
-            0.0000001
-        )
-        start2 = Date.now()
-        console.log i.solve(), Date.now() - start2
+    if DEBUG
+        @test = () ->
+            i = new mathJS.Integral(
+                (x) ->
+                    return -2*x*x-3*x+10
+                -3
+                1
+            )
+            start = Date.now()
+            console.log i.solve(false, 0.00000000000001), Date.now() - start
+            start = Date.now()
+            i.solveAsync(
+                (res) ->
+                    console.log res, "async took:", Date.now() - start
+                false
+                0.0000001
+            )
+            start2 = Date.now()
+            console.log i.solve(), Date.now() - start2
 
-        return "test done"
+            return "test done"
 
     constructor: (integrand, leftBoundary=-Infinity, rightBoundary=Infinity, integrationVariable=new mathJS.Variable("x")) ->
         @integrand = integrand

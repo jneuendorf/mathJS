@@ -1,4 +1,3 @@
-
 class mathJS.Generator
 
     @newFromGenerators: (g1, g2) ->

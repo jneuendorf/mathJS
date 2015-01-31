@@ -21,7 +21,7 @@ js/Numbers/Complex
 
 js/Formals/Variable
 js/Formals/Operation
-js/Formals/Term
+js/Formals/Expression
 js/Formals/Equation
 
 js/Set/SetSpec

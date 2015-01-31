@@ -17,7 +17,10 @@
   }
 
   window.mathJS = {
-    Domains: {}
+    Sets: {},
+    Domains: {},
+    Errors: {},
+    Geometry: {}
   };
 
   window.mixOf = function() {
@@ -1724,40 +1727,31 @@
 
 
   /**
-  * Tree structure of terms
-  * @class Term
+  * Tree structure of expressions. It consists of 2 term and 1 operation.
+  * @class Expression
   
   *
    */
 
-  mathJS.Term = (function() {
-    Term.prototype.fromString = function(str) {
-      return new mathJS.Term();
+  mathJS.Expression = (function() {
+    Expression.prototype.fromString = function(str) {
+      return new mathJS.Expression();
     };
 
-    function Term() {
-      var arg, i, l, operations, terms, _i, _j, _len;
-      l = arguments.length;
-      if (l >= 3 && l % 2 === 1) {
-        terms = [];
-        for (_i = 0, _len = arguments.length; _i < _len; _i += 2) {
-          arg = arguments[_i];
-          terms.push(arg);
-        }
-        this.terms = terms;
-        operations = [];
-        for (i = _j = 1; 1 <= l ? _j < l : _j > l; i = 1 <= l ? ++_j : --_j) {
-          if (i % 2 === 1) {
-            operations.push(arguments[i]);
-          }
-        }
-        this.operations = operations;
-      } else if (l === 1) {
-        this.terms = [arguments[0]];
+    function Expression(term1, operation, term2) {
+      this.term1 = term1;
+      if ((operation != null) && (term2 != null)) {
+        this.operation = operation;
+        this.term2 = term2;
+        this._isLeaf = false;
+      } else {
+        this.operation = null;
+        this.term2 = null;
+        this._isLeaf = true;
       }
     }
 
-    Term.prototype["eval"] = function(values) {
+    Expression.prototype["eval"] = function(values) {
       var op, ops, precedence, res, term, term1, term2, _i, _j, _k, _l, _len, _len1, _len2, _ref, _ref1, _results;
       ops = this.operations.clone();
       for (precedence = _i = 1; _i < 20; precedence = ++_i) {
@@ -1779,7 +1773,7 @@
       });
       console.log(ops);
       res = null;
-      _ref1 = this.terms;
+      _ref1 = this.expressions;
       _results = [];
       for (_l = 0, _len2 = _ref1.length; _l < _len2; _l++) {
         term = _ref1[_l];
@@ -1788,14 +1782,14 @@
       return _results;
     };
 
-    return Term;
+    return Expression;
 
   })();
 
   mathJS.Equation = (function() {
-    function Equation(term1, term2) {
-      this.term1 = term1;
-      this.term2 = term2;
+    function Equation(expression1, expression2) {
+      this.expression1 = expression1;
+      this.expression2 = expression2;
     }
 
     return Equation;
@@ -2289,12 +2283,16 @@
 
   })(mathJS.Set);
 
-  mathJS.Domains.N = (function(_super) {
+  mathJS.Sets.N = (function(_super) {
     var CLASS;
 
     __extends(N, _super);
 
     CLASS = N;
+
+    N["new"] = function() {
+      return new CLASS();
+    };
 
     function N() {
       Object.defineProperties(this, {
@@ -2353,15 +2351,11 @@
       });
     }
 
-    N.contains = function(x) {
+    N.prototype.contains = function(x) {
       return mathJS.isInt(x) || new mathJS.Int(x).equals(x);
     };
 
-    N.prototype.contains = CLASS.contains;
-
-    N.prototype.clone = function() {
-      return new mathJS.Domains.N();
-    };
+    N.prototype.clone = N["new"];
 
     N.prototype.equals = function(set, n) {
       var generator, i, val;
@@ -2409,7 +2403,7 @@
     };
 
     N.prototype.union = function(set, n, matches) {
-      var checker, self;
+      var checker, generator, self;
       if (n == null) {
         n = mathJS.settings.set.maxIterations;
       }
@@ -2419,10 +2413,11 @@
       checker = function(elem) {
         return self.checker(elem) || set.checker(elem);
       };
+      generator = function() {};
       if (set instanceof mathJS.DiscreteSet || (typeof set["instanceof"] === "function" ? set["instanceof"](mathJS.DiscreteSet) : void 0)) {
 
       } else if (set instanceof mathJS.Set || (typeof set["instanceof"] === "function" ? set["instanceof"](mathJS.Set) : void 0)) {
-        if (mathJS["instanceof"](set, mathJS.Domains.N)) {
+        if (mathJS["instanceof"](set, mathJS.Set.N)) {
           return this;
         }
         if (mathJS["instanceof"](set, mathJS.Domains.Q) || mathJS["instanceof"](set, mathJS.Domains.R)) {
@@ -2532,12 +2527,14 @@
   })(mathJS.Set);
 
   (function() {
-    var clss;
-    clss = mathJS.Domains.N;
-    mathJS.Domains.N = new mathJS.Domains.N();
-    return mathJS.Domains.N["new"] = function() {
-      return new clss();
-    };
+    return Object.defineProperties(mathJS.Domains, {
+      N: {
+        value: new mathJS.Sets.N(),
+        writable: false,
+        enumerable: true,
+        configurable: false
+      }
+    });
   })();
 
   mathJS.Function = (function(_super) {
@@ -2558,21 +2555,23 @@
 
     CLASS = Integral;
 
-    Integral.test = function() {
-      var i, start, start2;
-      i = new mathJS.Integral(function(x) {
-        return -2 * x * x - 3 * x + 10;
-      }, -3, 1);
-      start = Date.now();
-      console.log(i.solve(false, 0.00000000000001), Date.now() - start);
-      start = Date.now();
-      i.solveAsync(function(res) {
-        return console.log(res, "async took:", Date.now() - start);
-      }, false, 0.0000001);
-      start2 = Date.now();
-      console.log(i.solve(), Date.now() - start2);
-      return "test done";
-    };
+    if (DEBUG) {
+      Integral.test = function() {
+        var i, start, start2;
+        i = new mathJS.Integral(function(x) {
+          return -2 * x * x - 3 * x + 10;
+        }, -3, 1);
+        start = Date.now();
+        console.log(i.solve(false, 0.00000000000001), Date.now() - start);
+        start = Date.now();
+        i.solveAsync(function(res) {
+          return console.log(res, "async took:", Date.now() - start);
+        }, false, 0.0000001);
+        start2 = Date.now();
+        console.log(i.solve(), Date.now() - start2);
+        return "test done";
+      };
+    }
 
     function Integral(integrand, leftBoundary, rightBoundary, integrationVariable) {
       if (leftBoundary == null) {

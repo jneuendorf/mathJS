@@ -1,39 +1,31 @@
 ###*
-* Tree structure of terms
-* @class Term
+* Tree structure of expressions. It consists of 2 term and 1 operation.
+* @class Expression
 
 *###
-class mathJS.Term
+class mathJS.Expression
 
     fromString: (str) ->
         # TODO: parse string
-        return new mathJS.Term()
+        return new mathJS.Expression()
 
-    constructor: () ->
-        l = arguments.length
-        # given parameters are an odd number of terms and an even number of operations (in between the terms)
-        if l >= 3 and l % 2 is 1
-            # gather terms
-            terms = []
-            for arg in arguments by 2
-                terms.push arg
-            @terms = terms
-            # gather operations
-            operations = []
-            for i in [1...l] when i % 2 is 1
-                operations.push arguments[i]
-            @operations = operations
+    constructor: (term1, operation, term2) ->
+        @term1 = term1
+        if operation? and term2?
+            @operation = operation
+            @term2 = term2
+            @_isLeaf = false
+        else
+            @operation = null
+            @term2 = null
+            @_isLeaf = true
 
-        # just one param => assume 'this' term is a leaf in the tree
-        else if l is 1
-            @terms = [arguments[0]]
-            # else
-            #     @terms = []
+
 
 
 
     eval: (values) ->
-        # go through terms and operations and check for precedence and associativity
+        # go through expressions and operations and check for precedence and associativity
         ops = @operations.clone()
 
         # look for highest precedence first
@@ -55,7 +47,7 @@ class mathJS.Term
 
         # in order, depth first
         res = null
-        for term in @terms
+        for term in @expressions
             true
 
 
