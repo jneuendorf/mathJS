@@ -7,7 +7,8 @@
  */
 
 (function() {
-  var __slice = [].slice,
+  var cached,
+    __slice = [].slice,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     __modulo = function(a, b) { return (+a % (b = +b) + b) % b; };
@@ -17,10 +18,11 @@
   }
 
   window.mathJS = {
-    Sets: {},
     Domains: {},
     Errors: {},
-    Geometry: {}
+    Geometry: {},
+    Operations: {},
+    Sets: {}
   };
 
   window.mixOf = function() {
@@ -166,6 +168,18 @@
     this.splice(idx, 1);
     return this;
   };
+
+  Object.defineProperties(Array.prototype, {
+    first: {
+      get: function() {
+        return this[0];
+      },
+      set: function(val) {
+        this[0] = val;
+        return this;
+      }
+    }
+  });
 
 
   /**
@@ -324,6 +338,19 @@
         }
       }
       prevChar = char;
+    }
+    return res;
+  };
+
+  Object.keysLike = function(obj, pattern) {
+    var key, res, _i, _len, _ref;
+    res = [];
+    _ref = Object.keys(obj);
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      key = _ref[_i];
+      if (pattern.test(key)) {
+        res.push(key);
+      }
     }
     return res;
   };
@@ -621,7 +648,7 @@
     }
   };
 
-  mathJS.CalculationExceedanceError = (function(_super) {
+  mathJS.Errors.CalculationExceedanceError = (function(_super) {
     __extends(CalculationExceedanceError, _super);
 
     function CalculationExceedanceError() {
@@ -629,6 +656,39 @@
     }
 
     return CalculationExceedanceError;
+
+  })(Error);
+
+  mathJS.Errors.InvalidVariableError = (function(_super) {
+    __extends(InvalidVariableError, _super);
+
+    function InvalidVariableError() {
+      return InvalidVariableError.__super__.constructor.apply(this, arguments);
+    }
+
+    return InvalidVariableError;
+
+  })(Error);
+
+  mathJS.Errors.InvalidParametersError = (function(_super) {
+    __extends(InvalidParametersError, _super);
+
+    function InvalidParametersError() {
+      return InvalidParametersError.__super__.constructor.apply(this, arguments);
+    }
+
+    return InvalidParametersError;
+
+  })(Error);
+
+  mathJS.Errors.InvalidArityError = (function(_super) {
+    __extends(InvalidArityError, _super);
+
+    function InvalidArityError() {
+      return InvalidArityError.__super__.constructor.apply(this, arguments);
+    }
+
+    return InvalidArityError;
 
   })(Error);
 
@@ -806,13 +866,13 @@
   mathJS.Number = (function(_super) {
     __extends(Number, _super);
 
-    Number._valueIsValid = function(value) {
+    Number.valueIsValid = function(value) {
       return value instanceof mathJS.Number || mathJS.isNum(value);
     };
 
 
     /**
-    * This method gets the value from a parameter. The validity is determined by this._valueIsValid().
+    * This method gets the value from a parameter. The validity is determined by this.valueIsValid().
     * @static
     * @protected
     * @method _getValueFromParam
@@ -825,11 +885,13 @@
 
     Number._getValueFromParam = function(param, skipCheck) {
       var value;
-      if (!skipCheck && !this._valueIsValid(param)) {
+      if (!skipCheck && !this.valueIsValid(param)) {
         return null;
       }
       if (param instanceof mathJS.Number) {
         value = param.value;
+      } else if (param instanceof Number) {
+        value = param.valueOf();
       } else if (mathJS.isNum(param)) {
         value = param;
       }
@@ -847,7 +909,7 @@
     Number.fromPool = function(val) {
       var number;
       if (this._pool.length > 0) {
-        if (this._valueIsValid(val)) {
+        if (this.valueIsValid(val)) {
           number = this._pool.pop();
           number.value = val;
           return number;
@@ -887,7 +949,7 @@
 
     function Number(value) {
       var fStr;
-      if (!this._valueIsValid(value)) {
+      if (!this.valueIsValid(value)) {
         fStr = arguments.callee.caller.toString();
         throw new Error("mathJS: Expected plain number! Given " + value + " in '" + (fStr.substring(0, fStr.indexOf(")") + 1)) + "'");
       }
@@ -907,7 +969,7 @@
     }
 
     Number.prototype._setValue = function(value) {
-      if (this._valueIsValid(value)) {
+      if (this.valueIsValid(value)) {
         this._value = this._getValueFromParam(value, true);
       }
       return this;
@@ -917,7 +979,7 @@
       return this._value;
     };
 
-    Number.prototype._valueIsValid = Number._valueIsValid;
+    Number.prototype.valueIsValid = Number.valueIsValid;
 
     Number.prototype._getValueFromParam = Number._getValueFromParam;
 
@@ -1232,13 +1294,24 @@
   mathJS.Double = (function(_super) {
     __extends(Double, _super);
 
-    function Double(value) {
-      Double.__super__.constructor.apply(this, arguments);
+    function Double() {
+      return Double.__super__.constructor.apply(this, arguments);
     }
 
     return Double;
 
   })(mathJS.Number);
+
+  mathJS.Float = (function(_super) {
+    __extends(Float, _super);
+
+    function Float() {
+      return Float.__super__.constructor.apply(this, arguments);
+    }
+
+    return Float;
+
+  })(mathJS.Double);
 
   mathJS.Fraction = (function(_super) {
     __extends(Fraction, _super);
@@ -1693,6 +1766,10 @@
       return (typeof (_base = this.value).divide === "function" ? _base.divide(x) : void 0) || null;
     };
 
+    Variable.prototype["eval"] = function(value) {
+      return new this.type(value);
+    };
+
     return Variable;
 
   })();
@@ -1706,9 +1783,13 @@
       this.precedence = precedence;
       this.associativity = associativity;
       this.func = func;
-      this.params = func.length;
+      this.arity = func.length;
       this.inverse = inverse || null;
     }
+
+    Operation.prototype["eval"] = function(args) {
+      return this.func.apply(this, args);
+    };
 
     Operation.prototype.invert = function() {
       if (this.inverse != null) {
@@ -1721,7 +1802,46 @@
 
   })();
 
-  mathJS.ops = {
+  mathJS.Abstract = {
+    Operations: {
+      plus: function(x, y) {
+        if (mathJS.Number.valueIsValid(x) && mathJS.Number.valueIsValid(y)) {
+          x = new mathJS.Number(x);
+          y = new mathJS.Number(y);
+        }
+        if (x.plus != null) {
+          return x.plus(y);
+        }
+        throw new mathJS.Errors.InvalidParametersError("...");
+      },
+      minus: function() {},
+      times: function(x, y) {
+        if (mathJS.Number.valueIsValid(x) && mathJS.Number.valueIsValid(y)) {
+          x = new mathJS.Number(x);
+          y = new mathJS.Number(y);
+        }
+        if (x.plus != null) {
+          return x.times(y);
+        }
+        throw new mathJS.Errors.InvalidParametersError("...");
+      }
+    }
+  };
+
+  cached = {
+    division: new mathJS.Operation("divide", 1, "right", mathJS.pow, mathJS.root),
+    addition: new mathJS.Operation("plus", 1, "left", mathJS.Abstract.Operations.plus, mathJS.Abstract.Operations.minus),
+    multiplication: new mathJS.Operation("times", 1, "left", mathJS.Abstract.Operations.times, mathJS.Abstract.Operations.divide)
+  };
+
+  mathJS.Operations = {
+    "+": cached.addition,
+    "-": cached.subtraction,
+    "*": cached.multiplication,
+    "/": cached.division,
+    ":": cached.division,
+    "^": cached.exponentiation,
+    "!": cached.factorial,
     pow: new mathJS.Operation("pow", 1, "right", mathJS.pow, mathJS.root)
   };
 
@@ -1734,53 +1854,93 @@
    */
 
   mathJS.Expression = (function() {
-    Expression.prototype.fromString = function(str) {
+    var CLASS;
+
+    CLASS = Expression;
+
+    Expression.fromString = function(str) {
       return new mathJS.Expression();
     };
 
-    function Expression(term1, operation, term2) {
-      this.term1 = term1;
-      if ((operation != null) && (term2 != null)) {
+    Expression["new"] = function() {
+      return new CLASS();
+    };
+
+    Expression.newExpression = Expression["new"];
+
+    Expression.newTerm = function() {};
+
+    function Expression() {
+      var operation, terms;
+      operation = arguments[0], terms = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+      if (typeof operation === "string") {
+        if (mathJS.Operations[operation] != null) {
+          operation = mathJS.Operations[operation];
+        } else {
+          throw new InvalidParametersError("Invalid operation string given: '" + operation + "'.");
+        }
+      }
+      if (terms.length === 0) {
+        if (mathJS.Number.valueIsValid(operation)) {
+          this.operation = null;
+          this.terms = [new mathJS.Number(operation)];
+        } else {
+          throw new mathJS.Errors.InvalidParametersError("...");
+        }
+      } else if (operation.arity === terms.length) {
         this.operation = operation;
-        this.term2 = term2;
-        this._isLeaf = false;
+        this.terms = terms;
       } else {
-        this.operation = null;
-        this.term2 = null;
-        this._isLeaf = true;
+        throw new mathJS.Errors.InvalidArityError("Invalid number of parameters (" + terms.length + ") for Operation '" + operation.name + "'. Expected number of parameters is " + operation.arity + ".");
       }
     }
 
+
+    /**
+    * @method eval
+    * @param values {Object}
+    * An object of the form {varKey: varVal}.
+    * @returns The value of the expression (specified by the values).
+    *
+     */
+
     Expression.prototype["eval"] = function(values) {
-      var op, ops, precedence, res, term, term1, term2, _i, _j, _k, _l, _len, _len1, _len2, _ref, _ref1, _results;
-      ops = this.operations.clone();
-      for (precedence = _i = 1; _i < 20; precedence = ++_i) {
-        _ref = this.operations;
-        for (_j = 0, _len = _ref.length; _j < _len; _j++) {
-          op = _ref[_j];
-          if (op.precedence === precedence) {
-            term1 = this.operations[idx];
-            term2 = this.operations[idx + 1];
-          }
+      var term, value;
+      if (this.operation == null) {
+        term = this.terms.first;
+        if (term instanceof mathJS.Number) {
+          return term;
         }
+        if ((values != null) && ((value = values[term.name]) != null)) {
+          return term["eval"](value);
+        }
+        throw new mathJS.Errors.InvalidVariableError("Expected variable '" + term.name + "' of type '" + term.type.name + "'! But given " + (JSON.stringify(values)));
       }
-      for (_k = 0, _len1 = ops.length; _k < _len1; _k++) {
-        op = ops[_k];
-        precedence = op.precedence;
-      }
-      ops.sortProp(function(op) {
-        return op.precedence;
-      });
-      console.log(ops);
-      res = null;
-      _ref1 = this.expressions;
-      _results = [];
-      for (_l = 0, _len2 = _ref1.length; _l < _len2; _l++) {
-        term = _ref1[_l];
-        _results.push(true);
-      }
-      return _results;
+      return this.operation["eval"]((function() {
+        var _i, _len, _ref, _results;
+        _ref = this.terms;
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          term = _ref[_i];
+          _results.push(term["eval"](values));
+        }
+        return _results;
+      }).call(this));
     };
+
+    if (DEBUG) {
+      Expression.test = function() {
+        var e1, e2, e3, e4, e5;
+        e1 = new CLASS(5);
+        e2 = new CLASS(2);
+        e3 = new CLASS(4);
+        e4 = new CLASS("+", e1, e2);
+        console.log(e4["eval"]());
+        e5 = new CLASS("*", e4, e3);
+        console.log(e5["eval"]());
+        return "test done";
+      };
+    }
 
     return Expression;
 
@@ -2634,7 +2794,7 @@
       to = vars.to;
       stepSize = vars.stepSize;
       if ((steps = (to - from) / stepSize) > settings.maxSteps || mathJS.settings.integral.maxSteps) {
-        throw new mathJS.CalculationExceedanceError("Too many calculations (" + (steps.toExponential()) + ") ahead! Either adjust mathJS.Integral.settings.maxSteps, set the Integral's instance's settings or pass settings to mathJS.Integral.solve() if you really need that many calculations.");
+        throw new mathJS.Errors.CalculationExceedanceError("Too many calculations (" + (steps.toExponential()) + ") ahead! Either adjust mathJS.Integral.settings.maxSteps, set the Integral's instance's settings or pass settings to mathJS.Integral.solve() if you really need that many calculations.");
       }
       res = 0;
       halfStepSize = 0.5 * stepSize;

@@ -9,39 +9,40 @@ if typeof DEBUG is "undefined"
 
 # create namespaces
 window.mathJS =
-    Sets: {}
     Domains: {} # contains instances of sets
     Errors: {}
     Geometry: {}
+    Operations: {}
+    Sets: {}
 # end js/init.coffee
 
 # from js/globalFunctions.coffee
 window.mixOf = (base, mixins...) ->
-	class Mixed extends base
+    class Mixed extends base
 
-	# earlier mixins override later ones
-	for mixin in mixins by -1
-		# static
-		for name, method of mixin
-			Mixed[name] = method
-		# non-static
-		for name, method of mixin.prototype
-			Mixed::[name] = method
+    # earlier mixins override later ones
+    for mixin in mixins by -1
+        # static
+        for name, method of mixin
+            Mixed[name] = method
+        # non-static
+        for name, method of mixin.prototype
+            Mixed::[name] = method
 
 
-	# attach 'instanceof' equivalent method
-	superClasses = Array::slice.call(arguments, 0)
-	Mixed::instanceof = (cls) ->
-		# real inheritance => normal check
-		if @ instanceof cls
-			return true
-		# check mixed in classes
-		for c in superClasses when c is cls
-				return true
+    # attach 'instanceof' equivalent method
+    superClasses = Array::slice.call(arguments, 0)
+    Mixed::instanceof = (cls) ->
+        # real inheritance => normal check
+        if @ instanceof cls
+            return true
+        # check mixed in classes
+        for c in superClasses when c is cls
+                return true
 
-		return false
+        return false
 
-	return Mixed
+    return Mixed
 # end js/globalFunctions.coffee
 
 # from js/prototyping.coffee
@@ -112,7 +113,15 @@ Array::removeAt = (idx) ->
     @splice(idx, 1)
     return @
 
-
+# convenient index getters and setters
+Object.defineProperties Array::, {
+    first:
+        get: () ->
+            return @[0]
+        set: (val) ->
+            @[0] = val
+            return @
+}
 
 ###*
  * @method getMax
@@ -248,6 +257,16 @@ String::camelToSnakeCase = () ->
 
         prevChar = char
 
+    return res
+
+#######################################################################
+# OBJECT
+
+Object.keysLike = (obj, pattern) ->
+    res = []
+    for key in Object.keys(obj)
+        if pattern.test key
+            res.push key
     return res
 # end js/prototyping.coffee
 
@@ -498,9 +517,15 @@ mathJS.settings =
         maxSteps: 1e10
 # end js/settings.coffee
 
-# from js/Errors/CalculationExceedanceError.coffee
-class mathJS.CalculationExceedanceError extends Error
-# end js/Errors/CalculationExceedanceError.coffee
+# from js/Errors/SimpleErrors.coffee
+class mathJS.Errors.CalculationExceedanceError extends Error
+
+class mathJS.Errors.InvalidVariableError extends Error
+
+class mathJS.Errors.InvalidParametersError extends Error
+
+class mathJS.Errors.InvalidArityError extends Error
+# end js/Errors/SimpleErrors.coffee
 
 # from js/interfaces/Comparable.coffee
 class mathJS.Comparable
@@ -625,11 +650,11 @@ class mathJS.Poolable
 class mathJS.Number extends mixOf mathJS.Orderable, mathJS.Poolable, mathJS.Parseable
     ###########################################################################################
     # STATIC
-    @_valueIsValid: (value) ->
+    @valueIsValid: (value) ->
         return value instanceof mathJS.Number or mathJS.isNum(value)
 
     ###*
-    * This method gets the value from a parameter. The validity is determined by this._valueIsValid().
+    * This method gets the value from a parameter. The validity is determined by this.valueIsValid().
     * @static
     * @protected
     * @method _getValueFromParam
@@ -639,11 +664,13 @@ class mathJS.Number extends mixOf mathJS.Orderable, mathJS.Poolable, mathJS.Pars
     * @return {Number} The primitive value or null.
     *###
     @_getValueFromParam: (param, skipCheck) ->
-        if not skipCheck and not @_valueIsValid(param)
+        if not skipCheck and not @valueIsValid(param)
             return null
 
         if param instanceof mathJS.Number
             value = param.value
+        else if param instanceof Number
+            value = param.valueOf()
         else if mathJS.isNum param
             value = param
 
@@ -657,7 +684,7 @@ class mathJS.Number extends mixOf mathJS.Orderable, mathJS.Poolable, mathJS.Pars
     *###
     @fromPool: (val) ->
         if @_pool.length > 0
-            if @_valueIsValid val
+            if @valueIsValid val
                 number = @_pool.pop()
                 number.value = val
                 return number
@@ -688,7 +715,7 @@ class mathJS.Number extends mixOf mathJS.Orderable, mathJS.Poolable, mathJS.Pars
     ###########################################################################
     # CONSTRUCTOR
     constructor: (value) ->
-        if not @_valueIsValid(value)
+        if not @valueIsValid(value)
             fStr = arguments.callee.caller.toString()
             throw new Error("mathJS: Expected plain number! Given #{value} in '#{fStr.substring(0, fStr.indexOf(")") + 1)}'")
 
@@ -711,7 +738,7 @@ class mathJS.Number extends mixOf mathJS.Orderable, mathJS.Poolable, mathJS.Pars
     ###########################################################################
     # PROTECTED METHODS
     _setValue: (value) ->
-        if @_valueIsValid(value)
+        if @valueIsValid(value)
             @_value = @_getValueFromParam(value, true)
         return @
 
@@ -719,7 +746,7 @@ class mathJS.Number extends mixOf mathJS.Orderable, mathJS.Poolable, mathJS.Pars
         return @_value
 
     # link to static methods
-    _valueIsValid: @_valueIsValid
+    valueIsValid: @valueIsValid
 
     _getValueFromParam: @_getValueFromParam
 
@@ -956,9 +983,13 @@ class mathJS.Number extends mixOf mathJS.Orderable, mathJS.Poolable, mathJS.Pars
 # from js/Numbers/Double.coffee
 class mathJS.Double extends mathJS.Number
 
-    constructor: (value) ->
-        super
+    # constructor: (value) ->
+    #     super
 # end js/Numbers/Double.coffee
+
+# from js/Numbers/Float.coffee
+class mathJS.Float extends mathJS.Double
+# end js/Numbers/Float.coffee
 
 # from js/Numbers/Fraction.coffee
 class mathJS.Fraction extends mathJS.Number
@@ -1343,6 +1374,9 @@ class mathJS.Variable
 
     divide: (x) ->
         return @value.divide?(x) or null
+
+    eval: (value) ->
+        return new @type(value)
 # end js/Formals/Variable.coffee
 
 # from js/Formals/Operation.coffee
@@ -1353,22 +1387,84 @@ class mathJS.Operation
         @precedence = precedence
         @associativity = associativity
         @func = func
-        @params = func.length # number of parameters => unary, binary, ternary...
+        @arity = func.length # number of parameters => unary, binary, ternary...
         @inverse = inverse or null
+
+    eval: (args) ->
+        return @func.apply(@, args)
 
     invert: () ->
         if @inverse?
             return @inverse.apply(@, arguments)
         return null
 
-mathJS.ops =
-    pow:   new mathJS.Operation(
-                "pow"
-                1
-                "right"
-                mathJS.pow
-                mathJS.root
-            )
+mathJS.Abstract =
+    Operations:
+        plus: (x, y) ->
+            # numbers -> convert to mathJS.Number
+            # => int to real
+            if mathJS.Number.valueIsValid(x) and mathJS.Number.valueIsValid(y)
+                x = new mathJS.Number(x)
+                y = new mathJS.Number(y)
+            if x.plus?
+                return x.plus(y)
+            throw new mathJS.Errors.InvalidParametersError("...")
+        minus: () ->
+        times: (x, y) ->
+            # numbers -> convert to mathJS.Number
+            # => int to real
+            if mathJS.Number.valueIsValid(x) and mathJS.Number.valueIsValid(y)
+                x = new mathJS.Number(x)
+                y = new mathJS.Number(y)
+            if x.plus?
+                return x.times(y)
+            throw new mathJS.Errors.InvalidParametersError("...")
+
+
+
+cached =
+    division: new mathJS.Operation(
+        "divide"
+        1
+        "right"
+        mathJS.pow
+        mathJS.root
+    )
+    addition: new mathJS.Operation(
+        "plus"
+        1
+        "left"
+        mathJS.Abstract.Operations.plus
+        mathJS.Abstract.Operations.minus
+    )
+    # subtraction: new mathJS.Operation()
+    multiplication: new mathJS.Operation(
+        "times"
+        1
+        "left"
+        mathJS.Abstract.Operations.times
+        mathJS.Abstract.Operations.divide
+    )
+    # exponentiation: new mathJS.Operation()
+    # factorial: new mathJS.Operation()
+
+
+mathJS.Operations =
+    "+": cached.addition
+    "-": cached.subtraction
+    "*": cached.multiplication
+    "/": cached.division
+    ":": cached.division
+    "^": cached.exponentiation
+    "!": cached.factorial
+
+    pow: new mathJS.Operation(
+            "pow"
+            1
+            "right"
+            mathJS.pow
+            mathJS.root
+    )
 # end js/Formals/Operation.coffee
 
 # from js/Formals/Expression.coffee
@@ -1379,60 +1475,78 @@ mathJS.ops =
 *###
 class mathJS.Expression
 
-    fromString: (str) ->
+    CLASS = @
+
+    @fromString: (str) ->
         # TODO: parse string
         return new mathJS.Expression()
 
-    constructor: (term1, operation, term2) ->
-        @term1 = term1
-        if operation? and term2?
+
+    # TODO: make those meaningful: eg. adjusted parameter lists?!
+    @new: () ->
+        return new CLASS()
+
+    @newExpression = @new
+
+    @newTerm: () ->
+
+    # @stringToOperation: (opStr) ->
+    #     return mathJS.Operations[opStr] or null
+
+    constructor: (operation, terms...) ->
+        if typeof operation is "string"
+            if mathJS.Operations[operation]?
+                operation = mathJS.Operations[operation]
+            else
+                throw new InvalidParametersError("Invalid operation string given: '#{operation}'.")
+
+        # just 1 parameter => constant/value or hash given
+        if terms.length is 0
+            # constant value given => leaf in expression tree
+            if mathJS.Number.valueIsValid(operation)
+                @operation = null
+                @terms = [new mathJS.Number(operation)]
+            else
+                throw new mathJS.Errors.InvalidParametersError("...")
+
+        else if operation.arity is terms.length
             @operation = operation
-            @term2 = term2
-            @_isLeaf = false
+            @terms = terms
         else
-            @operation = null
-            @term2 = null
-            @_isLeaf = true
+            throw new mathJS.Errors.InvalidArityError("Invalid number of parameters (#{terms.length}) for Operation '#{operation.name}'. Expected number of parameters is #{operation.arity}.")
 
 
-
-
-
+    ###*
+    * @method eval
+    * @param values {Object}
+    * An object of the form {varKey: varVal}.
+    * @returns The value of the expression (specified by the values).
+    *###
     eval: (values) ->
-        # go through expressions and operations and check for precedence and associativity
-        ops = @operations.clone()
+        # leaf => this.term1 is either a mathJS.Variable or a constant (-> Number)
+        if not @operation?
+            term = @terms.first
+            # TODO: are numbers the only constants?
+            if term instanceof mathJS.Number
+                return term
+            if values? and (value = values[term.name])?
+                return term.eval(value)
+            throw new mathJS.Errors.InvalidVariableError("Expected variable '#{term.name}' of type '#{term.type.name}'! But given #{JSON.stringify(values)}")
 
-        # look for highest precedence first
-        for precedence in [1...20] # TODO: adjust max value according to defined operations
-            for op in @operations
-                if op.precedence is precedence
-                    term1 = @operations[idx]
-                    term2 = @operations[idx + 1]
+        # no leaf => eval substrees
+        return @operation.eval(term.eval(values) for term in @terms)
 
-
-
-        for op in ops
-            precedence = op.precedence
-
-        ops.sortProp (op) ->
-            return op.precedence
-
-        console.log ops
-
-        # in order, depth first
-        res = null
-        for term in @expressions
-            true
-
-
-        # (2x+1)^2 - (8x+4)*4
-        # tree:
-        #             minus
-        #     (2x+1)^2     (8x+4)*4
-        #       pow            times
-        #  2x+1      2    8x+4       4
-        #  plus    none   plus      none
-        # 2x   1     .   8x   4      .
+    if DEBUG
+        @test = () ->
+            e1 = new CLASS(5)
+            e2 = new CLASS(2)
+            e3 = new CLASS(4)
+            e4 = new CLASS("+", e1, e2)
+            console.log e4.eval()
+            e5 = new CLASS("*", e4, e3)
+            # e5 = (5 + 2) * 4 = 28
+            console.log e5.eval()
+            return "test done"
 # end js/Formals/Expression.coffee
 
 # from js/Formals/Equation.coffee
@@ -2311,7 +2425,7 @@ class mathJS.Integral
         stepSize = vars.stepSize
 
         if (steps = (to - from) / stepSize) > settings.maxSteps or mathJS.settings.integral.maxSteps
-            throw new mathJS.CalculationExceedanceError("Too many calculations (#{steps.toExponential()}) ahead! Either adjust mathJS.Integral.settings.maxSteps, set the Integral's instance's settings or pass settings to mathJS.Integral.solve() if you really need that many calculations.")
+            throw new mathJS.Errors.CalculationExceedanceError("Too many calculations (#{steps.toExponential()}) ahead! Either adjust mathJS.Integral.settings.maxSteps, set the Integral's instance's settings or pass settings to mathJS.Integral.solve() if you really need that many calculations.")
 
         res = 0
 
@@ -2575,7 +2689,7 @@ class mathJS.Tuple extends mathJS.Vector
 
 # from js/start.coffee
 $(document).ready () ->
-	# window.g = new TD.Game()
-	console.log "dom ready"
+    # window.g = new TD.Game()
+    console.log "dom ready"
 # end js/start.coffee
 

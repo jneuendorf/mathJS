@@ -65,7 +65,15 @@ Array::removeAt = (idx) ->
     @splice(idx, 1)
     return @
 
-
+# convenient index getters and setters
+Object.defineProperties Array::, {
+    first:
+        get: () ->
+            return @[0]
+        set: (val) ->
+            @[0] = val
+            return @
+}
 
 ###*
  * @method getMax
@@ -201,4 +209,14 @@ String::camelToSnakeCase = () ->
 
         prevChar = char
 
+    return res
+
+#######################################################################
+# OBJECT
+
+Object.keysLike = (obj, pattern) ->
+    res = []
+    for key in Object.keys(obj)
+        if pattern.test key
+            res.push key
     return res

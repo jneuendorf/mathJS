@@ -1,4 +1,4 @@
 class mathJS.Double extends mathJS.Number
 
-    constructor: (value) ->
-        super
+    # constructor: (value) ->
+    #     super

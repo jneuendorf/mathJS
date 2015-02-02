@@ -25,3 +25,6 @@ class mathJS.Variable
 
     divide: (x) ->
         return @value.divide?(x) or null
+
+    eval: (value) ->
+        return new @type(value)

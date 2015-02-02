@@ -8,11 +8,11 @@
 class mathJS.Number extends mixOf mathJS.Orderable, mathJS.Poolable, mathJS.Parseable
     ###########################################################################################
     # STATIC
-    @_valueIsValid: (value) ->
+    @valueIsValid: (value) ->
         return value instanceof mathJS.Number or mathJS.isNum(value)
 
     ###*
-    * This method gets the value from a parameter. The validity is determined by this._valueIsValid().
+    * This method gets the value from a parameter. The validity is determined by this.valueIsValid().
     * @static
     * @protected
     * @method _getValueFromParam
@@ -22,11 +22,13 @@ class mathJS.Number extends mixOf mathJS.Orderable, mathJS.Poolable, mathJS.Pars
     * @return {Number} The primitive value or null.
     *###
     @_getValueFromParam: (param, skipCheck) ->
-        if not skipCheck and not @_valueIsValid(param)
+        if not skipCheck and not @valueIsValid(param)
             return null
 
         if param instanceof mathJS.Number
             value = param.value
+        else if param instanceof Number
+            value = param.valueOf()
         else if mathJS.isNum param
             value = param
 
@@ -40,7 +42,7 @@ class mathJS.Number extends mixOf mathJS.Orderable, mathJS.Poolable, mathJS.Pars
     *###
     @fromPool: (val) ->
         if @_pool.length > 0
-            if @_valueIsValid val
+            if @valueIsValid val
                 number = @_pool.pop()
                 number.value = val
                 return number
@@ -71,7 +73,7 @@ class mathJS.Number extends mixOf mathJS.Orderable, mathJS.Poolable, mathJS.Pars
     ###########################################################################
     # CONSTRUCTOR
     constructor: (value) ->
-        if not @_valueIsValid(value)
+        if not @valueIsValid(value)
             fStr = arguments.callee.caller.toString()
             throw new Error("mathJS: Expected plain number! Given #{value} in '#{fStr.substring(0, fStr.indexOf(")") + 1)}'")
 
@@ -94,7 +96,7 @@ class mathJS.Number extends mixOf mathJS.Orderable, mathJS.Poolable, mathJS.Pars
     ###########################################################################
     # PROTECTED METHODS
     _setValue: (value) ->
-        if @_valueIsValid(value)
+        if @valueIsValid(value)
             @_value = @_getValueFromParam(value, true)
         return @
 
@@ -102,7 +104,7 @@ class mathJS.Number extends mixOf mathJS.Orderable, mathJS.Poolable, mathJS.Pars
         return @_value
 
     # link to static methods
-    _valueIsValid: @_valueIsValid
+    valueIsValid: @valueIsValid
 
     _getValueFromParam: @_getValueFromParam
 

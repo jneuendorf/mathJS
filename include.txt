@@ -6,7 +6,7 @@ js/prototyping
 js/mathJS
 js/settings
 
-js/Errors/CalculationExceedanceError
+js/Errors/SimpleErrors
 
 js/interfaces/Comparable
 js/interfaces/Orderable
@@ -15,6 +15,7 @@ js/interfaces/Poolable
 
 js/Numbers/Number
 js/Numbers/Double
+js/Numbers/Float
 js/Numbers/Fraction
 js/Numbers/Int
 js/Numbers/Complex
