@@ -14,6 +14,7 @@ class mathJS.Expression
     @parse = @fromString
 
     @parser = new mathJS.Algorithms.ShuntingYard(
+    # TODO: use operations from operation class
         "^":
             precedence: 4
             associativity: "right"
