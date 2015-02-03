@@ -16,35 +16,57 @@ class mathJS.Operation
             return @inverse.apply(@, arguments)
         return null
 
+# ABSTRACT OPERATIONS
+# Those functions make sure primitives are converted correctly and calls the according operation on it's first argument.
+# They are the actual functions of the operations.
+# TODO: no DRY
 mathJS.Abstract =
     Operations:
+        divide: (x, y) ->
+            if mathJS.Number.valueIsValid(x) and mathJS.Number.valueIsValid(y)
+                x = new mathJS.Number(x)
+                y = new mathJS.Number(y)
+            return x.divide(y)
+        minus: (x, y) ->
+            if mathJS.Number.valueIsValid(x) and mathJS.Number.valueIsValid(y)
+                x = new mathJS.Number(x)
+                y = new mathJS.Number(y)
+            return x.minus(y)
         plus: (x, y) ->
             # numbers -> convert to mathJS.Number
             # => int to real
             if mathJS.Number.valueIsValid(x) and mathJS.Number.valueIsValid(y)
                 x = new mathJS.Number(x)
                 y = new mathJS.Number(y)
-            if x.plus?
-                return x.plus(y)
-            throw new mathJS.Errors.InvalidParametersError("...")
-        minus: () ->
+            # else if x instanceof mathJS.Variable or y instanceof mathJS.Variable
+            #     return new mathJS.Expression(mathJS.Operations.plus, x, y)
+            # else if x.plus?
+            #     return x.plus(y)
+            return x.plus(y)
+            # throw new mathJS.Errors.InvalidParametersError("...")
         times: (x, y) ->
             # numbers -> convert to mathJS.Number
             # => int to real
             if mathJS.Number.valueIsValid(x) and mathJS.Number.valueIsValid(y)
                 x = new mathJS.Number(x)
                 y = new mathJS.Number(y)
-            if x.plus?
-                return x.times(y)
-            throw new mathJS.Errors.InvalidParametersError("...")
+            return x.times(y)
 
-
+###
+PRECEDENCE (top to bottom):
+(...)
+factorial
+unary +/-
+exponents, roots
+multiplication, division
+addition, subtraction
+###
 
 cached =
     division: new mathJS.Operation(
         "divide"
         1
-        "right"
+        "left"
         mathJS.pow
         mathJS.root
     )
@@ -55,7 +77,13 @@ cached =
         mathJS.Abstract.Operations.plus
         mathJS.Abstract.Operations.minus
     )
-    # subtraction: new mathJS.Operation()
+    subtraction: new mathJS.Operation(
+        "plus"
+        1
+        "left"
+        mathJS.Abstract.Operations.minus
+        mathJS.Abstract.Operations.plus
+    )
     multiplication: new mathJS.Operation(
         "times"
         1
@@ -63,23 +91,33 @@ cached =
         mathJS.Abstract.Operations.times
         mathJS.Abstract.Operations.divide
     )
-    # exponentiation: new mathJS.Operation()
-    # factorial: new mathJS.Operation()
+    exponentiation: new mathJS.Operation(
+        "pow"
+        1
+        "right"
+        mathJS.pow
+        mathJS.root
+    )
+    factorial: new mathJS.Operation(
+        "factorial"
+        10
+        "right"
+        mathJS.factorial
+        # TODO: inverse function
+        null
+    )
 
 
 mathJS.Operations =
-    "+": cached.addition
-    "-": cached.subtraction
-    "*": cached.multiplication
-    "/": cached.division
-    ":": cached.division
-    "^": cached.exponentiation
-    "!": cached.factorial
-
-    pow: new mathJS.Operation(
-            "pow"
-            1
-            "right"
-            mathJS.pow
-            mathJS.root
-    )
+    "+":        cached.addition
+    "plus":     cached.addition
+    "-":        cached.subtraction
+    "minus":    cached.subtraction
+    "*":        cached.multiplication
+    "times":    cached.multiplication
+    "/":        cached.division
+    ":":        cached.division
+    "divide":   cached.division
+    "^":        cached.exponentiation
+    "pow":      cached.exponentiation
+    "!":        cached.factorial

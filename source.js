@@ -11,13 +11,15 @@
     __slice = [].slice,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
-    __modulo = function(a, b) { return (+a % (b = +b) + b) % b; };
+    __modulo = function(a, b) { return (+a % (b = +b) + b) % b; },
+    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   if (typeof DEBUG === "undefined") {
     window.DEBUG = true;
   }
 
   window.mathJS = {
+    Algorithms: {},
     Domains: {},
     Errors: {},
     Geometry: {},
@@ -525,9 +527,35 @@
     return NaN;
   };
 
+  mathJS.factorial = function(n) {
+    if ((n = ~~n) < 0) {
+      return NaN;
+    }
+    return mathJS.factorial.cache[n] || (mathJS.factorial.cache[n] = n * mathJS.factorial(n - 1));
+  };
+
+  mathJS.factorial.cache = [1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880, 3628800, 39916800, 4.790016e8, 6.2270208e9, 8.71782912e10, 1.307674368e12];
+
+  mathJS.fac = mathJS.factorial;
+
   mathJS.parseNumber = function(str) {
     return null;
   };
+
+  mathJS.factorialInverse = function(n) {
+    var x, y;
+    if ((n = ~~n) < 0) {
+      return NaN;
+    }
+    x = 0;
+    while ((y = mathJS.factorial(++x)) < n) {}
+    if (y === n) {
+      return parseInt(x, 10);
+    }
+    return NaN;
+  };
+
+  mathJS.facInv = mathJS.factorialInverse;
 
 
   /**
@@ -647,6 +675,60 @@
       maxSteps: 1e10
     }
   };
+
+  mathJS.Algorithms.ShuntingYard = (function() {
+    function ShuntingYard(settings) {
+      var op, opSettings;
+      this.ops = "";
+      this.precedence = {};
+      this.associativity = {};
+      for (op in settings) {
+        opSettings = settings[op];
+        this.ops += op;
+        this.precedence[op] = opSettings.precedence;
+        this.associativity[op] = opSettings.associativity;
+      }
+    }
+
+    ShuntingYard.prototype.parse = function(str) {
+      var associativity, i, o1, o2, ops, postfix, precedence, s, token, _i, _len;
+      str = str.replace(/\s+/g, "");
+      s = [];
+      ops = this.ops;
+      precedence = this.precedence;
+      associativity = this.associativity;
+      postfix = "";
+      for (i = _i = 0, _len = str.length; _i < _len; i = ++_i) {
+        token = str[i];
+        if (token > "0" && token < "9") {
+          postfix += "" + token + " ";
+        } else if (__indexOf.call(ops, token) >= 0) {
+          o1 = token;
+          o2 = s.last();
+          while (__indexOf.call(ops, o2) >= 0 && (associativity[o1] === "left" && precedence[o1] <= precedence[o2]) || (associativity[o1] === "right" && precedence[o1] < precedence[o2])) {
+            postfix += "" + o2 + " ";
+            s.pop();
+            o2 = s.last();
+          }
+          s.push(o1);
+        } else if (token === "(") {
+          s.push(token);
+        } else if (token === ")") {
+          while (s.last() !== "(") {
+            postfix += "" + (s.pop()) + " ";
+          }
+          s.pop();
+        }
+      }
+      while (s.length > 0) {
+        postfix += "" + (s.pop()) + " ";
+      }
+      return postfix;
+    };
+
+    return ShuntingYard;
+
+  })();
 
   mathJS.Errors.CalculationExceedanceError = (function(_super) {
     __extends(CalculationExceedanceError, _super);
@@ -850,6 +932,17 @@
     };
 
     return Poolable;
+
+  })();
+
+  mathJS.Evaluable = (function() {
+    function Evaluable() {}
+
+    Evaluable.prototype["eval"] = function() {
+      throw new Error("to do!");
+    };
+
+    return Evaluable;
 
   })();
 
@@ -1285,6 +1378,10 @@
     Number.prototype.release = function() {
       this.constructor._pool.push(this);
       return this.constructor;
+    };
+
+    Number.prototype["eval"] = function(values) {
+      return this;
     };
 
     return Number;
@@ -1728,7 +1825,7 @@
   /**
   * @class Variable
   * @constructor
-  * @param {String} symbol
+  * @param {String} name
   * This is name name of the variable (mathematically)
   * @param {Function|Class} type
   * @param {Object} value
@@ -1736,43 +1833,35 @@
   *
    */
 
-  mathJS.Variable = (function() {
-    function Variable(symbol, type, value) {
+  mathJS.Variable = (function(_super) {
+    __extends(Variable, _super);
+
+    function Variable(name, type) {
       if (type == null) {
         type = mathJS.Number;
       }
-      this.symbol = symbol;
+      this.name = name;
       this.type = type;
-      this.value = value;
     }
 
-    Variable.prototype.plus = function(x) {
-      var _base;
-      return (typeof (_base = this.value).plus === "function" ? _base.plus(x) : void 0) || null;
+    Variable.prototype.plus = function(n) {
+      return new mathJS.Expression("+", this, n);
     };
 
-    Variable.prototype.minus = function(x) {
-      var _base;
-      return (typeof (_base = this.value).minus === "function" ? _base.minus(x) : void 0) || null;
-    };
-
-    Variable.prototype.times = function(x) {
-      var _base;
-      return (typeof (_base = this.value).times === "function" ? _base.times(x) : void 0) || null;
-    };
-
-    Variable.prototype.divide = function(x) {
-      var _base;
-      return (typeof (_base = this.value).divide === "function" ? _base.divide(x) : void 0) || null;
-    };
-
-    Variable.prototype["eval"] = function(value) {
-      return new this.type(value);
+    Variable.prototype["eval"] = function(values) {
+      var val;
+      if ((values != null) && ((val = values[this.name]) != null)) {
+        if (!(val instanceof this.type)) {
+          console.warn("Given value '" + val + "' doesn't match variable type '" + this.type.name + "'.");
+        }
+        return val;
+      }
+      return this;
     };
 
     return Variable;
 
-  })();
+  })(mathJS.Evaluable);
 
   mathJS.Operation = (function() {
     function Operation(name, precedence, associativity, func, inverse) {
@@ -1804,50 +1893,75 @@
 
   mathJS.Abstract = {
     Operations: {
+      divide: function(x, y) {
+        if (mathJS.Number.valueIsValid(x) && mathJS.Number.valueIsValid(y)) {
+          x = new mathJS.Number(x);
+          y = new mathJS.Number(y);
+        }
+        return x.divide(y);
+      },
+      minus: function(x, y) {
+        if (mathJS.Number.valueIsValid(x) && mathJS.Number.valueIsValid(y)) {
+          x = new mathJS.Number(x);
+          y = new mathJS.Number(y);
+        }
+        return x.minus(y);
+      },
       plus: function(x, y) {
         if (mathJS.Number.valueIsValid(x) && mathJS.Number.valueIsValid(y)) {
           x = new mathJS.Number(x);
           y = new mathJS.Number(y);
         }
-        if (x.plus != null) {
-          return x.plus(y);
-        }
-        throw new mathJS.Errors.InvalidParametersError("...");
+        return x.plus(y);
       },
-      minus: function() {},
       times: function(x, y) {
         if (mathJS.Number.valueIsValid(x) && mathJS.Number.valueIsValid(y)) {
           x = new mathJS.Number(x);
           y = new mathJS.Number(y);
         }
-        if (x.plus != null) {
-          return x.times(y);
-        }
-        throw new mathJS.Errors.InvalidParametersError("...");
+        return x.times(y);
       }
     }
   };
 
+
+  /*
+  PRECEDENCE (top to bottom):
+  (...)
+  factorial
+  unary +/-
+  exponents, roots
+  multiplication, division
+  addition, subtraction
+   */
+
   cached = {
-    division: new mathJS.Operation("divide", 1, "right", mathJS.pow, mathJS.root),
+    division: new mathJS.Operation("divide", 1, "left", mathJS.pow, mathJS.root),
     addition: new mathJS.Operation("plus", 1, "left", mathJS.Abstract.Operations.plus, mathJS.Abstract.Operations.minus),
-    multiplication: new mathJS.Operation("times", 1, "left", mathJS.Abstract.Operations.times, mathJS.Abstract.Operations.divide)
+    subtraction: new mathJS.Operation("plus", 1, "left", mathJS.Abstract.Operations.minus, mathJS.Abstract.Operations.plus),
+    multiplication: new mathJS.Operation("times", 1, "left", mathJS.Abstract.Operations.times, mathJS.Abstract.Operations.divide),
+    exponentiation: new mathJS.Operation("pow", 1, "right", mathJS.pow, mathJS.root),
+    factorial: new mathJS.Operation("factorial", 10, "right", mathJS.factorial, null)
   };
 
   mathJS.Operations = {
     "+": cached.addition,
+    "plus": cached.addition,
     "-": cached.subtraction,
+    "minus": cached.subtraction,
     "*": cached.multiplication,
+    "times": cached.multiplication,
     "/": cached.division,
     ":": cached.division,
+    "divide": cached.division,
     "^": cached.exponentiation,
-    "!": cached.factorial,
-    pow: new mathJS.Operation("pow", 1, "right", mathJS.pow, mathJS.root)
+    "pow": cached.exponentiation,
+    "!": cached.factorial
   };
 
 
   /**
-  * Tree structure of expressions. It consists of 2 term and 1 operation.
+  * Tree structure of expressions. It consists of 2 expression and 1 operation.
   * @class Expression
   
   *
@@ -1862,17 +1976,40 @@
       return new mathJS.Expression();
     };
 
+    Expression.parse = Expression.fromString;
+
+    Expression.parser = new mathJS.Algorithms.ShuntingYard({
+      "^": {
+        precedence: 4,
+        associativity: "right"
+      },
+      "*": {
+        precedence: 3,
+        associativity: "left"
+      },
+      "/": {
+        precedence: 3,
+        associativity: "left"
+      },
+      "+": {
+        precedence: 2,
+        associativity: "left"
+      },
+      "-": {
+        precedence: 2,
+        associativity: "left"
+      }
+    });
+
     Expression["new"] = function() {
-      return new CLASS();
+      var expressions, operation;
+      operation = arguments[0], expressions = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+      return new CLASS(operation, expressions);
     };
 
-    Expression.newExpression = Expression["new"];
-
-    Expression.newTerm = function() {};
-
     function Expression() {
-      var operation, terms;
-      operation = arguments[0], terms = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+      var expressions, operation;
+      operation = arguments[0], expressions = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
       if (typeof operation === "string") {
         if (mathJS.Operations[operation] != null) {
           operation = mathJS.Operations[operation];
@@ -1880,18 +2017,24 @@
           throw new InvalidParametersError("Invalid operation string given: '" + operation + "'.");
         }
       }
-      if (terms.length === 0) {
+      if (expressions.first instanceof Array) {
+        expressions = expressions.first;
+      }
+      if (expressions.length === 0) {
         if (mathJS.Number.valueIsValid(operation)) {
           this.operation = null;
-          this.terms = [new mathJS.Number(operation)];
+          this.expressions = [new mathJS.Number(operation)];
+        } else if (operation instanceof mathJS.Variable) {
+          this.operation = null;
+          this.expressions = [operation];
         } else {
           throw new mathJS.Errors.InvalidParametersError("...");
         }
-      } else if (operation.arity === terms.length) {
+      } else if (operation.arity === expressions.length) {
         this.operation = operation;
-        this.terms = terms;
+        this.expressions = expressions;
       } else {
-        throw new mathJS.Errors.InvalidArityError("Invalid number of parameters (" + terms.length + ") for Operation '" + operation.name + "'. Expected number of parameters is " + operation.arity + ".");
+        throw new mathJS.Errors.InvalidArityError("Invalid number of parameters (" + expressions.length + ") for Operation '" + operation.name + "'. Expected number of parameters is " + operation.arity + ".");
       }
     }
 
@@ -1905,39 +2048,37 @@
      */
 
     Expression.prototype["eval"] = function(values) {
-      var term, value;
-      if (this.operation == null) {
-        term = this.terms.first;
-        if (term instanceof mathJS.Number) {
-          return term;
+      var args, expression, k, v, value, _i, _len, _ref;
+      for (k in values) {
+        v = values[k];
+        if (mathJS.isPrimitive(v) && mathJS.Number.valueIsValid(v)) {
+          values[k] = new mathJS.Number(v);
         }
-        if ((values != null) && ((value = values[term.name]) != null)) {
-          return term["eval"](value);
-        }
-        throw new mathJS.Errors.InvalidVariableError("Expected variable '" + term.name + "' of type '" + term.type.name + "'! But given " + (JSON.stringify(values)));
       }
-      return this.operation["eval"]((function() {
-        var _i, _len, _ref, _results;
-        _ref = this.terms;
-        _results = [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          term = _ref[_i];
-          _results.push(term["eval"](values));
+      if (this.operation == null) {
+        return this.expressions.first["eval"](values);
+      }
+      args = [];
+      _ref = this.expressions;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        expression = _ref[_i];
+        value = expression["eval"](values);
+        if (value instanceof mathJS.Variable) {
+          return this;
         }
-        return _results;
-      }).call(this));
+        args.push(value);
+      }
+      return this.operation["eval"](args);
+    };
+
+    Expression.prototype.simplify = function() {
+      return this;
     };
 
     if (DEBUG) {
       Expression.test = function() {
-        var e1, e2, e3, e4, e5;
-        e1 = new CLASS(5);
-        e2 = new CLASS(2);
-        e3 = new CLASS(4);
-        e4 = new CLASS("+", e1, e2);
-        console.log(e4["eval"]());
-        e5 = new CLASS("*", e4, e3);
-        console.log(e5["eval"]());
+        var str;
+        str = "(5x - 3)  ^ 2 * 2 / (4y + 3!)";
         return "test done";
       };
     }

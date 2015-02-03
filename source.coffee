@@ -9,6 +9,7 @@ if typeof DEBUG is "undefined"
 
 # create namespaces
 window.mathJS =
+    Algorithms: {}
     Domains: {} # contains instances of sets
     Errors: {}
     Geometry: {}
@@ -46,6 +47,7 @@ window.mixOf = (base, mixins...) ->
 # end js/globalFunctions.coffee
 
 # from js/prototyping.coffee
+# TODO: use object.defineProperties in order to hide methods from enumeration
 #######################################################################
 Array::reverseCopy = () ->
     res = []
@@ -431,10 +433,54 @@ mathJS.root = (n, exp) ->
         return mathJS.pow(n, 1 / exp)
     return NaN
 
+mathJS.factorial = (n) ->
+    if (n = ~~n) < 0
+        return NaN
+    return mathJS.factorial.cache[n] or (mathJS.factorial.cache[n] = n * mathJS.factorial(n - 1))
+
+# initial cache (dynamically growing when exceeded)
+mathJS.factorial.cache = [
+    1
+    1
+    2
+    6
+    24
+    120
+    720
+    5040
+    40320
+    362880
+    3628800
+    39916800
+    4.790016e8
+    6.2270208e9
+    8.71782912e10
+    1.307674368e12
+]
+
+# make alias
+mathJS.fac = mathJS.factorial
 
 mathJS.parseNumber = (str) ->
     # TODO
     return null
+
+mathJS.factorialInverse = (n) ->
+    if (n = ~~n) < 0
+        return NaN
+        
+    x = 0
+    # js: while((y = mathJS.factorial(++x)) < n) {}
+    while (y = mathJS.factorial(++x)) < n then
+
+    if y is n
+        return parseInt(x, 10)
+
+    return NaN
+
+# make alias
+mathJS.facInv = mathJS.factorialInverse
+
 
 ###*
  * This function checks if a given parameter is a (plain) number.
@@ -516,6 +562,132 @@ mathJS.settings =
     integral:
         maxSteps: 1e10
 # end js/settings.coffee
+
+# from js/Algorithms/ShuntingYard.coffee
+# from http://rosettacode.org/wiki/Parsing/Shunting-yard_algorithm
+# mathJS.Algorithms.ShuntingYard = (str, options) ->
+#     # remove spaces, so str[i]!=" "
+#     str = str.replace /\s+/g, ""
+#
+#     # s = new Stack()
+#     s = []
+#     ops = "-+/*^"
+#     precedence =
+#         "^": 4
+#         "*": 3
+#         "/": 3
+#         "+": 2
+#         "-": 2
+#     associativity =
+#         "^": "right"
+#         "*": "left"
+#         "/": "left"
+#         "+": "left"
+#         "-": "left"
+#     postfix = ""
+#
+#     for token, i in str
+#         # if token is operand (here limited to 0 <= x <= 9)
+#         if token > "0" and token < "9"
+#             postfix += "#{token} "
+#         # if token is an operator
+#         else if token in ops
+#             o1 = token
+#             o2 = s.last()
+#
+#             # while operator token, o2, on top of the stack
+#             # and o1 is left-associative and its precedence is less than or equal to that of o2
+#             # (the algorithm on wikipedia says: or o1 precedence < o2 precedence, but I think it should be)
+#             # or o1 is right-associative and its precedence is less than that of o2
+#             while o2 in ops and (associativity[o1] is "left" and precedence[o1] <= precedence[o2]) or (associativity[o1] is "right" and precedence[o1] < precedence[o2])
+#                 # add o2 to output queue
+#                 postfix += "#{o2} "
+#                 # pop o2 of the stack
+#                 s.pop()
+#                 # next round
+#                 o2 = s.last()
+#             # push o1 onto the stack
+#             s.push(o1)
+#         # if token is left parenthesis
+#         else if token is "("
+#             # then push it onto the stack
+#             s.push(token)
+#         # if token is right parenthesis
+#         else if token is ")"
+#             # until token at top is (
+#             while s.last() isnt "("
+#                 postfix += "#{s.pop()} "
+#             # pop (, but not onto the output queue
+#             s.pop()
+#
+#     # while s.length() > 0
+#     while s.length > 0
+#       postfix += "#{s.pop()} "
+#
+#     return postfix
+
+class mathJS.Algorithms.ShuntingYard
+
+    constructor: (settings) ->
+        @ops = ""
+        @precedence = {}
+        @associativity = {}
+
+        for op, opSettings of settings
+            @ops += op
+            @precedence[op] = opSettings.precedence
+            @associativity[op] = opSettings.associativity
+
+    parse: (str) ->
+        # remove spaces
+        str = str.replace /\s+/g, ""
+
+        s = []
+        ops = @ops
+        precedence = @precedence
+        associativity = @associativity
+        postfix = ""
+
+        for token, i in str
+            # if token is operand (here limited to 0 <= x <= 9)
+            if token > "0" and token < "9"
+                postfix += "#{token} "
+            # if token is an operator
+            else if token in ops
+                o1 = token
+                o2 = s.last()
+
+                # while operator token, o2, on top of the stack
+                # and o1 is left-associative and its precedence is less than or equal to that of o2
+                # (the algorithm on wikipedia says: or o1 precedence < o2 precedence, but I think it should be)
+                # or o1 is right-associative and its precedence is less than that of o2
+                while o2 in ops and (associativity[o1] is "left" and precedence[o1] <= precedence[o2]) or (associativity[o1] is "right" and precedence[o1] < precedence[o2])
+                    # add o2 to output queue
+                    postfix += "#{o2} "
+                    # pop o2 of the stack
+                    s.pop()
+                    # next round
+                    o2 = s.last()
+                # push o1 onto the stack
+                s.push(o1)
+            # if token is left parenthesis
+            else if token is "("
+                # then push it onto the stack
+                s.push(token)
+            # if token is right parenthesis
+            else if token is ")"
+                # until token at top is (
+                while s.last() isnt "("
+                    postfix += "#{s.pop()} "
+                # pop (, but not onto the output queue
+                s.pop()
+
+        # while s.length() > 0
+        while s.length > 0
+          postfix += "#{s.pop()} "
+
+        return postfix
+# end js/Algorithms/ShuntingYard.coffee
 
 # from js/Errors/SimpleErrors.coffee
 class mathJS.Errors.CalculationExceedanceError extends Error
@@ -638,6 +810,13 @@ class mathJS.Poolable
         @constructor._pool.push @
         return @constructor
 # end js/interfaces/Poolable.coffee
+
+# from js/interfaces/Evaluable.coffee
+class mathJS.Evaluable
+
+    eval: () ->
+        throw new Error("to do!")
+# end js/interfaces/Evaluable.coffee
 
 # from js/Numbers/Number.coffee
 ###*
@@ -975,6 +1154,10 @@ class mathJS.Number extends mixOf mathJS.Orderable, mathJS.Poolable, mathJS.Pars
     release: () ->
         @constructor._pool.push @
         return @constructor
+
+    # EVALUABLE INTERFACE
+    eval: (values) ->
+        return @
 
     # TODO: intercept destructor
     # .....
@@ -1350,33 +1533,29 @@ class mathJS.Complex extends mathJS.Number
 ###*
 * @class Variable
 * @constructor
-* @param {String} symbol
+* @param {String} name
 * This is name name of the variable (mathematically)
 * @param {Function|Class} type
 * @param {Object} value
 * Optional. This param is passed upon evaluation.
 *###
-class mathJS.Variable
+# TODO: make interfaces meta: eg. have a Variable@Evaluable.coffee file that contains the interface and inset on build
+class mathJS.Variable extends mathJS.Evaluable
 
-    constructor: (symbol, type=mathJS.Number, value) ->
-        @symbol = symbol
+    constructor: (name, type=mathJS.Number) ->
+        @name = name
         @type = type
-        @value = value
 
-    plus: (x) ->
-        return @value.plus?(x) or null
+    plus: (n) ->
+        return new mathJS.Expression("+", @, n)
 
-    minus: (x) ->
-        return @value.minus?(x) or null
+    eval: (values) ->
+        if values? and (val = values[@name])?
+            if val not instanceof @type
+                console.warn "Given value '#{val}' doesn't match variable type '#{@type.name}'."
+            return val
 
-    times: (x) ->
-        return @value.times?(x) or null
-
-    divide: (x) ->
-        return @value.divide?(x) or null
-
-    eval: (value) ->
-        return new @type(value)
+        return @
 # end js/Formals/Variable.coffee
 
 # from js/Formals/Operation.coffee
@@ -1398,35 +1577,57 @@ class mathJS.Operation
             return @inverse.apply(@, arguments)
         return null
 
+# ABSTRACT OPERATIONS
+# Those functions make sure primitives are converted correctly and calls the according operation on it's first argument.
+# They are the actual functions of the operations.
+# TODO: no DRY
 mathJS.Abstract =
     Operations:
+        divide: (x, y) ->
+            if mathJS.Number.valueIsValid(x) and mathJS.Number.valueIsValid(y)
+                x = new mathJS.Number(x)
+                y = new mathJS.Number(y)
+            return x.divide(y)
+        minus: (x, y) ->
+            if mathJS.Number.valueIsValid(x) and mathJS.Number.valueIsValid(y)
+                x = new mathJS.Number(x)
+                y = new mathJS.Number(y)
+            return x.minus(y)
         plus: (x, y) ->
             # numbers -> convert to mathJS.Number
             # => int to real
             if mathJS.Number.valueIsValid(x) and mathJS.Number.valueIsValid(y)
                 x = new mathJS.Number(x)
                 y = new mathJS.Number(y)
-            if x.plus?
-                return x.plus(y)
-            throw new mathJS.Errors.InvalidParametersError("...")
-        minus: () ->
+            # else if x instanceof mathJS.Variable or y instanceof mathJS.Variable
+            #     return new mathJS.Expression(mathJS.Operations.plus, x, y)
+            # else if x.plus?
+            #     return x.plus(y)
+            return x.plus(y)
+            # throw new mathJS.Errors.InvalidParametersError("...")
         times: (x, y) ->
             # numbers -> convert to mathJS.Number
             # => int to real
             if mathJS.Number.valueIsValid(x) and mathJS.Number.valueIsValid(y)
                 x = new mathJS.Number(x)
                 y = new mathJS.Number(y)
-            if x.plus?
-                return x.times(y)
-            throw new mathJS.Errors.InvalidParametersError("...")
+            return x.times(y)
 
-
+###
+PRECEDENCE (top to bottom):
+(...)
+factorial
+unary +/-
+exponents, roots
+multiplication, division
+addition, subtraction
+###
 
 cached =
     division: new mathJS.Operation(
         "divide"
         1
-        "right"
+        "left"
         mathJS.pow
         mathJS.root
     )
@@ -1437,7 +1638,13 @@ cached =
         mathJS.Abstract.Operations.plus
         mathJS.Abstract.Operations.minus
     )
-    # subtraction: new mathJS.Operation()
+    subtraction: new mathJS.Operation(
+        "plus"
+        1
+        "left"
+        mathJS.Abstract.Operations.minus
+        mathJS.Abstract.Operations.plus
+    )
     multiplication: new mathJS.Operation(
         "times"
         1
@@ -1445,31 +1652,41 @@ cached =
         mathJS.Abstract.Operations.times
         mathJS.Abstract.Operations.divide
     )
-    # exponentiation: new mathJS.Operation()
-    # factorial: new mathJS.Operation()
+    exponentiation: new mathJS.Operation(
+        "pow"
+        1
+        "right"
+        mathJS.pow
+        mathJS.root
+    )
+    factorial: new mathJS.Operation(
+        "factorial"
+        10
+        "right"
+        mathJS.factorial
+        # TODO: inverse function
+        null
+    )
 
 
 mathJS.Operations =
-    "+": cached.addition
-    "-": cached.subtraction
-    "*": cached.multiplication
-    "/": cached.division
-    ":": cached.division
-    "^": cached.exponentiation
-    "!": cached.factorial
-
-    pow: new mathJS.Operation(
-            "pow"
-            1
-            "right"
-            mathJS.pow
-            mathJS.root
-    )
+    "+":        cached.addition
+    "plus":     cached.addition
+    "-":        cached.subtraction
+    "minus":    cached.subtraction
+    "*":        cached.multiplication
+    "times":    cached.multiplication
+    "/":        cached.division
+    ":":        cached.division
+    "divide":   cached.division
+    "^":        cached.exponentiation
+    "pow":      cached.exponentiation
+    "!":        cached.factorial
 # end js/Formals/Operation.coffee
 
 # from js/Formals/Expression.coffee
 ###*
-* Tree structure of expressions. It consists of 2 term and 1 operation.
+* Tree structure of expressions. It consists of 2 expression and 1 operation.
 * @class Expression
 
 *###
@@ -1481,39 +1698,61 @@ class mathJS.Expression
         # TODO: parse string
         return new mathJS.Expression()
 
+    @parse = @fromString
+
+    @parser = new mathJS.Algorithms.ShuntingYard(
+        "^":
+            precedence: 4
+            associativity: "right"
+        "*":
+            precedence: 3
+            associativity: "left"
+        "/":
+            precedence: 3
+            associativity: "left"
+        "+":
+            precedence: 2
+            associativity: "left"
+        "-":
+            precedence: 2
+            associativity: "left"
+    )
+
 
     # TODO: make those meaningful: eg. adjusted parameter lists?!
-    @new: () ->
-        return new CLASS()
+    @new: (operation, expressions...) ->
+        return new CLASS(operation, expressions)
 
-    @newExpression = @new
-
-    @newTerm: () ->
-
-    # @stringToOperation: (opStr) ->
-    #     return mathJS.Operations[opStr] or null
-
-    constructor: (operation, terms...) ->
+    constructor: (operation, expressions...) ->
+        # map op string to actual operation object
         if typeof operation is "string"
             if mathJS.Operations[operation]?
                 operation = mathJS.Operations[operation]
             else
                 throw new InvalidParametersError("Invalid operation string given: '#{operation}'.")
 
+        # if constructor was called from static .new()
+        if expressions.first instanceof Array
+            expressions = expressions.first
+
         # just 1 parameter => constant/value or hash given
-        if terms.length is 0
-            # constant value given => leaf in expression tree
+        if expressions.length is 0
+            # TODO: Variables
+            # constant/variable value given => leaf in expression tree
             if mathJS.Number.valueIsValid(operation)
                 @operation = null
-                @terms = [new mathJS.Number(operation)]
+                @expressions = [new mathJS.Number(operation)]
+            else if operation instanceof mathJS.Variable
+                @operation = null
+                @expressions = [operation]
             else
                 throw new mathJS.Errors.InvalidParametersError("...")
 
-        else if operation.arity is terms.length
+        else if operation.arity is expressions.length
             @operation = operation
-            @terms = terms
+            @expressions = expressions
         else
-            throw new mathJS.Errors.InvalidArityError("Invalid number of parameters (#{terms.length}) for Operation '#{operation.name}'. Expected number of parameters is #{operation.arity}.")
+            throw new mathJS.Errors.InvalidArityError("Invalid number of parameters (#{expressions.length}) for Operation '#{operation.name}'. Expected number of parameters is #{operation.arity}.")
 
 
     ###*
@@ -1523,29 +1762,54 @@ class mathJS.Expression
     * @returns The value of the expression (specified by the values).
     *###
     eval: (values) ->
-        # leaf => this.term1 is either a mathJS.Variable or a constant (-> Number)
+        # replace primitives with mathJS objects
+        for k, v of values
+            if mathJS.isPrimitive(v) and mathJS.Number.valueIsValid(v)
+                values[k] = new mathJS.Number(v)
+
+        # leaf => first expression is either a mathJS.Variable or a constant (-> Number)
         if not @operation?
-            term = @terms.first
-            # TODO: are numbers the only constants?
-            if term instanceof mathJS.Number
-                return term
-            if values? and (value = values[term.name])?
-                return term.eval(value)
-            throw new mathJS.Errors.InvalidVariableError("Expected variable '#{term.name}' of type '#{term.type.name}'! But given #{JSON.stringify(values)}")
+            return @expressions.first.eval(values)
 
         # no leaf => eval substrees
-        return @operation.eval(term.eval(values) for term in @terms)
+        args = []
+        for expression in @expressions
+            # evaluated expression is a variable => stop because this and the 'above' expression can't be evaluated further
+            value = expression.eval(values)
+            if value instanceof mathJS.Variable
+                return @
+            # evaluation succeeded => add to list of evaluated values (which will be passed to the operation)
+            args.push value
+
+        return @operation.eval(args)
+
+    simplify: () ->
+        # TODO
+        return @
 
     if DEBUG
         @test = () ->
-            e1 = new CLASS(5)
-            e2 = new CLASS(2)
-            e3 = new CLASS(4)
-            e4 = new CLASS("+", e1, e2)
-            console.log e4.eval()
-            e5 = new CLASS("*", e4, e3)
-            # e5 = (5 + 2) * 4 = 28
-            console.log e5.eval()
+            # e1 = new CLASS(5)
+            # e2 = new CLASS(2)
+            # e3 = new CLASS(4)
+            # e4 = new CLASS("+", e1, e2)
+            # console.log e4.eval()
+            # e5 = new CLASS("*", e4, e3)
+            # # e5 = (5 + 2) * 4 = 28
+            # console.log e5.eval()
+            #
+            # e1 = new CLASS(5)
+            # e2 = new CLASS(new mathJS.Variable("x", mathJS.Number))
+            # e4 = new CLASS("+", e1, e2)
+            # console.log e4.eval({x: new mathJS.Number(5)})
+            # console.log e4.eval()
+            # e5 = e4.eval()
+            # console.log e5.eval({x: new mathJS.Number(5)})
+
+            str = "(5x - 3)  ^ 2 * 2 / (4y + 3!)"
+
+            # (5x-3)^2 * 2 / (4y + 6)
+
             return "test done"
 # end js/Formals/Expression.coffee
 

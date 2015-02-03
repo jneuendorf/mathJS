@@ -1,30 +1,26 @@
 ###*
 * @class Variable
 * @constructor
-* @param {String} symbol
+* @param {String} name
 * This is name name of the variable (mathematically)
 * @param {Function|Class} type
 * @param {Object} value
 * Optional. This param is passed upon evaluation.
 *###
-class mathJS.Variable
+# TODO: make interfaces meta: eg. have a Variable@Evaluable.coffee file that contains the interface and inset on build
+class mathJS.Variable extends mathJS.Evaluable
 
-    constructor: (symbol, type=mathJS.Number, value) ->
-        @symbol = symbol
+    constructor: (name, type=mathJS.Number) ->
+        @name = name
         @type = type
-        @value = value
 
-    plus: (x) ->
-        return @value.plus?(x) or null
+    plus: (n) ->
+        return new mathJS.Expression("+", @, n)
 
-    minus: (x) ->
-        return @value.minus?(x) or null
+    eval: (values) ->
+        if values? and (val = values[@name])?
+            if val not instanceof @type
+                console.warn "Given value '#{val}' doesn't match variable type '#{@type.name}'."
+            return val
 
-    times: (x) ->
-        return @value.times?(x) or null
-
-    divide: (x) ->
-        return @value.divide?(x) or null
-
-    eval: (value) ->
-        return new @type(value)
+        return @

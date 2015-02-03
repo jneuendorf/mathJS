@@ -8,6 +8,7 @@ if typeof DEBUG is "undefined"
 
 # create namespaces
 window.mathJS =
+    Algorithms: {}
     Domains: {} # contains instances of sets
     Errors: {}
     Geometry: {}

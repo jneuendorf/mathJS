@@ -334,5 +334,9 @@ class mathJS.Number extends mixOf mathJS.Orderable, mathJS.Poolable, mathJS.Pars
         @constructor._pool.push @
         return @constructor
 
+    # EVALUABLE INTERFACE
+    eval: (values) ->
+        return @
+
     # TODO: intercept destructor
     # .....

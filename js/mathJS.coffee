@@ -158,10 +158,54 @@ mathJS.root = (n, exp) ->
         return mathJS.pow(n, 1 / exp)
     return NaN
 
+mathJS.factorial = (n) ->
+    if (n = ~~n) < 0
+        return NaN
+    return mathJS.factorial.cache[n] or (mathJS.factorial.cache[n] = n * mathJS.factorial(n - 1))
+
+# initial cache (dynamically growing when exceeded)
+mathJS.factorial.cache = [
+    1
+    1
+    2
+    6
+    24
+    120
+    720
+    5040
+    40320
+    362880
+    3628800
+    39916800
+    4.790016e8
+    6.2270208e9
+    8.71782912e10
+    1.307674368e12
+]
+
+# make alias
+mathJS.fac = mathJS.factorial
 
 mathJS.parseNumber = (str) ->
     # TODO
     return null
+
+mathJS.factorialInverse = (n) ->
+    if (n = ~~n) < 0
+        return NaN
+        
+    x = 0
+    # js: while((y = mathJS.factorial(++x)) < n) {}
+    while (y = mathJS.factorial(++x)) < n then
+
+    if y is n
+        return parseInt(x, 10)
+
+    return NaN
+
+# make alias
+mathJS.facInv = mathJS.factorialInverse
+
 
 ###*
  * This function checks if a given parameter is a (plain) number.

@@ -1,3 +1,4 @@
+# TODO: use object.defineProperties in order to hide methods from enumeration
 #######################################################################
 Array::reverseCopy = () ->
     res = []
