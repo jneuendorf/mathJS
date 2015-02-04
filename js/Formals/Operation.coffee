@@ -1,9 +1,10 @@
 class mathJS.Operation
 
-    constructor: (name, precedence, associativity="left", func, inverse) ->
+    constructor: (name, precedence, associativity="left", commutative, func, inverse) ->
         @name = name
         @precedence = precedence
         @associativity = associativity
+        @commutative = commutative
         @func = func
         @arity = func.length # number of parameters => unary, binary, ternary...
         @inverse = inverse or null
@@ -67,6 +68,7 @@ cached =
         "divide"
         1
         "left"
+        false
         mathJS.pow
         mathJS.root
     )
@@ -74,6 +76,7 @@ cached =
         "plus"
         1
         "left"
+        true
         mathJS.Abstract.Operations.plus
         mathJS.Abstract.Operations.minus
     )
@@ -81,6 +84,7 @@ cached =
         "plus"
         1
         "left"
+        false
         mathJS.Abstract.Operations.minus
         mathJS.Abstract.Operations.plus
     )
@@ -88,6 +92,7 @@ cached =
         "times"
         1
         "left"
+        true
         mathJS.Abstract.Operations.times
         mathJS.Abstract.Operations.divide
     )
@@ -95,6 +100,7 @@ cached =
         "pow"
         1
         "right"
+        false
         mathJS.pow
         mathJS.root
     )
@@ -102,6 +108,7 @@ cached =
         "factorial"
         10
         "right"
+        false
         mathJS.factorial
         # TODO: inverse function
         null

@@ -677,6 +677,15 @@
   };
 
   mathJS.Algorithms.ShuntingYard = (function() {
+    var CLASS;
+
+    CLASS = ShuntingYard;
+
+    ShuntingYard.specialOperators = {
+      "+": "#",
+      "-": "_"
+    };
+
     function ShuntingYard(settings) {
       var op, opSettings;
       this.ops = "";
@@ -690,10 +699,10 @@
       }
     }
 
-    ShuntingYard.prototype.parse = function(str) {
-      var associativity, i, o1, o2, ops, postfix, precedence, s, token, _i, _len;
+    ShuntingYard.prototype.toPostfix = function(str) {
+      var associativity, i, o1, o2, ops, postfix, precedence, prevToken, stack, token, _i, _len;
       str = str.replace(/\s+/g, "");
-      s = [];
+      stack = [];
       ops = this.ops;
       precedence = this.precedence;
       associativity = this.associativity;
@@ -704,26 +713,38 @@
           postfix += "" + token + " ";
         } else if (__indexOf.call(ops, token) >= 0) {
           o1 = token;
-          o2 = s.last();
-          while (__indexOf.call(ops, o2) >= 0 && (associativity[o1] === "left" && precedence[o1] <= precedence[o2]) || (associativity[o1] === "right" && precedence[o1] < precedence[o2])) {
-            postfix += "" + o2 + " ";
-            s.pop();
-            o2 = s.last();
+          o2 = stack.last();
+          if (i === 0 || prevToken === "(") {
+            if (CLASS.specialOperators[token] != null) {
+              postfix += "" + CLASS.specialOperators[token] + " ";
+            }
+          } else {
+            while (__indexOf.call(ops, o2) >= 0 && (associativity[o1] === "left" && precedence[o1] <= precedence[o2]) || (associativity[o1] === "right" && precedence[o1] < precedence[o2])) {
+              postfix += "" + o2 + " ";
+              stack.pop();
+              o2 = stack.last();
+            }
+            stack.push(o1);
           }
-          s.push(o1);
         } else if (token === "(") {
-          s.push(token);
+          stack.push(token);
         } else if (token === ")") {
-          while (s.last() !== "(") {
-            postfix += "" + (s.pop()) + " ";
+          while (stack.last() !== "(") {
+            postfix += "" + (stack.pop()) + " ";
           }
-          s.pop();
+          stack.pop();
         }
+        prevToken = token;
       }
-      while (s.length > 0) {
-        postfix += "" + (s.pop()) + " ";
+      while (stack.length > 0) {
+        postfix += "" + (stack.pop()) + " ";
       }
       return postfix;
+    };
+
+    ShuntingYard.prototype.toExpression = function(str) {
+      var postfix;
+      return postfix = this.toPostfix(str);
     };
 
     return ShuntingYard;
@@ -1864,13 +1885,14 @@
   })(mathJS.Evaluable);
 
   mathJS.Operation = (function() {
-    function Operation(name, precedence, associativity, func, inverse) {
+    function Operation(name, precedence, associativity, commutative, func, inverse) {
       if (associativity == null) {
         associativity = "left";
       }
       this.name = name;
       this.precedence = precedence;
       this.associativity = associativity;
+      this.commutative = commutative;
       this.func = func;
       this.arity = func.length;
       this.inverse = inverse || null;
@@ -1936,12 +1958,12 @@
    */
 
   cached = {
-    division: new mathJS.Operation("divide", 1, "left", mathJS.pow, mathJS.root),
-    addition: new mathJS.Operation("plus", 1, "left", mathJS.Abstract.Operations.plus, mathJS.Abstract.Operations.minus),
-    subtraction: new mathJS.Operation("plus", 1, "left", mathJS.Abstract.Operations.minus, mathJS.Abstract.Operations.plus),
-    multiplication: new mathJS.Operation("times", 1, "left", mathJS.Abstract.Operations.times, mathJS.Abstract.Operations.divide),
-    exponentiation: new mathJS.Operation("pow", 1, "right", mathJS.pow, mathJS.root),
-    factorial: new mathJS.Operation("factorial", 10, "right", mathJS.factorial, null)
+    division: new mathJS.Operation("divide", 1, "left", false, mathJS.pow, mathJS.root),
+    addition: new mathJS.Operation("plus", 1, "left", true, mathJS.Abstract.Operations.plus, mathJS.Abstract.Operations.minus),
+    subtraction: new mathJS.Operation("plus", 1, "left", false, mathJS.Abstract.Operations.minus, mathJS.Abstract.Operations.plus),
+    multiplication: new mathJS.Operation("times", 1, "left", true, mathJS.Abstract.Operations.times, mathJS.Abstract.Operations.divide),
+    exponentiation: new mathJS.Operation("pow", 1, "right", false, mathJS.pow, mathJS.root),
+    factorial: new mathJS.Operation("factorial", 10, "right", false, mathJS.factorial, null)
   };
 
   mathJS.Operations = {
@@ -1979,6 +2001,10 @@
     Expression.parse = Expression.fromString;
 
     Expression.parser = new mathJS.Algorithms.ShuntingYard({
+      "!": {
+        precedence: 5,
+        associativity: "right"
+      },
       "^": {
         precedence: 4,
         associativity: "right"
