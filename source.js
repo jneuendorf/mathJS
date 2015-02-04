@@ -676,81 +676,6 @@
     }
   };
 
-  mathJS.Algorithms.ShuntingYard = (function() {
-    var CLASS;
-
-    CLASS = ShuntingYard;
-
-    ShuntingYard.specialOperators = {
-      "+": "#",
-      "-": "_"
-    };
-
-    function ShuntingYard(settings) {
-      var op, opSettings;
-      this.ops = "";
-      this.precedence = {};
-      this.associativity = {};
-      for (op in settings) {
-        opSettings = settings[op];
-        this.ops += op;
-        this.precedence[op] = opSettings.precedence;
-        this.associativity[op] = opSettings.associativity;
-      }
-    }
-
-    ShuntingYard.prototype.toPostfix = function(str) {
-      var associativity, i, o1, o2, ops, postfix, precedence, prevToken, stack, token, _i, _len;
-      str = str.replace(/\s+/g, "");
-      stack = [];
-      ops = this.ops;
-      precedence = this.precedence;
-      associativity = this.associativity;
-      postfix = "";
-      for (i = _i = 0, _len = str.length; _i < _len; i = ++_i) {
-        token = str[i];
-        if (token > "0" && token < "9") {
-          postfix += "" + token + " ";
-        } else if (__indexOf.call(ops, token) >= 0) {
-          o1 = token;
-          o2 = stack.last();
-          if (i === 0 || prevToken === "(") {
-            if (CLASS.specialOperators[token] != null) {
-              postfix += "" + CLASS.specialOperators[token] + " ";
-            }
-          } else {
-            while (__indexOf.call(ops, o2) >= 0 && (associativity[o1] === "left" && precedence[o1] <= precedence[o2]) || (associativity[o1] === "right" && precedence[o1] < precedence[o2])) {
-              postfix += "" + o2 + " ";
-              stack.pop();
-              o2 = stack.last();
-            }
-            stack.push(o1);
-          }
-        } else if (token === "(") {
-          stack.push(token);
-        } else if (token === ")") {
-          while (stack.last() !== "(") {
-            postfix += "" + (stack.pop()) + " ";
-          }
-          stack.pop();
-        }
-        prevToken = token;
-      }
-      while (stack.length > 0) {
-        postfix += "" + (stack.pop()) + " ";
-      }
-      return postfix;
-    };
-
-    ShuntingYard.prototype.toExpression = function(str) {
-      var postfix;
-      return postfix = this.toPostfix(str);
-    };
-
-    return ShuntingYard;
-
-  })();
-
   mathJS.Errors.CalculationExceedanceError = (function(_super) {
     __extends(CalculationExceedanceError, _super);
 
@@ -1380,6 +1305,10 @@
       return mathJS.sign(this.value);
     };
 
+    Number.prototype.negate = function() {
+      return this.fromPool(-this.value);
+    };
+
     Number.prototype.toInt = function() {
       return mathJS.Int.fromPool(mathJS.floor(this.value));
     };
@@ -1842,6 +1771,144 @@
 
   })(mathJS.Number);
 
+  mathJS.Algorithms.ShuntingYard = (function() {
+    var CLASS, isOperand;
+
+    CLASS = ShuntingYard;
+
+    ShuntingYard.specialOperators = {
+      "+": "#",
+      "-": "_"
+    };
+
+    ShuntingYard.init = function() {
+      return this.specialOperations = {
+        "#": mathJS.Operations.neutralPlus,
+        "_": mathJS.Operations.negate
+      };
+    };
+
+    function ShuntingYard(settings) {
+      var op, opSettings;
+      this.ops = "";
+      this.precedence = {};
+      this.associativity = {};
+      for (op in settings) {
+        opSettings = settings[op];
+        this.ops += op;
+        this.precedence[op] = opSettings.precedence;
+        this.associativity[op] = opSettings.associativity;
+      }
+    }
+
+    isOperand = function(token) {
+      return ("0" <= token && token <= "9");
+    };
+
+    ShuntingYard.prototype.toPostfix = function(str) {
+      var associativity, i, o1, o2, ops, postfix, precedence, prevToken, stack, token, _i, _len;
+      str = str.replace(/\s+/g, "");
+      stack = [];
+      ops = this.ops;
+      precedence = this.precedence;
+      associativity = this.associativity;
+      postfix = "";
+      postfix.postfix = true;
+      for (i = _i = 0, _len = str.length; _i < _len; i = ++_i) {
+        token = str[i];
+        if (isOperand(token)) {
+          postfix += "" + token + " ";
+        } else if (__indexOf.call(ops, token) >= 0) {
+          o1 = token;
+          o2 = stack.last();
+          if (i === 0 || prevToken === "(") {
+            if (CLASS.specialOperators[token] != null) {
+              postfix += "" + CLASS.specialOperators[token] + " ";
+            }
+          } else {
+            while (__indexOf.call(ops, o2) >= 0 && (associativity[o1] === "left" && precedence[o1] <= precedence[o2]) || (associativity[o1] === "right" && precedence[o1] < precedence[o2])) {
+              postfix += "" + o2 + " ";
+              stack.pop();
+              o2 = stack.last();
+            }
+            stack.push(o1);
+          }
+        } else if (token === "(") {
+          stack.push(token);
+        } else if (token === ")") {
+          while (stack.last() !== "(") {
+            postfix += "" + (stack.pop()) + " ";
+          }
+          stack.pop();
+        }
+        prevToken = token;
+      }
+      while (stack.length > 0) {
+        postfix += "" + (stack.pop()) + " ";
+      }
+      return postfix.trim();
+    };
+
+    ShuntingYard.prototype.toExpression = function(str) {
+      var endIdx, exp, i, idxOffset, j, k, op, ops, param, params, postfix, startIdx, token, v, _i, _len, _ref;
+      if (str.postfix == null) {
+        postfix = this.toPostfix(str);
+      } else {
+        postfix = str;
+      }
+      postfix = postfix.split(" ");
+      console.log(postfix);
+      ops = this.ops;
+      _ref = CLASS.specialOperators;
+      for (k in _ref) {
+        v = _ref[k];
+        ops += v;
+      }
+      i = 0;
+      while (postfix.length > 1) {
+        token = postfix[i];
+        idxOffset = 0;
+        if (__indexOf.call(ops, token) >= 0) {
+          if ((op = mathJS.Operations[token])) {
+            startIdx = i - op.arity;
+            endIdx = i;
+          } else if ((op = CLASS.specialOperations[token])) {
+            startIdx = i + 1;
+            endIdx = i + op.arity + 1;
+            idxOffset = -1;
+          }
+          params = postfix.slice(startIdx, endIdx);
+          startIdx += idxOffset;
+          for (j = _i = 0, _len = params.length; _i < _len; j = ++_i) {
+            param = params[j];
+            if (typeof param === "string") {
+              if (isOperand(param)) {
+                params[j] = new mathJS.Expression(parseFloat(param));
+              } else {
+                params[j] = new mathJS.Variable(param);
+              }
+            }
+          }
+          exp = (function(func, args, ctor) {
+            ctor.prototype = func.prototype;
+            var child = new ctor, result = func.apply(child, args);
+            return Object(result) === result ? result : child;
+          })(mathJS.Expression, [op].concat(__slice.call(params)), function(){});
+          postfix.splice(startIdx, params.length + 1, exp);
+          i = startIdx + 1;
+        } else if (isOperand(token)) {
+          postfix[i] = new mathJS.Expression(parseFloat(token));
+        } else {
+          postfix[i] = new mathJS.Variable(token);
+        }
+      }
+      return postfix.first;
+    };
+
+    return ShuntingYard;
+
+  })();
+
 
   /**
   * @class Variable
@@ -1942,6 +2009,18 @@
           y = new mathJS.Number(y);
         }
         return x.times(y);
+      },
+      negate: function(x) {
+        if (mathJS.Number.valueIsValid(x)) {
+          x = new mathJS.Number(x);
+        }
+        return x.negate();
+      },
+      unaryPlus: function(x) {
+        if (mathJS.Number.valueIsValid(x)) {
+          x = new mathJS.Number(x);
+        }
+        return x.clone();
       }
     }
   };
@@ -1963,7 +2042,9 @@
     subtraction: new mathJS.Operation("plus", 1, "left", false, mathJS.Abstract.Operations.minus, mathJS.Abstract.Operations.plus),
     multiplication: new mathJS.Operation("times", 1, "left", true, mathJS.Abstract.Operations.times, mathJS.Abstract.Operations.divide),
     exponentiation: new mathJS.Operation("pow", 1, "right", false, mathJS.pow, mathJS.root),
-    factorial: new mathJS.Operation("factorial", 10, "right", false, mathJS.factorial, null)
+    factorial: new mathJS.Operation("factorial", 10, "right", false, mathJS.factorial, mathJS.factorialInverse),
+    negate: new mathJS.Operation("negate", 11, "none", false, mathJS.Abstract.Operations.negate, mathJS.Abstract.Operations.negate),
+    unaryPlus: new mathJS.Operation("unaryPlus", 11, "none", false, mathJS.Abstract.Operations.unaryPlus, mathJS.Abstract.Operations.unaryPlus)
   };
 
   mathJS.Operations = {
@@ -1978,7 +2059,16 @@
     "divide": cached.division,
     "^": cached.exponentiation,
     "pow": cached.exponentiation,
-    "!": cached.factorial
+    "!": cached.factorial,
+    "negate": cached.negate,
+    "-u": cached.negate,
+    "u-": cached.negate,
+    "unaryMinus": cached.negate,
+    "neutralMinus": cached.negate,
+    "+u": cached.unaryPlus,
+    "u+": cached.unaryPlus,
+    "unaryPlus": cached.unaryPlus,
+    "neutralPlus": cached.unaryPlus
   };
 
 
@@ -2040,7 +2130,7 @@
         if (mathJS.Operations[operation] != null) {
           operation = mathJS.Operations[operation];
         } else {
-          throw new InvalidParametersError("Invalid operation string given: '" + operation + "'.");
+          throw new mathJS.Errors.InvalidParametersError("Invalid operation string given: '" + operation + "'.");
         }
       }
       if (expressions.first instanceof Array) {
@@ -3291,8 +3381,17 @@
 
   })(mathJS.Vector);
 
-  $(document).ready(function() {
-    return console.log("dom ready");
-  });
+  mathJS.Initializer = (function() {
+    function Initializer() {}
+
+    Initializer.start = function() {
+      return mathJS.Algorithms.ShuntingYard.init();
+    };
+
+    return Initializer;
+
+  })();
+
+  mathJS.Initializer.start();
 
 }).call(this);

@@ -52,6 +52,14 @@ mathJS.Abstract =
                 x = new mathJS.Number(x)
                 y = new mathJS.Number(y)
             return x.times(y)
+        negate: (x) ->
+            if mathJS.Number.valueIsValid(x)
+                x = new mathJS.Number(x)
+            return x.negate()
+        unaryPlus: (x) ->
+            if mathJS.Number.valueIsValid(x)
+                x = new mathJS.Number(x)
+            return x.clone()
 
 ###
 PRECEDENCE (top to bottom):
@@ -110,21 +118,45 @@ cached =
         "right"
         false
         mathJS.factorial
-        # TODO: inverse function
-        null
+        mathJS.factorialInverse
+    )
+    negate: new mathJS.Operation(
+        "negate"
+        11
+        "none"
+        false
+        mathJS.Abstract.Operations.negate
+        mathJS.Abstract.Operations.negate
+    )
+    unaryPlus: new mathJS.Operation(
+        "unaryPlus"
+        11
+        "none"
+        false
+        mathJS.Abstract.Operations.unaryPlus
+        mathJS.Abstract.Operations.unaryPlus
     )
 
 
 mathJS.Operations =
-    "+":        cached.addition
-    "plus":     cached.addition
-    "-":        cached.subtraction
-    "minus":    cached.subtraction
-    "*":        cached.multiplication
-    "times":    cached.multiplication
-    "/":        cached.division
-    ":":        cached.division
-    "divide":   cached.division
-    "^":        cached.exponentiation
-    "pow":      cached.exponentiation
-    "!":        cached.factorial
+    "+":            cached.addition
+    "plus":         cached.addition
+    "-":            cached.subtraction
+    "minus":        cached.subtraction
+    "*":            cached.multiplication
+    "times":        cached.multiplication
+    "/":            cached.division
+    ":":            cached.division
+    "divide":       cached.division
+    "^":            cached.exponentiation
+    "pow":          cached.exponentiation
+    "!":            cached.factorial
+    "negate":       cached.negate
+    "-u":           cached.negate
+    "u-":           cached.negate
+    "unaryMinus":   cached.negate
+    "neutralMinus": cached.negate
+    "+u":           cached.unaryPlus
+    "u+":           cached.unaryPlus
+    "unaryPlus":    cached.unaryPlus
+    "neutralPlus":  cached.unaryPlus

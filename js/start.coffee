@@ -1,3 +1,4 @@
-$(document).ready () ->
-    # window.g = new TD.Game()
-    console.log "dom ready"
+mathJS.Initializer.start()
+
+# $(document).ready () ->
+#     console.log "dom ready"

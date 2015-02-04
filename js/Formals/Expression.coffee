@@ -46,7 +46,7 @@ class mathJS.Expression
             if mathJS.Operations[operation]?
                 operation = mathJS.Operations[operation]
             else
-                throw new InvalidParametersError("Invalid operation string given: '#{operation}'.")
+                throw new mathJS.Errors.InvalidParametersError("Invalid operation string given: '#{operation}'.")
 
         # if constructor was called from static .new()
         if expressions.first instanceof Array

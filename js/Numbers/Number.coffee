@@ -68,8 +68,6 @@ class mathJS.Number extends mixOf mathJS.Orderable, mathJS.Poolable, mathJS.Pars
             return n
         return new mathJS.Number(n)
 
-
-
     ###########################################################################
     # CONSTRUCTOR
     constructor: (value) ->
@@ -316,6 +314,9 @@ class mathJS.Number extends mixOf mathJS.Orderable, mathJS.Poolable, mathJS.Pars
 
     sign: () ->
         return mathJS.sign @value
+
+    negate: () ->
+        return @fromPool -@value
 
     toInt: () ->
         return mathJS.Int.fromPool mathJS.floor(@value)

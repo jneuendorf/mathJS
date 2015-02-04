@@ -6,7 +6,6 @@ js/prototyping
 js/mathJS
 js/settings
 
-js/Algorithms/ShuntingYard
 
 js/Errors/SimpleErrors
 
@@ -22,6 +21,8 @@ js/Numbers/Float
 js/Numbers/Fraction
 js/Numbers/Int
 js/Numbers/Complex
+
+js/Algorithms/ShuntingYard
 
 js/Formals/Variable
 js/Formals/Operation
@@ -40,5 +41,8 @@ js/Function
 js/Calculus/Integral
 
 js/LinearAlgebra/Vector
+
+
+js/Initializer
 
 js/start
