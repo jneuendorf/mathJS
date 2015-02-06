@@ -19,21 +19,8 @@ class mathJS.Set extends mathJS.AbstractSet
     # CONSTRUCTOR
     constructor: (parameters...) ->
         @discreteSet = new mathJS.DiscreteSet()
+        @conditionalSet = new mathJS.ConditionalSet()
         @_size = null
-
-        # Object.defineProperties @, {
-        #     _size:
-        #         enumerable: false
-        #     # size:
-        #     #     get: () ->
-        #     #         if @_size?
-        #     #             return @_size
-        #     #         return @getSize()
-        #     #     set: () ->
-        #     #         if DEBUG
-        #     #             console.warn "The size of a set can't be set"
-        #     #         return @
-        # }
 
         # ANALYSE PARAMETERS
         # nothing passed => empty set
