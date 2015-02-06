@@ -54,16 +54,20 @@ class mathJS.Expression
 
         # just 1 parameter => constant/value or hash given
         if expressions.length is 0
-            # TODO: Variables
             # constant/variable value given => leaf in expression tree
             if mathJS.Number.valueIsValid(operation)
                 @operation = null
                 @expressions = [new mathJS.Number(operation)]
-            else if operation instanceof mathJS.Variable
-                @operation = null
-                @expressions = [operation]
             else
-                throw new mathJS.Errors.InvalidParametersError("...")
+                if operation instanceof mathJS.Variable
+                    @operation = null
+                    @expressions = [operation]
+                # variable string. eg. "x"
+                else
+                    @operation = null
+                    @expressions = [new mathJS.Variable(operation)]
+            # else
+            #     throw new mathJS.Errors.InvalidParametersError("...")
 
         else if operation.arity is expressions.length
             @operation = operation
@@ -71,6 +75,51 @@ class mathJS.Expression
         else
             throw new mathJS.Errors.InvalidArityError("Invalid number of parameters (#{expressions.length}) for Operation '#{operation.name}'. Expected number of parameters is #{operation.arity}.")
 
+    ###*
+    * This method tests for the equality of structure. So 2*3x does not equal 6x!
+    * For that see mathEquals().
+    * @method equals
+    *###
+    equals: (expression) ->
+        # immediate return if different number of sub expressions
+        if @expressions.length isnt expression.expressions.length
+            return false
+
+        # leaf -> anchor
+        if not @operation?
+            return not expression.operation? and expression.expressions.first.equals(@expressions.first)
+
+        # order of expressions doesn't matter
+        if @operation.commutative is true
+            doneExpressions = []
+            for exp, i in @expressions
+                res = false
+                for x, j in expression.expressions when j not in doneExpressions and x.equals(exp)
+                    doneExpressions.push j
+                    res = true
+                    break
+
+                # exp does not equals any of the expressions => return false
+                if not res
+                    return false
+
+            return true
+        # order of expressions matters
+        else
+            # res = true
+            for e1, i in @expressions
+                e2 = expression.expressions[i]
+                # res = res and e1.equals(e2)
+                if not e1.equals(e2)
+                    return false
+            # return res
+            return true
+
+    ###*
+    * This method tests for the logical/mathematical equality of 2 expressions.
+    *###
+    mathEquals: (expression) ->
+        return @simplify().equals expression.simplify()
 
     ###*
     * @method eval
@@ -101,7 +150,10 @@ class mathJS.Expression
         return @operation.eval(args)
 
     simplify: () ->
-        # TODO
+        # simplify numeric values aka. non-variable arithmetics
+        evaluated = @eval()
+        # actual simplification: less ops!
+        # TODO: gather simplification patterns
         return @
 
     if DEBUG

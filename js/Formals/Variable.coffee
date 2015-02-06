@@ -14,8 +14,20 @@ class mathJS.Variable extends mathJS.Evaluable
         @name = name
         @type = type
 
+    equals: (variable) ->
+        return @type is variable.type
+
     plus: (n) ->
         return new mathJS.Expression("+", @, n)
+
+    minus: (n) ->
+        return new mathJS.Expression("-", @, n)
+
+    times: (n) ->
+        return new mathJS.Expression("*", @, n)
+
+    divide: (n) ->
+        return new mathJS.Expression("/", @, n)
 
     eval: (values) ->
         if values? and (val = values[@name])?

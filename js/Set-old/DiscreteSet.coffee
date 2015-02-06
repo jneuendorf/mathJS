@@ -14,10 +14,6 @@ class mathJS.DiscreteSet extends mathJS.Set
     ###########################################################################
     # CONSTRUCTOR
     constructor: (elems = []) ->
-        if arguments.callee.caller isnt mathJS.Set
-            throw new mathJS.Errors.AbstractInstantiationError("mathJS.DiscreteSet can\'t be instantiated directly! Use mathJS.Set instead!")
-
-
         @leftBoundary = null
         @rightBoundary = null
         @condition = null
@@ -64,14 +60,6 @@ class mathJS.DiscreteSet extends mathJS.Set
 
     isSupersetOf: (set) ->
         return set.isSubsetOf @
-
-    add: (elem) ->
-        for e in @elems when e is elem or e.equals(elem)
-            return @
-
-        @elems.push elem
-        return @
-
 
     clone: () ->
         return new mathJS.DiscreteSet(@elems)

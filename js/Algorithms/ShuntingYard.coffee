@@ -25,11 +25,14 @@ class mathJS.Algorithms.ShuntingYard
             @associativity[op] = opSettings.associativity
 
     isOperand = (token) ->
-        return "0" <= token <= "9"
+        return mathJS.isNum(token)
 
     toPostfix: (str) ->
         # remove spaces
         str = str.replace /\s+/g, ""
+        # make implicit multiplication explicit (3x=> 3*x, xy => x*y)
+        # TODO: what if a variable/function has more than 1 character: 3*abs(-3)
+        str = str.replace /(\d+|\w)(\w)/g,"$1*$2"
 
         stack = []
         ops = @ops
@@ -40,11 +43,8 @@ class mathJS.Algorithms.ShuntingYard
         postfix.postfix = true
 
         for token, i in str
-            # if token is operand (here limited to 0 <= x <= 9)
-            if isOperand(token)
-                postfix += "#{token} "
             # if token is an operator
-            else if token in ops
+            if token in ops
                 o1 = token
                 o2 = stack.last()
 
@@ -77,6 +77,9 @@ class mathJS.Algorithms.ShuntingYard
                     postfix += "#{stack.pop()} "
                 # pop (, but not onto the output queue
                 stack.pop()
+            # token is an operand or a variable
+            else
+                postfix += "#{token} "
 
             prevToken = token
 
@@ -88,17 +91,12 @@ class mathJS.Algorithms.ShuntingYard
         return postfix.trim()
 
     toExpression: (str) ->
-        # "-2*(+3)! + (-5) + (+4)"
         if not str.postfix?
             postfix = @toPostfix(str)
         else
             postfix = str
-        # e.g. "_ 2 # 3 ! * _ 5 + # 4 + "
 
         postfix = postfix.split " "
-        # ["_", "2", "#", "3", "!", "*", "_", "5", "+", "#", "4", "+", ""]
-
-        console.log postfix
 
         # gather all operators
         ops = @ops
@@ -116,12 +114,10 @@ class mathJS.Algorithms.ShuntingYard
                 if (op = mathJS.Operations[token])
                     startIdx = i - op.arity
                     endIdx = i
-                    # params = postfix.slice(i - op.arity - 1, i - 1)
                 else if (op = CLASS.specialOperations[token])
                     startIdx = i + 1
                     endIdx = i + op.arity + 1
                     idxOffset = -1
-                    # params = postfix.slice(i + 1, i + op.arity + 1)
 
                 params = postfix.slice(startIdx, endIdx)
 
@@ -144,9 +140,9 @@ class mathJS.Algorithms.ShuntingYard
 
             # constants
             else if isOperand(token)
-                postfix[i] = new mathJS.Expression(parseFloat(token))
+                postfix[i++] = new mathJS.Expression(parseFloat(token))
             # variables
             else
-                postfix[i] = new mathJS.Variable(token)
+                postfix[i++] = new mathJS.Variable(token)
 
         return postfix.first

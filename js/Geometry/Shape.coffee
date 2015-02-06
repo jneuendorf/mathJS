@@ -1,4 +1,4 @@
 class mathJS.Shape
 
-  constructor: (args) ->
-    # body...
+    constructor: () ->
+        # body...

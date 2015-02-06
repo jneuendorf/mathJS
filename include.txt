@@ -29,11 +29,14 @@ js/Formals/Operation
 js/Formals/Expression
 js/Formals/Equation
 
-js/Set/SetSpec
+js/Logic/Predicate
+
+# js/Set/SetSpec
+js/Set/AbstractSet
 js/Set/Set
-# js/Set/EmptySet
 js/Set/DiscreteSet
 js/Set/ConditionalSet
+# js/Set/EmptySet
 js/Set/Domains/N
 
 js/Function
@@ -41,7 +44,6 @@ js/Function
 js/Calculus/Integral
 
 js/LinearAlgebra/Vector
-
 
 js/Initializer
 

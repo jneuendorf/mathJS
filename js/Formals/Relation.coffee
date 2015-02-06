@@ -1,9 +1,8 @@
-class mathJS.Equation
+class mathJS.Relation
 
-    constructor: (left, right) ->
+    constructor: (left, right, operation) ->
         if left.mathEquals(right)
             @left = left
             @right = right
         else
-            # TODO: only if no variables are contained
             throw new mathJS.Errors.InvalidParametersError("The 2 expressions are not (mathematically) equal!")

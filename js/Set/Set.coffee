@@ -1,94 +1,54 @@
 ###*
 * @class Set
 * @constructor
-* @param {Object} boundarySettings
-* @param {Function} condition
-* Optional. If given, the created Set will bounded by that condition
-* @param {Array} elems
-* Optional. This parameter serves as elements for the new Set. They will be in the new Set immediately.
-* It is an array of comparable elements (that means if `mathJS.isComparable() === true`); non-comparables will be ignored.
+* @param {mixed} specifications
+* To create an empty set pass no parameters.
+* To create a discrete set list the elements.
+* To create a set from set-builder notation pass the parameters must have the following types:
+* mathJS.Expression, [mathJS.Domains], mathJS.Predicate
 *###
-class mathJS.Set extends mixOf mathJS.Poolable, mathJS.Comparable, mathJS.Parseable
+class mathJS.Set extends mathJS.AbstractSet
+# class mathJS.Set extends mixOf mathJS.Poolable, mathJS.Comparable, mathJS.Parseable
     ###########################################################################
     # STATIC
-
-    # @disjoint: (set1, set2) ->
-    #     return set1.intersects set2
-
-    # predefined set conditions (should be used!)
-    # @isInt: new mathJS.SetSpec(
-    #     (x) ->
-    #         return new mathJS.Int(x).equals(x)
-    #     false
-    # )
-    # @range: new mathJS.SetSpec(
-    #     (x) ->
-    #         return new mathJS.Int(x).equals(x)
-    #     false
-    # )
-
 
     @_isSet = (set) ->
         return set instanceof mathJS.Set or set.instanceof(mathJS.Set)
 
     ###########################################################################
     # CONSTRUCTOR
-    # TODO: make constructor to be able to take 3 configurations of parameters (set, ConditionalSet, DiscreteSet)
-    constructor: (boundarySettings, condition, elems = []) ->
-        # nothing passed => assume a domain is created
-        if arguments.length is 0
-            return
+    constructor: (parameters...) ->
+        @discreteSet = new mathJS.DiscreteSet()
+        @_size = null
 
+        # Object.defineProperties @, {
+        #     _size:
+        #         enumerable: false
+        #     # size:
+        #     #     get: () ->
+        #     #         if @_size?
+        #     #             return @_size
+        #     #         return @getSize()
+        #     #     set: () ->
+        #     #         if DEBUG
+        #     #             console.warn "The size of a set can't be set"
+        #     #         return @
+        # }
 
-        if not boundarySettings?
-            boundarySettings =
-                leftBoundary: null
-                rightBoundary: null
+        # ANALYSE PARAMETERS
+        # nothing passed => empty set
+        if parameters.length is 0
+            # @_size = 0
+            true
 
-        @leftBoundary = boundarySettings.leftBoundary
-        @rightBoundary = boundarySettings.rightBoundary
-
-        if condition instanceof Function
-            @condition = condition
+        # setset-builder notation
+        else if parameters.length is 3 and parameters.second instanceof Array
+            console.log "set builder"
+        # list of set elements -> discrete
         else
-            @condition = null
+            for param in parameters
+                @discreteSet.add param
 
-
-        @_discreteSet = new mathJS.DiscreteSet()
-        @_conditionalSet = new mathJS.ConditionalSet()
-
-        for elem in elems when mathJS.isComparable elem
-            # discrete set => union w/ discrete set
-            if elem instanceof mathJS.DiscreteSet or elem.instanceof?(mathJS.DiscreteSet)
-                @_discreteSet = @_discreteSet.union elem
-            # conditional set  => union w/ conditional set
-            else if elem instanceof mathJS.ConditionalSet or elem.instanceof?(mathJS.ConditionalSet)
-                @_conditionalSet = @_conditionalSet.union elem
-            # mathJS.Number or primitive => union w/ discrete set
-            else
-                @_discreteSet = @_discreteSet.union new mathJS.DiscreteSet( [elem] )
-
-        # console.log ">>", @_discreteSet, @_conditionalSet
-
-        Object.defineProperties @, {
-            _universe:
-                value: null
-                enumerable: false
-                writable: true
-            universe:
-                get: () ->
-                    return @_universe
-                set: (universe) ->
-                    if universe instanceof mathJS.Set or universe is null
-                        @_universe = universe
-                    return @
-                enumerable: true
-            size:
-                value: @_discreteSet.size + @_conditionalSet.size
-                enumerable: true
-                writable: false
-                configurable: true # for overwriting in case of in-place union
-        }
 
     ###########################################################################
     # PRIVATE METHODS
@@ -98,6 +58,10 @@ class mathJS.Set extends mixOf mathJS.Poolable, mathJS.Comparable, mathJS.Parsea
 
     ###########################################################################
     # PUBLIC METHODS
+    size: () ->
+        if @_size?
+            @_size = @discreteSet.size() + @conditionalSet.size()
+        return @_size
 
     clone: () ->
         # TODO
@@ -127,8 +91,6 @@ class mathJS.Set extends mixOf mathJS.Poolable, mathJS.Comparable, mathJS.Parsea
                     return true
         return false
 
-    has: @::contains
-
     union: (set) ->
         # TODO: how to avoid doubles?
         # see if the set matches any already existing set
@@ -142,15 +104,6 @@ class mathJS.Set extends mixOf mathJS.Poolable, mathJS.Comparable, mathJS.Parsea
 
         return @
 
-    intersect: (set) ->
-        return
-
-    intersects: (set) ->
-        return @intersection.size() > 0
-
-    disjoint: (set) ->
-        return @intersection.size() is 0
-
     complement: () ->
         if @universe?
             return asdf
@@ -163,19 +116,3 @@ class mathJS.Set extends mixOf mathJS.Poolable, mathJS.Comparable, mathJS.Parsea
     cartesianProduct: (set) ->
 
     times: @::cartesianProduct
-
-    # size: () ->
-    #     return @_discreteSet.size + @_conditionalSet.size
-
-    isEmpty: () ->
-        return @size is 0
-
-    # cardinality: @::size
-
-    # makeToDiscreteSet: () ->
-    #     @.__proto__ = mathJS.DiscreteSet.prototype
-    #     return @
-    #
-    # makeToConditionalSet: () ->
-    #     @.__proto__ = mathJS.ConditionalSet.prototype
-    #     return @

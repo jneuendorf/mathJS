@@ -49,7 +49,23 @@ Array::average = () ->
 # make alias
 Array::median = Array::average
 
+
 Array::clone = Array::slice
+# TODO: from http://jsperf.com/array-prototype-slice-call-vs-slice-call/17
+# function nonnative_slice(item, start){
+#   start = ~~start;
+#   var
+#     len = item.length, i, newArray;
+#
+#   newArray = new Array(len - start);
+#
+#   for (i = start; i < len; i++){
+#     newArray[i - start] = item[i];
+#   }
+#
+#   return newArray;
+# }
+
 
 Array::remove = (elem) ->
     idx = @indexOf elem
@@ -73,6 +89,18 @@ Object.defineProperties Array::, {
             return @[0]
         set: (val) ->
             @[0] = val
+            return @
+    second:
+        get: () ->
+            return @[1]
+        set: (val) ->
+            @[1] = val
+            return @
+    third:
+        get: () ->
+            return @[2]
+        set: (val) ->
+            @[2] = val
             return @
 }
 
@@ -211,6 +239,9 @@ String::camelToSnakeCase = () ->
         prevChar = char
 
     return res
+
+String::lower = String::toLowerCase
+String::upper = String::toUpperCase
 
 #######################################################################
 # OBJECT

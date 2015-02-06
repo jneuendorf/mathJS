@@ -98,7 +98,23 @@ Array::average = () ->
 # make alias
 Array::median = Array::average
 
+
 Array::clone = Array::slice
+# TODO: from http://jsperf.com/array-prototype-slice-call-vs-slice-call/17
+# function nonnative_slice(item, start){
+#   start = ~~start;
+#   var
+#     len = item.length, i, newArray;
+#
+#   newArray = new Array(len - start);
+#
+#   for (i = start; i < len; i++){
+#     newArray[i - start] = item[i];
+#   }
+#
+#   return newArray;
+# }
+
 
 Array::remove = (elem) ->
     idx = @indexOf elem
@@ -122,6 +138,18 @@ Object.defineProperties Array::, {
             return @[0]
         set: (val) ->
             @[0] = val
+            return @
+    second:
+        get: () ->
+            return @[1]
+        set: (val) ->
+            @[1] = val
+            return @
+    third:
+        get: () ->
+            return @[2]
+        set: (val) ->
+            @[2] = val
             return @
 }
 
@@ -260,6 +288,9 @@ String::camelToSnakeCase = () ->
         prevChar = char
 
     return res
+
+String::lower = String::toLowerCase
+String::upper = String::toUpperCase
 
 #######################################################################
 # OBJECT
@@ -571,6 +602,8 @@ class mathJS.Errors.InvalidVariableError extends Error
 class mathJS.Errors.InvalidParametersError extends Error
 
 class mathJS.Errors.InvalidArityError extends Error
+
+class mathJS.Errors.AbstractInstantiationError extends Error
 # end js/Errors/SimpleErrors.coffee
 
 # from js/interfaces/Comparable.coffee
@@ -1432,11 +1465,14 @@ class mathJS.Algorithms.ShuntingYard
             @associativity[op] = opSettings.associativity
 
     isOperand = (token) ->
-        return "0" <= token <= "9"
+        return mathJS.isNum(token)
 
     toPostfix: (str) ->
         # remove spaces
         str = str.replace /\s+/g, ""
+        # make implicit multiplication explicit (3x=> 3*x, xy => x*y)
+        # TODO: what if a variable/function has more than 1 character: 3*abs(-3)
+        str = str.replace /(\d+|\w)(\w)/g,"$1*$2"
 
         stack = []
         ops = @ops
@@ -1447,11 +1483,8 @@ class mathJS.Algorithms.ShuntingYard
         postfix.postfix = true
 
         for token, i in str
-            # if token is operand (here limited to 0 <= x <= 9)
-            if isOperand(token)
-                postfix += "#{token} "
             # if token is an operator
-            else if token in ops
+            if token in ops
                 o1 = token
                 o2 = stack.last()
 
@@ -1484,6 +1517,9 @@ class mathJS.Algorithms.ShuntingYard
                     postfix += "#{stack.pop()} "
                 # pop (, but not onto the output queue
                 stack.pop()
+            # token is an operand or a variable
+            else
+                postfix += "#{token} "
 
             prevToken = token
 
@@ -1495,17 +1531,12 @@ class mathJS.Algorithms.ShuntingYard
         return postfix.trim()
 
     toExpression: (str) ->
-        # "-2*(+3)! + (-5) + (+4)"
         if not str.postfix?
             postfix = @toPostfix(str)
         else
             postfix = str
-        # e.g. "_ 2 # 3 ! * _ 5 + # 4 + "
 
         postfix = postfix.split " "
-        # ["_", "2", "#", "3", "!", "*", "_", "5", "+", "#", "4", "+", ""]
-
-        console.log postfix
 
         # gather all operators
         ops = @ops
@@ -1523,12 +1554,10 @@ class mathJS.Algorithms.ShuntingYard
                 if (op = mathJS.Operations[token])
                     startIdx = i - op.arity
                     endIdx = i
-                    # params = postfix.slice(i - op.arity - 1, i - 1)
                 else if (op = CLASS.specialOperations[token])
                     startIdx = i + 1
                     endIdx = i + op.arity + 1
                     idxOffset = -1
-                    # params = postfix.slice(i + 1, i + op.arity + 1)
 
                 params = postfix.slice(startIdx, endIdx)
 
@@ -1551,31 +1580,10 @@ class mathJS.Algorithms.ShuntingYard
 
             # constants
             else if isOperand(token)
-                postfix[i] = new mathJS.Expression(parseFloat(token))
+                postfix[i++] = new mathJS.Expression(parseFloat(token))
             # variables
             else
-                postfix[i] = new mathJS.Variable(token)
-
-        # done = false
-        #
-        # while not done
-        #     for token, i in postfix
-        #         if token in ops
-        #             if (op = mathJS.Operations[token])
-        #                 params = postfix.slice(i - op.arity, i - 1)
-        #             else if (op = CLASS.specialOperations[token])
-        #                 params = postfix.slice(i + 1, i + op.arity)
-        #
-        #             # take parameters according to op
-        #             if op.associativity is "left"
-        #                 true
-        #             else if op.associativity is "right"
-        #                 true
-        #         else if isOperand(token)
-        #             postfix += "#{token} "
-        #         # if token is an operator
-        #
-        #         done = true
+                postfix[i++] = new mathJS.Variable(token)
 
         return postfix.first
 # end js/Algorithms/ShuntingYard.coffee
@@ -1597,8 +1605,20 @@ class mathJS.Variable extends mathJS.Evaluable
         @name = name
         @type = type
 
+    equals: (variable) ->
+        return @type is variable.type
+
     plus: (n) ->
         return new mathJS.Expression("+", @, n)
+
+    minus: (n) ->
+        return new mathJS.Expression("-", @, n)
+
+    times: (n) ->
+        return new mathJS.Expression("*", @, n)
+
+    divide: (n) ->
+        return new mathJS.Expression("/", @, n)
 
     eval: (values) ->
         if values? and (val = values[@name])?
@@ -1831,16 +1851,20 @@ class mathJS.Expression
 
         # just 1 parameter => constant/value or hash given
         if expressions.length is 0
-            # TODO: Variables
             # constant/variable value given => leaf in expression tree
             if mathJS.Number.valueIsValid(operation)
                 @operation = null
                 @expressions = [new mathJS.Number(operation)]
-            else if operation instanceof mathJS.Variable
-                @operation = null
-                @expressions = [operation]
             else
-                throw new mathJS.Errors.InvalidParametersError("...")
+                if operation instanceof mathJS.Variable
+                    @operation = null
+                    @expressions = [operation]
+                # variable string. eg. "x"
+                else
+                    @operation = null
+                    @expressions = [new mathJS.Variable(operation)]
+            # else
+            #     throw new mathJS.Errors.InvalidParametersError("...")
 
         else if operation.arity is expressions.length
             @operation = operation
@@ -1848,6 +1872,51 @@ class mathJS.Expression
         else
             throw new mathJS.Errors.InvalidArityError("Invalid number of parameters (#{expressions.length}) for Operation '#{operation.name}'. Expected number of parameters is #{operation.arity}.")
 
+    ###*
+    * This method tests for the equality of structure. So 2*3x does not equal 6x!
+    * For that see mathEquals().
+    * @method equals
+    *###
+    equals: (expression) ->
+        # immediate return if different number of sub expressions
+        if @expressions.length isnt expression.expressions.length
+            return false
+
+        # leaf -> anchor
+        if not @operation?
+            return not expression.operation? and expression.expressions.first.equals(@expressions.first)
+
+        # order of expressions doesn't matter
+        if @operation.commutative is true
+            doneExpressions = []
+            for exp, i in @expressions
+                res = false
+                for x, j in expression.expressions when j not in doneExpressions and x.equals(exp)
+                    doneExpressions.push j
+                    res = true
+                    break
+
+                # exp does not equals any of the expressions => return false
+                if not res
+                    return false
+
+            return true
+        # order of expressions matters
+        else
+            # res = true
+            for e1, i in @expressions
+                e2 = expression.expressions[i]
+                # res = res and e1.equals(e2)
+                if not e1.equals(e2)
+                    return false
+            # return res
+            return true
+
+    ###*
+    * This method tests for the logical/mathematical equality of 2 expressions.
+    *###
+    mathEquals: (expression) ->
+        return @simplify().equals expression.simplify()
 
     ###*
     * @method eval
@@ -1878,7 +1947,10 @@ class mathJS.Expression
         return @operation.eval(args)
 
     simplify: () ->
-        # TODO
+        # simplify numeric values aka. non-variable arithmetics
+        evaluated = @eval()
+        # actual simplification: less ops!
+        # TODO: gather simplification patterns
         return @
 
     if DEBUG
@@ -1910,153 +1982,125 @@ class mathJS.Expression
 # from js/Formals/Equation.coffee
 class mathJS.Equation
 
-    constructor: (expression1, expression2) ->
-        @expression1 = expression1
-        @expression2 = expression2
+    constructor: (left, right) ->
+        if left.mathEquals(right)
+            @left = left
+            @right = right
+        else
+            # TODO: only if no variables are contained
+            throw new mathJS.Errors.InvalidParametersError("The 2 expressions are not (mathematically) equal!")
 # end js/Formals/Equation.coffee
 
-# from js/Set/SetSpec.coffee
-class mathJS.SetSpec
+# from js/Logic/Predicate.coffee
+class mathJS.Predicate
 
-    # f is mapping (bijection to N)
-    constructor: (isFinite, f, f2) ->
-        if isFinite is true or isFinite is "true"
-            @isFinite = true
-            @checker = f
-            @generator = f2
+    constructor: () ->
+# end js/Logic/Predicate.coffee
 
-        else if isFinite is false or isFinite is "false"
-            @checker = f
-            if isFinite is true
-                @generator = generator
-        else
-            debugger
-            throw new Error("mathJS: Expected (Function, boolean) for SetSpec! Given #{check} and #{isFinite}")
+# from js/Set/AbstractSet.coffee
+class mathJS.AbstractSet
 
-class mathJS.SetBuilder
+    constructor: () ->
+        if arguments.callee.caller isnt mathJS.Set
+            throw new mathJS.Errors.AbstractInstantiationError("mathJS.AbstractSet can\'t be instantiated!")
 
-    constructor: (expression, domain, conditions...) ->
-        # try to evaluate conditions??
-        
+    size: () ->
+
+    equals: (set) ->
+
+    contains: (x) ->
+        return @_c(x)
+
+    clone: () ->
+
+    union: (set) ->
+
+    intersects: (set) ->
+        return not @disjoint(set)
+
+    intersection: (set) ->
+
+    disjoint: (set) ->
+        return @intersection(set).size() is 0
+
+    isSubsetOf: (set) ->
+
+    isSupersetOf: (set) ->
+
+    complement: () ->
+
+    without: (set) ->
+
+    isEmpty: () ->
+        return @size() is 0
+
+    cartesianProduct: (set) ->
 
 
-###
-{7,3,15,31}
-{a,b,c}
-{1,2,3,...,100}
-{0,1,2,...}
-
-{x : x in R and x = x^2 } or {x | x in R and x = x^2 }
-{ (x,y) | 0 < y < f(x) }
-{ (t,2t+1) | t in Z }
-
-[a,b] = { x | x in R and a <= x <= b }
-
-equal predicates <=> equal sets (if expressions (in front) also equal)!!!
-{ x | x in R and |x| = 1 } <=> { x | x in R and x^2 = 1 }
-
-
-dicht oder nicht?
-nicht dicht + bounded => diskret
-N -> left boundary
-mathJS.Root class for difference Q <-> R
-
-
-###
-# end js/Set/SetSpec.coffee
+    # ALIASES
+    except: @without
+    minus: @without
+    difference: @without
+    supersetOf: @isSupersetOf
+    subsetOf: @isSubsetOf
+    has: @contains
+    cardinality: @size
+    times: @cartesianProduct
+# end js/Set/AbstractSet.coffee
 
 # from js/Set/Set.coffee
 ###*
 * @class Set
 * @constructor
-* @param {Object} boundarySettings
-* @param {Function} condition
-* Optional. If given, the created Set will bounded by that condition
-* @param {Array} elems
-* Optional. This parameter serves as elements for the new Set. They will be in the new Set immediately.
-* It is an array of comparable elements (that means if `mathJS.isComparable() === true`); non-comparables will be ignored.
+* @param {mixed} specifications
+* To create an empty set pass no parameters.
+* To create a discrete set list the elements.
+* To create a set from set-builder notation pass the parameters must have the following types:
+* mathJS.Expression, [mathJS.Domains], mathJS.Predicate
 *###
-class mathJS.Set extends mixOf mathJS.Poolable, mathJS.Comparable, mathJS.Parseable
+class mathJS.Set extends mathJS.AbstractSet
+# class mathJS.Set extends mixOf mathJS.Poolable, mathJS.Comparable, mathJS.Parseable
     ###########################################################################
     # STATIC
-
-    # @disjoint: (set1, set2) ->
-    #     return set1.intersects set2
-
-    # predefined set conditions (should be used!)
-    # @isInt: new mathJS.SetSpec(
-    #     (x) ->
-    #         return new mathJS.Int(x).equals(x)
-    #     false
-    # )
-    # @range: new mathJS.SetSpec(
-    #     (x) ->
-    #         return new mathJS.Int(x).equals(x)
-    #     false
-    # )
-
 
     @_isSet = (set) ->
         return set instanceof mathJS.Set or set.instanceof(mathJS.Set)
 
     ###########################################################################
     # CONSTRUCTOR
-    # TODO: make constructor to be able to take 3 configurations of parameters (set, ConditionalSet, DiscreteSet)
-    constructor: (boundarySettings, condition, elems = []) ->
-        # nothing passed => assume a domain is created
-        if arguments.length is 0
-            return
-
-
-        if not boundarySettings?
-            boundarySettings =
-                leftBoundary: null
-                rightBoundary: null
-
-        @leftBoundary = boundarySettings.leftBoundary
-        @rightBoundary = boundarySettings.rightBoundary
-
-        if condition instanceof Function
-            @condition = condition
-        else
-            @condition = null
-
-
-        @_discreteSet = new mathJS.DiscreteSet()
-        @_conditionalSet = new mathJS.ConditionalSet()
-
-        for elem in elems when mathJS.isComparable elem
-            # discrete set => union w/ discrete set
-            if elem instanceof mathJS.DiscreteSet or elem.instanceof?(mathJS.DiscreteSet)
-                @_discreteSet = @_discreteSet.union elem
-            # conditional set  => union w/ conditional set
-            else if elem instanceof mathJS.ConditionalSet or elem.instanceof?(mathJS.ConditionalSet)
-                @_conditionalSet = @_conditionalSet.union elem
-            # mathJS.Number or primitive => union w/ discrete set
-            else
-                @_discreteSet = @_discreteSet.union new mathJS.DiscreteSet( [elem] )
-
-        # console.log ">>", @_discreteSet, @_conditionalSet
+    constructor: (parameters...) ->
+        @discreteSet = new mathJS.DiscreteSet()
 
         Object.defineProperties @, {
-            _universe:
-                value: null
+            _size:
                 enumerable: false
-                writable: true
-            universe:
-                get: () ->
-                    return @_universe
-                set: (universe) ->
-                    if universe instanceof mathJS.Set or universe is null
-                        @_universe = universe
-                    return @
-                enumerable: true
-            size:
-                value: @_discreteSet.size + @_conditionalSet.size
-                enumerable: true
-                writable: false
-                configurable: true # for overwriting in case of in-place union
+            # size:
+            #     get: () ->
+            #         if @_size?
+            #             return @_size
+            #         return @getSize()
+            #     set: () ->
+            #         if DEBUG
+            #             console.warn "The size of a set can't be set"
+            #         return @
         }
+
+        @_size = null
+
+        # ANALYSE PARAMETERS
+        # nothing passed => empty set
+        if parameters.length is 0
+            # @_size = 0
+            true
+
+        # setset-builder notation
+        else if parameters.length is 3 and parameters.second instanceof Array
+            console.log "set builder"
+        # list of set elements -> discrete
+        else
+            for param in parameters
+                @discreteSet.add param
+
 
     ###########################################################################
     # PRIVATE METHODS
@@ -2066,7 +2110,6 @@ class mathJS.Set extends mixOf mathJS.Poolable, mathJS.Comparable, mathJS.Parsea
 
     ###########################################################################
     # PUBLIC METHODS
-
     clone: () ->
         # TODO
         throw new Error("todo!")
@@ -2095,8 +2138,6 @@ class mathJS.Set extends mixOf mathJS.Poolable, mathJS.Comparable, mathJS.Parsea
                     return true
         return false
 
-    has: @::contains
-
     union: (set) ->
         # TODO: how to avoid doubles?
         # see if the set matches any already existing set
@@ -2110,15 +2151,6 @@ class mathJS.Set extends mixOf mathJS.Poolable, mathJS.Comparable, mathJS.Parsea
 
         return @
 
-    intersect: (set) ->
-        return
-
-    intersects: (set) ->
-        return @intersection.size() > 0
-
-    disjoint: (set) ->
-        return @intersection.size() is 0
-
     complement: () ->
         if @universe?
             return asdf
@@ -2131,22 +2163,6 @@ class mathJS.Set extends mixOf mathJS.Poolable, mathJS.Comparable, mathJS.Parsea
     cartesianProduct: (set) ->
 
     times: @::cartesianProduct
-
-    # size: () ->
-    #     return @_discreteSet.size + @_conditionalSet.size
-
-    isEmpty: () ->
-        return @size is 0
-
-    # cardinality: @::size
-
-    # makeToDiscreteSet: () ->
-    #     @.__proto__ = mathJS.DiscreteSet.prototype
-    #     return @
-    #
-    # makeToConditionalSet: () ->
-    #     @.__proto__ = mathJS.ConditionalSet.prototype
-    #     return @
 # end js/Set/Set.coffee
 
 # from js/Set/DiscreteSet.coffee
@@ -2166,6 +2182,10 @@ class mathJS.DiscreteSet extends mathJS.Set
     ###########################################################################
     # CONSTRUCTOR
     constructor: (elems = []) ->
+        if arguments.callee.caller isnt mathJS.Set
+            throw new mathJS.Errors.AbstractInstantiationError("mathJS.DiscreteSet can\'t be instantiated directly! Use mathJS.Set instead!")
+
+
         @leftBoundary = null
         @rightBoundary = null
         @condition = null
@@ -2212,6 +2232,14 @@ class mathJS.DiscreteSet extends mathJS.Set
 
     isSupersetOf: (set) ->
         return set.isSubsetOf @
+
+    add: (elem) ->
+        for e in @elems when e is elem or e.equals(elem)
+            return @
+
+        @elems.push elem
+        return @
+
 
     clone: () ->
         return new mathJS.DiscreteSet(@elems)
@@ -2698,15 +2726,6 @@ do () ->
             configurable: false
     }
 # end js/Set/Domains/N.coffee
-
-# from js/Function.coffee
-class mathJS.Function extends mathJS.ConditionalSet
-
-    constructor: (fromSet, toSet, mapping) ->
-        @fromSet = fromSet
-        @toSet = toSet
-        @mapping = mapping
-# end js/Function.coffee
 
 # from js/Calculus/Integral.coffee
 class mathJS.Integral

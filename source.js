@@ -180,6 +180,24 @@
         this[0] = val;
         return this;
       }
+    },
+    second: {
+      get: function() {
+        return this[1];
+      },
+      set: function(val) {
+        this[1] = val;
+        return this;
+      }
+    },
+    third: {
+      get: function() {
+        return this[2];
+      },
+      set: function(val) {
+        this[2] = val;
+        return this;
+      }
     }
   });
 
@@ -343,6 +361,10 @@
     }
     return res;
   };
+
+  String.prototype.lower = String.prototype.toLowerCase;
+
+  String.prototype.upper = String.prototype.toUpperCase;
 
   Object.keysLike = function(obj, pattern) {
     var key, res, _i, _len, _ref;
@@ -717,6 +739,17 @@
     }
 
     return InvalidArityError;
+
+  })(Error);
+
+  mathJS.Errors.AbstractInstantiationError = (function(_super) {
+    __extends(AbstractInstantiationError, _super);
+
+    function AbstractInstantiationError() {
+      return AbstractInstantiationError.__super__.constructor.apply(this, arguments);
+    }
+
+    return AbstractInstantiationError;
 
   })(Error);
 
@@ -1802,12 +1835,13 @@
     }
 
     isOperand = function(token) {
-      return ("0" <= token && token <= "9");
+      return mathJS.isNum(token);
     };
 
     ShuntingYard.prototype.toPostfix = function(str) {
       var associativity, i, o1, o2, ops, postfix, precedence, prevToken, stack, token, _i, _len;
       str = str.replace(/\s+/g, "");
+      str = str.replace(/(\d+|\w)(\w)/g, "$1*$2");
       stack = [];
       ops = this.ops;
       precedence = this.precedence;
@@ -1816,9 +1850,7 @@
       postfix.postfix = true;
       for (i = _i = 0, _len = str.length; _i < _len; i = ++_i) {
         token = str[i];
-        if (isOperand(token)) {
-          postfix += "" + token + " ";
-        } else if (__indexOf.call(ops, token) >= 0) {
+        if (__indexOf.call(ops, token) >= 0) {
           o1 = token;
           o2 = stack.last();
           if (i === 0 || prevToken === "(") {
@@ -1840,6 +1872,8 @@
             postfix += "" + (stack.pop()) + " ";
           }
           stack.pop();
+        } else {
+          postfix += "" + token + " ";
         }
         prevToken = token;
       }
@@ -1857,7 +1891,6 @@
         postfix = str;
       }
       postfix = postfix.split(" ");
-      console.log(postfix);
       ops = this.ops;
       _ref = CLASS.specialOperators;
       for (k in _ref) {
@@ -1897,9 +1930,9 @@
           postfix.splice(startIdx, params.length + 1, exp);
           i = startIdx + 1;
         } else if (isOperand(token)) {
-          postfix[i] = new mathJS.Expression(parseFloat(token));
+          postfix[i++] = new mathJS.Expression(parseFloat(token));
         } else {
-          postfix[i] = new mathJS.Variable(token);
+          postfix[i++] = new mathJS.Variable(token);
         }
       }
       return postfix.first;
@@ -1932,8 +1965,24 @@
       this.type = type;
     }
 
+    Variable.prototype.equals = function(variable) {
+      return this.type === variable.type;
+    };
+
     Variable.prototype.plus = function(n) {
       return new mathJS.Expression("+", this, n);
+    };
+
+    Variable.prototype.minus = function(n) {
+      return new mathJS.Expression("-", this, n);
+    };
+
+    Variable.prototype.times = function(n) {
+      return new mathJS.Expression("*", this, n);
+    };
+
+    Variable.prototype.divide = function(n) {
+      return new mathJS.Expression("/", this, n);
     };
 
     Variable.prototype["eval"] = function(values) {
@@ -2140,11 +2189,14 @@
         if (mathJS.Number.valueIsValid(operation)) {
           this.operation = null;
           this.expressions = [new mathJS.Number(operation)];
-        } else if (operation instanceof mathJS.Variable) {
-          this.operation = null;
-          this.expressions = [operation];
         } else {
-          throw new mathJS.Errors.InvalidParametersError("...");
+          if (operation instanceof mathJS.Variable) {
+            this.operation = null;
+            this.expressions = [operation];
+          } else {
+            this.operation = null;
+            this.expressions = [new mathJS.Variable(operation)];
+          }
         }
       } else if (operation.arity === expressions.length) {
         this.operation = operation;
@@ -2153,6 +2205,66 @@
         throw new mathJS.Errors.InvalidArityError("Invalid number of parameters (" + expressions.length + ") for Operation '" + operation.name + "'. Expected number of parameters is " + operation.arity + ".");
       }
     }
+
+
+    /**
+    * This method tests for the equality of structure. So 2*3x does not equal 6x!
+    * For that see mathEquals().
+    * @method equals
+    *
+     */
+
+    Expression.prototype.equals = function(expression) {
+      var doneExpressions, e1, e2, exp, i, j, res, x, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2;
+      if (this.expressions.length !== expression.expressions.length) {
+        return false;
+      }
+      if (this.operation == null) {
+        return (expression.operation == null) && expression.expressions.first.equals(this.expressions.first);
+      }
+      if (this.operation.commutative === true) {
+        doneExpressions = [];
+        _ref = this.expressions;
+        for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
+          exp = _ref[i];
+          res = false;
+          _ref1 = expression.expressions;
+          for (j = _j = 0, _len1 = _ref1.length; _j < _len1; j = ++_j) {
+            x = _ref1[j];
+            if (!(__indexOf.call(doneExpressions, j) < 0 && x.equals(exp))) {
+              continue;
+            }
+            doneExpressions.push(j);
+            res = true;
+            break;
+          }
+          if (!res) {
+            return false;
+          }
+        }
+        return true;
+      } else {
+        _ref2 = this.expressions;
+        for (i = _k = 0, _len2 = _ref2.length; _k < _len2; i = ++_k) {
+          e1 = _ref2[i];
+          e2 = expression.expressions[i];
+          if (!e1.equals(e2)) {
+            return false;
+          }
+        }
+        return true;
+      }
+    };
+
+
+    /**
+    * This method tests for the logical/mathematical equality of 2 expressions.
+    *
+     */
+
+    Expression.prototype.mathEquals = function(expression) {
+      return this.simplify().equals(expression.simplify());
+    };
 
 
     /**
@@ -2188,6 +2300,8 @@
     };
 
     Expression.prototype.simplify = function() {
+      var evaluated;
+      evaluated = this["eval"]();
       return this;
     };
 
@@ -2204,79 +2318,98 @@
   })();
 
   mathJS.Equation = (function() {
-    function Equation(expression1, expression2) {
-      this.expression1 = expression1;
-      this.expression2 = expression2;
+    function Equation(left, right) {
+      if (left.mathEquals(right)) {
+        this.left = left;
+        this.right = right;
+      } else {
+        throw new mathJS.Errors.InvalidParametersError("The 2 expressions are not (mathematically) equal!");
+      }
     }
 
     return Equation;
 
   })();
 
-  mathJS.SetSpec = (function() {
-    function SetSpec(isFinite, f, f2) {
-      if (isFinite === true || isFinite === "true") {
-        this.isFinite = true;
-        this.checker = f;
-        this.generator = f2;
-      } else if (isFinite === false || isFinite === "false") {
-        this.checker = f;
-        if (isFinite === true) {
-          this.generator = generator;
-        }
-      } else {
-        debugger;
-        throw new Error("mathJS: Expected (Function, boolean) for SetSpec! Given " + check + " and " + isFinite);
+  mathJS.Predicate = (function() {
+    function Predicate() {}
+
+    return Predicate;
+
+  })();
+
+  mathJS.AbstractSet = (function() {
+    function AbstractSet() {
+      if (arguments.callee.caller !== mathJS.Set) {
+        throw new mathJS.Errors.AbstractInstantiationError("mathJS.AbstractSet can\'t be instantiated!");
       }
     }
 
-    return SetSpec;
+    AbstractSet.prototype.size = function() {};
+
+    AbstractSet.prototype.equals = function(set) {};
+
+    AbstractSet.prototype.contains = function(x) {
+      return this._c(x);
+    };
+
+    AbstractSet.prototype.clone = function() {};
+
+    AbstractSet.prototype.union = function(set) {};
+
+    AbstractSet.prototype.intersects = function(set) {
+      return !this.disjoint(set);
+    };
+
+    AbstractSet.prototype.intersection = function(set) {};
+
+    AbstractSet.prototype.disjoint = function(set) {
+      return this.intersection(set).size() === 0;
+    };
+
+    AbstractSet.prototype.isSubsetOf = function(set) {};
+
+    AbstractSet.prototype.isSupersetOf = function(set) {};
+
+    AbstractSet.prototype.complement = function() {};
+
+    AbstractSet.prototype.without = function(set) {};
+
+    AbstractSet.prototype.isEmpty = function() {
+      return this.size() === 0;
+    };
+
+    AbstractSet.prototype.cartesianProduct = function(set) {};
+
+    AbstractSet.prototype.except = AbstractSet.without;
+
+    AbstractSet.prototype.minus = AbstractSet.without;
+
+    AbstractSet.prototype.difference = AbstractSet.without;
+
+    AbstractSet.prototype.supersetOf = AbstractSet.isSupersetOf;
+
+    AbstractSet.prototype.subsetOf = AbstractSet.isSubsetOf;
+
+    AbstractSet.prototype.has = AbstractSet.contains;
+
+    AbstractSet.prototype.cardinality = AbstractSet.size;
+
+    AbstractSet.prototype.times = AbstractSet.cartesianProduct;
+
+    return AbstractSet;
 
   })();
-
-  mathJS.SetBuilder = (function() {
-    function SetBuilder() {
-      var conditions, domain, expression;
-      expression = arguments[0], domain = arguments[1], conditions = 3 <= arguments.length ? __slice.call(arguments, 2) : [];
-    }
-
-    return SetBuilder;
-
-  })();
-
-
-  /*
-  {7,3,15,31}
-  {a,b,c}
-  {1,2,3,...,100}
-  {0,1,2,...}
-  
-  {x : x in R and x = x^2 } or {x | x in R and x = x^2 }
-  { (x,y) | 0 < y < f(x) }
-  { (t,2t+1) | t in Z }
-  
-  [a,b] = { x | x in R and a <= x <= b }
-  
-  equal predicates <=> equal sets (if expressions (in front) also equal)!!!
-  { x | x in R and |x| = 1 } <=> { x | x in R and x^2 = 1 }
-  
-  
-  dicht oder nicht?
-  nicht dicht + bounded => diskret
-  N -> left boundary
-  mathJS.Root class for difference Q <-> R
-   */
 
 
   /**
   * @class Set
   * @constructor
-  * @param {Object} boundarySettings
-  * @param {Function} condition
-  * Optional. If given, the created Set will bounded by that condition
-  * @param {Array} elems
-  * Optional. This parameter serves as elements for the new Set. They will be in the new Set immediately.
-  * It is an array of comparable elements (that means if `mathJS.isComparable() === true`); non-comparables will be ignored.
+  * @param {mixed} specifications
+  * To create an empty set pass no parameters.
+  * To create a discrete set list the elements.
+  * To create a set from set-builder notation pass the parameters must have the following types:
+  * mathJS.Expression, [mathJS.Domains], mathJS.Predicate
   *
    */
 
@@ -2287,66 +2420,26 @@
       return set instanceof mathJS.Set || set["instanceof"](mathJS.Set);
     };
 
-    function Set(boundarySettings, condition, elems) {
-      var elem, _i, _len;
-      if (elems == null) {
-        elems = [];
-      }
-      if (arguments.length === 0) {
-        return;
-      }
-      if (boundarySettings == null) {
-        boundarySettings = {
-          leftBoundary: null,
-          rightBoundary: null
-        };
-      }
-      this.leftBoundary = boundarySettings.leftBoundary;
-      this.rightBoundary = boundarySettings.rightBoundary;
-      if (condition instanceof Function) {
-        this.condition = condition;
-      } else {
-        this.condition = null;
-      }
-      this._discreteSet = new mathJS.DiscreteSet();
-      this._conditionalSet = new mathJS.ConditionalSet();
-      for (_i = 0, _len = elems.length; _i < _len; _i++) {
-        elem = elems[_i];
-        if (mathJS.isComparable(elem)) {
-          if (elem instanceof mathJS.DiscreteSet || (typeof elem["instanceof"] === "function" ? elem["instanceof"](mathJS.DiscreteSet) : void 0)) {
-            this._discreteSet = this._discreteSet.union(elem);
-          } else if (elem instanceof mathJS.ConditionalSet || (typeof elem["instanceof"] === "function" ? elem["instanceof"](mathJS.ConditionalSet) : void 0)) {
-            this._conditionalSet = this._conditionalSet.union(elem);
-          } else {
-            this._discreteSet = this._discreteSet.union(new mathJS.DiscreteSet([elem]));
-          }
-        }
-      }
+    function Set() {
+      var param, parameters, _i, _len;
+      parameters = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      this.discreteSet = new mathJS.DiscreteSet();
       Object.defineProperties(this, {
-        _universe: {
-          value: null,
-          enumerable: false,
-          writable: true
-        },
-        universe: {
-          get: function() {
-            return this._universe;
-          },
-          set: function(universe) {
-            if (universe instanceof mathJS.Set || universe === null) {
-              this._universe = universe;
-            }
-            return this;
-          },
-          enumerable: true
-        },
-        size: {
-          value: this._discreteSet.size + this._conditionalSet.size,
-          enumerable: true,
-          writable: false,
-          configurable: true
+        _size: {
+          enumerable: false
         }
       });
+      this._size = null;
+      if (parameters.length === 0) {
+        true;
+      } else if (parameters.length === 3 && parameters.second instanceof Array) {
+        console.log("set builder");
+      } else {
+        for (_i = 0, _len = parameters.length; _i < _len; _i++) {
+          param = parameters[_i];
+          this.discreteSet.add(param);
+        }
+      }
     }
 
     Set.prototype.clone = function() {
@@ -2383,20 +2476,8 @@
       return false;
     };
 
-    Set.prototype.has = Set.prototype.contains;
-
     Set.prototype.union = function(set) {
       return this;
-    };
-
-    Set.prototype.intersect = function(set) {};
-
-    Set.prototype.intersects = function(set) {
-      return this.intersection.size() > 0;
-    };
-
-    Set.prototype.disjoint = function(set) {
-      return this.intersection.size() === 0;
     };
 
     Set.prototype.complement = function() {
@@ -2418,13 +2499,9 @@
 
     Set.prototype.times = Set.prototype.cartesianProduct;
 
-    Set.prototype.isEmpty = function() {
-      return this.size === 0;
-    };
-
     return Set;
 
-  })(mixOf(mathJS.Poolable, mathJS.Comparable, mathJS.Parseable));
+  })(mathJS.AbstractSet);
 
 
   /**
@@ -2447,6 +2524,9 @@
       var elem, _i, _len;
       if (elems == null) {
         elems = [];
+      }
+      if (arguments.callee.caller !== mathJS.Set) {
+        throw new mathJS.Errors.AbstractInstantiationError("mathJS.DiscreteSet can\'t be instantiated directly! Use mathJS.Set instead!");
       }
       this.leftBoundary = null;
       this.rightBoundary = null;
@@ -2503,6 +2583,19 @@
 
     DiscreteSet.prototype.isSupersetOf = function(set) {
       return set.isSubsetOf(this);
+    };
+
+    DiscreteSet.prototype.add = function(elem) {
+      var e, _i, _len, _ref;
+      _ref = this.elems;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        e = _ref[_i];
+        if (e === elem || e.equals(elem)) {
+          return this;
+        }
+      }
+      this.elems.push(elem);
+      return this;
     };
 
     DiscreteSet.prototype.clone = function() {
@@ -2953,19 +3046,6 @@
       }
     });
   })();
-
-  mathJS.Function = (function(_super) {
-    __extends(Function, _super);
-
-    function Function(fromSet, toSet, mapping) {
-      this.fromSet = fromSet;
-      this.toSet = toSet;
-      this.mapping = mapping;
-    }
-
-    return Function;
-
-  })(mathJS.ConditionalSet);
 
   mathJS.Integral = (function() {
     var CLASS, _solvePrepareVars;
