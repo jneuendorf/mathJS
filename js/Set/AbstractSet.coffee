@@ -1,48 +1,59 @@
-class mathJS.AbstractSet
+class _mathJS.AbstractSet
 
-    constructor: () ->
-        if arguments.callee.caller isnt mathJS.Set
-            throw new mathJS.Errors.AbstractInstantiationError("mathJS.AbstractSet can\'t be instantiated!")
+    # constructor: () ->
+    #     if arguments.callee.caller isnt mathJS.Set
+    #         throw new mathJS.Errors.AbstractInstantiationError("mathJS.AbstractSet can\'t be instantiated!")
 
-    size: () ->
-
-    equals: (set) ->
-
-    contains: (x) ->
-        return @_c(x)
+    cartesianProduct: (set) ->
 
     clone: () ->
 
-    union: (set) ->
+    contains: (elem) ->
 
-    intersects: (set) ->
-        return not @disjoint(set)
+    equals: (set) ->
+
+    getElements: () ->
 
     intersection: (set) ->
-
-    disjoint: (set) ->
-        return @intersection(set).size() is 0
 
     isSubsetOf: (set) ->
 
     isSupersetOf: (set) ->
 
-    complement: () ->
+    size: () ->
+
+    union: (set) ->
 
     without: (set) ->
+
+    ###########################################################################
+    # PRE-IMPLEMENTED
+    complement: (universe) ->
+        return universe.minus(@)
 
     isEmpty: () ->
         return @size() is 0
 
-    cartesianProduct: (set) ->
+    intersects: (set) ->
+        return not @disjoint(set)
 
+    disjoint: (set) ->
+        return @intersection(set).size() is 0
 
+    ###########################################################################
     # ALIASES
-    except: @without
-    minus: @without
-    difference: @without
-    supersetOf: @isSupersetOf
-    subsetOf: @isSubsetOf
-    has: @contains
-    cardinality: @size
-    times: @cartesianProduct
+    cardinality: @::size
+
+    difference: @::without
+    except: @::without
+    minus: @::without
+
+    has: @::contains
+
+    intersect: @::intersection
+
+    subsetOf: @::isSubsetOf
+
+    supersetOf: @::isSupersetOf
+
+    times: @::cartesianProduct

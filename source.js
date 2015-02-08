@@ -7,7 +7,7 @@
  */
 
 (function() {
-  var cached,
+  var cached, _mathJS,
     __slice = [].slice,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -26,6 +26,12 @@
     Operations: {},
     Sets: {}
   };
+
+  _mathJS = {};
+
+  if (DEBUG) {
+    window._mathJS = _mathJS;
+  }
 
   window.mixOf = function() {
     var Mixed, base, method, mixin, mixins, name, superClasses, _i, _ref;
@@ -366,6 +372,62 @@
 
   String.prototype.upper = String.prototype.toUpperCase;
 
+  String.prototype.equals = function(str) {
+    return this.valueOf() === str.valueOf();
+  };
+
+  String.prototype.lessThan = function(str) {
+    return this.valueOf() < str.valueOf();
+  };
+
+  String.prototype.lt = String.prototype.lessThan;
+
+  String.prototype.greaterThan = function(str) {
+    return this.valueOf() > str.valueOf();
+  };
+
+  String.prototype.gt = String.prototype.greaterThan;
+
+  String.prototype.lessThanOrEqualTo = function(str) {
+    return this.valueOf() <= str.valueOf();
+  };
+
+  String.prototype.lte = String.prototype.lessThanOrEqualTo;
+
+  String.prototype.greaterThanOrEqualTo = function(str) {
+    return this.valueOf() >= str.valueOf();
+  };
+
+  String.prototype.gte;
+
+  Boolean.prototype.equals = function(bool) {
+    return this.valueOf() === bool.valueOf();
+  };
+
+  Boolean.prototype.lessThan = function(bool) {
+    return this.valueOf() < bool.valueOf();
+  };
+
+  Boolean.prototype.lt = Boolean.prototype.lessThan;
+
+  Boolean.prototype.greaterThan = function(bool) {
+    return this.valueOf() > bool.valueOf();
+  };
+
+  Boolean.prototype.gt = Boolean.prototype.greaterThan;
+
+  Boolean.prototype.lessThanOrEqualTo = function(bool) {
+    return this.valueOf() <= bool.valueOf();
+  };
+
+  Boolean.prototype.lte = Boolean.prototype.lessThanOrEqualTo;
+
+  Boolean.prototype.greaterThanOrEqualTo = function(bool) {
+    return this.valueOf() >= str.valueOf();
+  };
+
+  Boolean.prototype.gte;
+
   Object.keysLike = function(obj, pattern) {
     var key, res, _i, _len, _ref;
     res = [];
@@ -688,15 +750,28 @@
     return NaN;
   };
 
+  mathJS.sortFunction = function(a, b) {
+    if (a.lessThan(b)) {
+      return -1;
+    }
+    if (a.greaterThan(b)) {
+      return 1;
+    }
+    return 0;
+  };
+
   mathJS.settings = {
     set: {
       maxIterations: 1e3,
-      maxMatches: 60
+      maxMatches: 60,
+      defaultNumberOfElements: 1e3
     },
     integral: {
       maxSteps: 1e10
     }
   };
+
+  mathJS.config = mathJS.settings;
 
   mathJS.Errors.CalculationExceedanceError = (function(_super) {
     __extends(CalculationExceedanceError, _super);
@@ -1366,6 +1441,8 @@
     Number.prototype["eval"] = function(values) {
       return this;
     };
+
+    Number.prototype.valueOf = Number.prototype._getValue;
 
     return Number;
 
@@ -2338,64 +2415,64 @@
 
   })();
 
-  mathJS.AbstractSet = (function() {
-    function AbstractSet() {
-      if (arguments.callee.caller !== mathJS.Set) {
-        throw new mathJS.Errors.AbstractInstantiationError("mathJS.AbstractSet can\'t be instantiated!");
-      }
-    }
+  _mathJS.AbstractSet = (function() {
+    function AbstractSet() {}
 
-    AbstractSet.prototype.size = function() {};
-
-    AbstractSet.prototype.equals = function(set) {};
-
-    AbstractSet.prototype.contains = function(x) {
-      return this._c(x);
-    };
+    AbstractSet.prototype.cartesianProduct = function(set) {};
 
     AbstractSet.prototype.clone = function() {};
 
-    AbstractSet.prototype.union = function(set) {};
+    AbstractSet.prototype.contains = function(elem) {};
 
-    AbstractSet.prototype.intersects = function(set) {
-      return !this.disjoint(set);
-    };
+    AbstractSet.prototype.equals = function(set) {};
+
+    AbstractSet.prototype.getElements = function() {};
 
     AbstractSet.prototype.intersection = function(set) {};
-
-    AbstractSet.prototype.disjoint = function(set) {
-      return this.intersection(set).size() === 0;
-    };
 
     AbstractSet.prototype.isSubsetOf = function(set) {};
 
     AbstractSet.prototype.isSupersetOf = function(set) {};
 
-    AbstractSet.prototype.complement = function() {};
+    AbstractSet.prototype.size = function() {};
+
+    AbstractSet.prototype.union = function(set) {};
 
     AbstractSet.prototype.without = function(set) {};
+
+    AbstractSet.prototype.complement = function(universe) {
+      return universe.minus(this);
+    };
 
     AbstractSet.prototype.isEmpty = function() {
       return this.size() === 0;
     };
 
-    AbstractSet.prototype.cartesianProduct = function(set) {};
+    AbstractSet.prototype.intersects = function(set) {
+      return !this.disjoint(set);
+    };
 
-    AbstractSet.prototype.except = AbstractSet.without;
+    AbstractSet.prototype.disjoint = function(set) {
+      return this.intersection(set).size() === 0;
+    };
 
-    AbstractSet.prototype.minus = AbstractSet.without;
+    AbstractSet.prototype.cardinality = AbstractSet.prototype.size;
 
-    AbstractSet.prototype.difference = AbstractSet.without;
+    AbstractSet.prototype.difference = AbstractSet.prototype.without;
 
-    AbstractSet.prototype.supersetOf = AbstractSet.isSupersetOf;
+    AbstractSet.prototype.except = AbstractSet.prototype.without;
 
-    AbstractSet.prototype.subsetOf = AbstractSet.isSubsetOf;
+    AbstractSet.prototype.minus = AbstractSet.prototype.without;
 
-    AbstractSet.prototype.has = AbstractSet.contains;
+    AbstractSet.prototype.has = AbstractSet.prototype.contains;
 
-    AbstractSet.prototype.cardinality = AbstractSet.size;
+    AbstractSet.prototype.intersect = AbstractSet.prototype.intersection;
 
-    AbstractSet.prototype.times = AbstractSet.cartesianProduct;
+    AbstractSet.prototype.subsetOf = AbstractSet.prototype.isSubsetOf;
+
+    AbstractSet.prototype.supersetOf = AbstractSet.prototype.isSupersetOf;
+
+    AbstractSet.prototype.times = AbstractSet.prototype.cartesianProduct;
 
     return AbstractSet;
 
@@ -2407,47 +2484,75 @@
   * @constructor
   * @param {mixed} specifications
   * To create an empty set pass no parameters.
-  * To create a discrete set list the elements.
+  * To create a discrete set list the elements. Those elements must implement the comparable interface and must not be arrays. Non-comparable elements will be ignored unless they are primitives.
   * To create a set from set-builder notation pass the parameters must have the following types:
   * mathJS.Expression, [mathJS.Domains], mathJS.Predicate
   *
    */
 
   mathJS.Set = (function(_super) {
+    var newFromConditional, newFromDiscrete;
+
     __extends(Set, _super);
 
-    Set._isSet = function(set) {
-      return set instanceof mathJS.Set || set["instanceof"](mathJS.Set);
-    };
-
     function Set() {
-      var param, parameters, _i, _len;
+      var parameters;
       parameters = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-      this.discreteSet = new mathJS.DiscreteSet();
-      Object.defineProperties(this, {
-        _size: {
-          enumerable: false
-        }
-      });
-      this._size = null;
       if (parameters.length === 0) {
+        this.discreteSet = new _mathJS.DiscreteSet();
+        this.conditionalSet = new _mathJS.ConditionalSet();
         true;
       } else if (parameters.length === 3 && parameters.second instanceof Array) {
         console.log("set builder");
+      } else if (parameters.first instanceof _mathJS.DiscreteSet && parameters.second instanceof _mathJS.ConditionalSet) {
+        this.discreteSet = parameters.first.clone();
+        this.conditionalSet = parameters.second.clone();
       } else {
-        for (_i = 0, _len = parameters.length; _i < _len; _i++) {
-          param = parameters[_i];
-          this.discreteSet.add(param);
+        if (parameters.first instanceof Array) {
+          parameters = parameters.first;
         }
+        console.log("params:", parameters);
+        this.discreteSet = new _mathJS.DiscreteSet(parameters);
+        this.conditionalSet = new _mathJS.ConditionalSet();
       }
     }
 
+    newFromDiscrete = function(set) {
+      return new mathJS.Set(set.getElements());
+    };
+
+    newFromConditional = function(set) {
+      return new mathJS.Set(set.expression, set.domains, set.predicate);
+    };
+
+    Set.prototype.getElements = function(n, sorted) {
+      var res;
+      if (n == null) {
+        n = mathJS.config.set.defaultNumberOfElements;
+      }
+      if (sorted == null) {
+        sorted = false;
+      }
+      res = this.discreteSet.elems.concat(this.conditionalSet.getElements(n, false));
+      if (sorted !== true) {
+        return res;
+      }
+      return res.sort(mathJS.sortFunction);
+    };
+
+    Set.prototype.size = function() {
+      return this.discreteSet.size() + this.conditionalSet.size();
+    };
+
     Set.prototype.clone = function() {
-      throw new Error("todo!");
+      return newFromDiscrete(this.discreteSet).union(newFromConditional(this.conditionalSet));
     };
 
     Set.prototype.equals = function(set) {
-      throw new Error("todo!");
+      if (set.size() !== this.size()) {
+        return false;
+      }
+      return set.discreteSet.equals(this.discreteSet) && set.conditionalSet.equals(this.conditionalSet);
     };
 
     Set.prototype.isSubsetOf = function(set) {
@@ -2458,26 +2563,12 @@
       throw new Error("todo!");
     };
 
-    Set.prototype.forAll = function() {};
-
-    Set.prototype.exists = function() {};
-
     Set.prototype.contains = function(elem) {
-      var subset, _i, _len, _ref;
-      if (elem instanceof this.type) {
-        _ref = this.subsets;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          subset = _ref[_i];
-          if (subset.contains(elem)) {
-            return true;
-          }
-        }
-      }
-      return false;
+      return set.conditionalSet.contains(this.conditionalSet) || set.discreteSet.contains(this.discreteSet);
     };
 
     Set.prototype.union = function(set) {
-      return this;
+      return new mathJS.Set(this.discreteSet.union(set.discreteSet), this.conditionalSet.union(set.conditionalSet));
     };
 
     Set.prototype.complement = function() {
@@ -2497,11 +2588,9 @@
 
     Set.prototype.cartesianProduct = function(set) {};
 
-    Set.prototype.times = Set.prototype.cartesianProduct;
-
     return Set;
 
-  })(mathJS.AbstractSet);
+  })(_mathJS.AbstractSet);
 
 
   /**
@@ -2517,57 +2606,113 @@
   *
    */
 
-  mathJS.DiscreteSet = (function(_super) {
+  _mathJS.DiscreteSet = (function(_super) {
     __extends(DiscreteSet, _super);
 
-    function DiscreteSet(elems) {
-      var elem, _i, _len;
-      if (elems == null) {
-        elems = [];
+    function DiscreteSet() {
+      var elem, elems, _i, _len;
+      elems = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      if (elems.first instanceof Array) {
+        elems = elems.first;
       }
-      if (arguments.callee.caller !== mathJS.Set) {
-        throw new mathJS.Errors.AbstractInstantiationError("mathJS.DiscreteSet can\'t be instantiated directly! Use mathJS.Set instead!");
-      }
-      this.leftBoundary = null;
-      this.rightBoundary = null;
-      this.condition = null;
       this.elems = [];
       for (_i = 0, _len = elems.length; _i < _len; _i++) {
         elem = elems[_i];
-        if (mathJS.isComparable(elem) && !this.contains(elem)) {
-          this.elems.push(elem);
+        if (!this.contains(elem)) {
+          if (!mathJS.isNum(elem)) {
+            this.elems.push(elem);
+          } else {
+            this.elems.push(new mathJS.Number(elem));
+          }
         }
       }
-      Object.defineProperties(this, {
-        elems: {
-          value: this.elems,
-          enumerable: false
-        },
-        _universe: {
-          value: null,
-          enumerable: false,
-          writable: true
-        },
-        universe: {
-          get: function() {
-            return this._universe;
-          },
-          set: function(universe) {
-            if (universe instanceof mathJS.Set || universe === null) {
-              this._universe = universe;
-            }
-            return this;
-          },
-          enumerable: true
-        },
-        size: {
-          value: this.elems.length,
-          enumerable: false,
-          writable: false,
-          configurable: true
-        }
-      });
     }
+
+    DiscreteSet.prototype.cartesianProduct = function(set) {
+      var e, elements, x, _i, _j, _len, _len1, _ref, _ref1;
+      elements = [];
+      _ref = this.elems;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        e = _ref[_i];
+        _ref1 = set.elems;
+        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+          x = _ref1[_j];
+          elements.push(new mathJS.Tuple(e, x));
+        }
+      }
+      return new _mathJS.DiscreteSet(elements);
+    };
+
+    DiscreteSet.prototype.clone = function() {
+      return new _mathJS.DiscreteSet(this.elems);
+    };
+
+    DiscreteSet.prototype.contains = function(elem) {
+      var e, _i, _len, _ref;
+      _ref = this.elems;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        e = _ref[_i];
+        if (elem.equals(e)) {
+          return true;
+        }
+      }
+      return false;
+    };
+
+    DiscreteSet.prototype.equals = function(set) {
+      var e, _i, _j, _len, _len1, _ref, _ref1;
+      _ref = this.elems;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        e = _ref[_i];
+        if (!set.contains(e)) {
+          return false;
+        }
+      }
+      _ref1 = set.elems;
+      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+        e = _ref1[_j];
+        if (!this.contains(e)) {
+          return false;
+        }
+      }
+      return true;
+    };
+
+
+    /**
+    * Get the elements of the set.
+    * @method getElements
+    * @param sorted {Boolean}
+    * Optional. If set to `true` returns the elements in ascending order.
+    *
+     */
+
+    DiscreteSet.prototype.getElements = function(sorted) {
+      if (sorted == null) {
+        sorted = false;
+      }
+      if (sorted !== true) {
+        return this.elems.clone();
+      }
+      return this.elems.clone().sort(mathJS.sortFunction);
+    };
+
+    DiscreteSet.prototype.intersection = function(set) {
+      var elems, x, y, _i, _j, _len, _len1, _ref, _ref1;
+      elems = [];
+      _ref = this.elems;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        x = _ref[_i];
+        _ref1 = set.elems;
+        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+          y = _ref1[_j];
+          if (x.equals(y)) {
+            elems.push(x);
+          }
+        }
+      }
+      return new _mathJS.DiscreteSet(elems);
+    };
 
     DiscreteSet.prototype.isSubsetOf = function(set) {
       var e, _i, _len, _ref;
@@ -2585,140 +2730,51 @@
       return set.isSubsetOf(this);
     };
 
-    DiscreteSet.prototype.add = function(elem) {
-      var e, _i, _len, _ref;
-      _ref = this.elems;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        e = _ref[_i];
-        if (e === elem || e.equals(elem)) {
-          return this;
-        }
-      }
-      this.elems.push(elem);
-      return this;
-    };
-
-    DiscreteSet.prototype.clone = function() {
-      return new mathJS.DiscreteSet(this.elems);
-    };
-
-
-    /**
-    * @Override
-    *
-     */
-
-    DiscreteSet.prototype.equals = function(set) {
-      return this.isSubsetOf(set) && set.isSubsetOf(this);
-    };
-
-    DiscreteSet.prototype.contains = function(elem) {
-      var e, _i, _len, _ref;
-      if (mathJS.isComparable(elem)) {
-        _ref = this.elems;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          e = _ref[_i];
-          if (e === elem || (typeof e.equals === "function" ? e.equals(elem) : void 0)) {
-            return true;
-          }
-        }
-      }
-      return false;
+    DiscreteSet.prototype.size = function() {
+      return this.elems.length;
     };
 
     DiscreteSet.prototype.union = function(set) {
-      if (set instanceof mathJS.DiscreteSet) {
-        return new mathJS.DiscreteSet(this.elems.concat(set.elems));
-      } else if (set instanceof mathJS.ConditionalSet) {
-        return "asdf";
-      }
+      return new _mathJS.DiscreteSet(set.elems.concat(this.elems));
     };
 
-    DiscreteSet.prototype.intersect = function(set) {
-      var elems, res, x, y, _i, _j, _len, _len1, _ref, _ref1;
-      if (set instanceof mathJS.DiscreteSet) {
-        elems = [];
+    DiscreteSet.prototype.without = function(set) {
+      var elem;
+      return (function() {
+        var _i, _len, _ref, _results;
         _ref = this.elems;
+        _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          x = _ref[_i];
-          _ref1 = set.elems;
-          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-            y = _ref1[_j];
-            if (x.equals(y)) {
-              elems.push(x);
-            }
+          elem = _ref[_i];
+          if (!set.contains(elem)) {
+            _results.push(elem);
           }
         }
-        if (elems.length > 0) {
-          res = new mathJS.DiscreteSet(this.type, this.universe);
-        }
-      } else if (set instanceof mathJS.ConditionalSet) {
-
-      } else if (set instanceof mathJS.EmptySet) {
-        return new mathJS.EmptySet();
-      }
-      return null;
+        return _results;
+      }).call(this);
     };
-
-    DiscreteSet.prototype.complement = function() {
-      if (this.universe != null) {
-        return;
-      }
-      return new mathJS.EmptySet();
-    };
-
-
-    /**
-    * a.without b => returns: removed all common elements from a
-    *
-     */
-
-    DiscreteSet.prototype.without = function(set) {};
 
     return DiscreteSet;
 
   })(mathJS.Set);
 
-  mathJS.ConditionalSet = (function(_super) {
+  _mathJS.ConditionalSet = (function(_super) {
     __extends(ConditionalSet, _super);
 
     function ConditionalSet(condition, universe) {
       if (universe == null) {
         universe = null;
       }
-      if (condition instanceof mathJS.SetSpec) {
-        this.condition = condition;
-      } else {
-        this.condition = null;
-      }
-      this.leftBoundary = null;
-      this.rightBoundary = null;
-      Object.defineProperties(this, {
-        _universe: {
-          value: universe,
-          enumerable: false,
-          writable: true
-        },
-        universe: {
-          get: function() {
-            return this._universe;
-          },
-          set: function(universe) {
-            if (universe instanceof mathJS.Set || universe === null) {
-              this._universe = universe;
-            }
-            return this;
-          },
-          enumerable: true
-        },
-        size: {
-          value: this.elems.length,
-          enumerable: false,
-          writable: false,
-          configurable: true
-        }
-      });
     }
+
+    ConditionalSet.prototype.getElements = function(n, sorted) {
+      var res;
+      if (sorted == null) {
+        sorted = false;
+      }
+      res = [];
+      return res;
+    };
 
     ConditionalSet.prototype.clone = function() {
       throw new Error("todo!");
@@ -2736,9 +2792,7 @@
       throw new Error("todo!");
     };
 
-    ConditionalSet.prototype.forAll = function() {};
-
-    ConditionalSet.prototype.exists = function() {};
+    ConditionalSet.prototype.size = function() {};
 
     ConditionalSet.prototype.contains = function(elem) {
       var _ref;

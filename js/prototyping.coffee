@@ -243,6 +243,54 @@ String::camelToSnakeCase = () ->
 String::lower = String::toLowerCase
 String::upper = String::toUpperCase
 
+# implement comparable and orderable interface for primitives
+String::equals = (str) ->
+    return @valueOf() is str.valueOf()
+
+String::lessThan = (str) ->
+    return @valueOf() < str.valueOf()
+
+String::lt = String::lessThan
+
+String::greaterThan = (str) ->
+    return @valueOf() > str.valueOf()
+
+String::gt = String::greaterThan
+
+String::lessThanOrEqualTo = (str) ->
+    return @valueOf() <= str.valueOf()
+
+String::lte = String::lessThanOrEqualTo
+
+String::greaterThanOrEqualTo = (str) ->
+    return @valueOf() >= str.valueOf()
+
+String::gte
+
+
+Boolean::equals = (bool) ->
+    return @valueOf() is bool.valueOf()
+
+Boolean::lessThan = (bool) ->
+    return @valueOf() < bool.valueOf()
+
+Boolean::lt = Boolean::lessThan
+
+Boolean::greaterThan = (bool) ->
+    return @valueOf() > bool.valueOf()
+
+Boolean::gt = Boolean::greaterThan
+
+Boolean::lessThanOrEqualTo = (bool) ->
+    return @valueOf() <= bool.valueOf()
+
+Boolean::lte = Boolean::lessThanOrEqualTo
+
+Boolean::greaterThanOrEqualTo = (bool) ->
+    return @valueOf() >= str.valueOf()
+
+Boolean::gte
+
 #######################################################################
 # OBJECT
 

@@ -15,6 +15,11 @@ window.mathJS =
     Geometry: {}
     Operations: {}
     Sets: {}
+
+_mathJS = {}
+
+if DEBUG
+    window._mathJS = _mathJS
 # end js/init.coffee
 
 # from js/globalFunctions.coffee
@@ -292,6 +297,54 @@ String::camelToSnakeCase = () ->
 String::lower = String::toLowerCase
 String::upper = String::toUpperCase
 
+# implement comparable and orderable interface for primitives
+String::equals = (str) ->
+    return @valueOf() is str.valueOf()
+
+String::lessThan = (str) ->
+    return @valueOf() < str.valueOf()
+
+String::lt = String::lessThan
+
+String::greaterThan = (str) ->
+    return @valueOf() > str.valueOf()
+
+String::gt = String::greaterThan
+
+String::lessThanOrEqualTo = (str) ->
+    return @valueOf() <= str.valueOf()
+
+String::lte = String::lessThanOrEqualTo
+
+String::greaterThanOrEqualTo = (str) ->
+    return @valueOf() >= str.valueOf()
+
+String::gte
+
+
+Boolean::equals = (bool) ->
+    return @valueOf() is bool.valueOf()
+
+Boolean::lessThan = (bool) ->
+    return @valueOf() < bool.valueOf()
+
+Boolean::lt = Boolean::lessThan
+
+Boolean::greaterThan = (bool) ->
+    return @valueOf() > bool.valueOf()
+
+Boolean::gt = Boolean::greaterThan
+
+Boolean::lessThanOrEqualTo = (bool) ->
+    return @valueOf() <= bool.valueOf()
+
+Boolean::lte = Boolean::lessThanOrEqualTo
+
+Boolean::greaterThanOrEqualTo = (bool) ->
+    return @valueOf() >= str.valueOf()
+
+Boolean::gte
+
 #######################################################################
 # OBJECT
 
@@ -499,7 +552,7 @@ mathJS.parseNumber = (str) ->
 mathJS.factorialInverse = (n) ->
     if (n = ~~n) < 0
         return NaN
-        
+
     x = 0
     # js: while((y = mathJS.factorial(++x)) < n) {}
     while (y = mathJS.factorial(++x)) < n then
@@ -583,6 +636,13 @@ mathJS.reciprocal = (n) ->
     if mathJS.isNum(n)
         return 1 / n
     return NaN
+
+mathJS.sortFunction = (a, b) ->
+    if a.lessThan b
+        return -1
+    if a.greaterThan b
+        return 1
+    return 0
 # end js/mathJS.coffee
 
 # from js/settings.coffee
@@ -590,8 +650,11 @@ mathJS.settings =
     set:
         maxIterations: 1e3
         maxMatches: 60
+        defaultNumberOfElements: 1e3
     integral:
         maxSteps: 1e10
+
+mathJS.config = mathJS.settings
 # end js/settings.coffee
 
 # from js/Errors/SimpleErrors.coffee
@@ -1069,6 +1132,8 @@ class mathJS.Number extends mixOf mathJS.Orderable, mathJS.Poolable, mathJS.Pars
 
     # TODO: intercept destructor
     # .....
+
+    valueOf: @::_getValue
 # end js/Numbers/Number.coffee
 
 # from js/Numbers/Double.coffee
@@ -1998,54 +2063,65 @@ class mathJS.Predicate
 # end js/Logic/Predicate.coffee
 
 # from js/Set/AbstractSet.coffee
-class mathJS.AbstractSet
+class _mathJS.AbstractSet
 
-    constructor: () ->
-        if arguments.callee.caller isnt mathJS.Set
-            throw new mathJS.Errors.AbstractInstantiationError("mathJS.AbstractSet can\'t be instantiated!")
+    # constructor: () ->
+    #     if arguments.callee.caller isnt mathJS.Set
+    #         throw new mathJS.Errors.AbstractInstantiationError("mathJS.AbstractSet can\'t be instantiated!")
 
-    size: () ->
-
-    equals: (set) ->
-
-    contains: (x) ->
-        return @_c(x)
+    cartesianProduct: (set) ->
 
     clone: () ->
 
-    union: (set) ->
+    contains: (elem) ->
 
-    intersects: (set) ->
-        return not @disjoint(set)
+    equals: (set) ->
+
+    getElements: () ->
 
     intersection: (set) ->
-
-    disjoint: (set) ->
-        return @intersection(set).size() is 0
 
     isSubsetOf: (set) ->
 
     isSupersetOf: (set) ->
 
-    complement: () ->
+    size: () ->
+
+    union: (set) ->
 
     without: (set) ->
+
+    ###########################################################################
+    # PRE-IMPLEMENTED
+    complement: (universe) ->
+        return universe.minus(@)
 
     isEmpty: () ->
         return @size() is 0
 
-    cartesianProduct: (set) ->
+    intersects: (set) ->
+        return not @disjoint(set)
 
+    disjoint: (set) ->
+        return @intersection(set).size() is 0
 
+    ###########################################################################
     # ALIASES
-    except: @without
-    minus: @without
-    difference: @without
-    supersetOf: @isSupersetOf
-    subsetOf: @isSubsetOf
-    has: @contains
-    cardinality: @size
-    times: @cartesianProduct
+    cardinality: @::size
+
+    difference: @::without
+    except: @::without
+    minus: @::without
+
+    has: @::contains
+
+    intersect: @::intersection
+
+    subsetOf: @::isSubsetOf
+
+    supersetOf: @::isSupersetOf
+
+    times: @::cartesianProduct
 # end js/Set/AbstractSet.coffee
 
 # from js/Set/Set.coffee
@@ -2054,70 +2130,82 @@ class mathJS.AbstractSet
 * @constructor
 * @param {mixed} specifications
 * To create an empty set pass no parameters.
-* To create a discrete set list the elements.
+* To create a discrete set list the elements. Those elements must implement the comparable interface and must not be arrays. Non-comparable elements will be ignored unless they are primitives.
 * To create a set from set-builder notation pass the parameters must have the following types:
 * mathJS.Expression, [mathJS.Domains], mathJS.Predicate
 *###
-class mathJS.Set extends mathJS.AbstractSet
+class mathJS.Set extends _mathJS.AbstractSet
 # class mathJS.Set extends mixOf mathJS.Poolable, mathJS.Comparable, mathJS.Parseable
+
     ###########################################################################
     # STATIC
-
-    @_isSet = (set) ->
-        return set instanceof mathJS.Set or set.instanceof(mathJS.Set)
+    # @_isSet = (set) ->
+    #     return set instanceof mathJS.Set or set.instanceof(mathJS.Set)
 
     ###########################################################################
     # CONSTRUCTOR
     constructor: (parameters...) ->
-        @discreteSet = new mathJS.DiscreteSet()
-
-        Object.defineProperties @, {
-            _size:
-                enumerable: false
-            # size:
-            #     get: () ->
-            #         if @_size?
-            #             return @_size
-            #         return @getSize()
-            #     set: () ->
-            #         if DEBUG
-            #             console.warn "The size of a set can't be set"
-            #         return @
-        }
-
-        @_size = null
-
         # ANALYSE PARAMETERS
         # nothing passed => empty set
         if parameters.length is 0
-            # @_size = 0
+            @discreteSet = new _mathJS.DiscreteSet()
+            @conditionalSet = new _mathJS.ConditionalSet()
             true
 
         # setset-builder notation
         else if parameters.length is 3 and parameters.second instanceof Array
             console.log "set builder"
-        # list of set elements -> discrete
+        # discrete and conditional set given (from internal calls like union())
+        else if parameters.first instanceof _mathJS.DiscreteSet and parameters.second instanceof _mathJS.ConditionalSet
+            @discreteSet = parameters.first.clone()
+            @conditionalSet = parameters.second.clone()
+        # discrete set
         else
-            for param in parameters
-                @discreteSet.add param
+            # array given -> make its elements the set elements
+            if parameters.first instanceof Array
+                parameters = parameters.first
+
+            console.log "params:", parameters
+
+            # list of set elements -> discrete
+            @discreteSet = new _mathJS.DiscreteSet(parameters)
+            @conditionalSet = new _mathJS.ConditionalSet()
+            # for param in parameters
+            #     @discreteSet.add param
 
 
     ###########################################################################
     # PRIVATE METHODS
+    # TODO: inline the following 2 if used nowhere else
+    newFromDiscrete = (set) ->
+        return new mathJS.Set(set.getElements())
+
+    newFromConditional = (set) ->
+        return new mathJS.Set(set.expression, set.domains, set.predicate)
 
     ###########################################################################
     # PROTECTED METHODS
 
     ###########################################################################
     # PUBLIC METHODS
+    getElements: (n=mathJS.config.set.defaultNumberOfElements, sorted=false) ->
+        res = @discreteSet.elems.concat(@conditionalSet.getElements(n, false))
+
+        if sorted isnt true
+            return res
+
+        return res.sort(mathJS.sortFunction)
+
+    size: () ->
+        return @discreteSet.size() + @conditionalSet.size()
+
     clone: () ->
-        # TODO
-        throw new Error("todo!")
-        return
+        return newFromDiscrete(@discreteSet).union(newFromConditional(@conditionalSet))
 
     equals: (set) ->
-        # TODO
-        throw new Error("todo!")
+        if set.size() isnt @size()
+            return false
+        return set.discreteSet.equals(@discreteSet) and set.conditionalSet.equals(@conditionalSet)
 
     isSubsetOf: (set) ->
         # TODO
@@ -2127,29 +2215,11 @@ class mathJS.Set extends mathJS.AbstractSet
         # TODO
         throw new Error("todo!")
 
-    forAll: () ->
-
-    exists: () ->
-
     contains: (elem) ->
-        if elem instanceof @type
-            for subset in @subsets
-                if subset.contains elem
-                    return true
-        return false
+        return set.conditionalSet.contains(@conditionalSet) or set.discreteSet.contains(@discreteSet)
 
     union: (set) ->
-        # TODO: how to avoid doubles?
-        # see if the set matches any already existing set
-        # if @intersects set
-        #     # remove duplicates from given set
-        #     set = set.without @
-        #     @subsets.push set
-        # # disjoint sets
-        # else
-        #     @subsets.push set
-
-        return @
+        return new mathJS.Set(@discreteSet.union(set.discreteSet), @conditionalSet.union(set.conditionalSet))
 
     complement: () ->
         if @universe?
@@ -2161,8 +2231,6 @@ class mathJS.Set extends mathJS.AbstractSet
     without: (set) ->
 
     cartesianProduct: (set) ->
-
-    times: @::cartesianProduct
 # end js/Set/Set.coffee
 
 # from js/Set/DiscreteSet.coffee
@@ -2177,45 +2245,21 @@ class mathJS.Set extends mathJS.AbstractSet
 * Optional. This and the following parameters serve as elements for the new Set. They will be in the new Set immediately.
 * @extends Set
 *###
-class mathJS.DiscreteSet extends mathJS.Set
+class _mathJS.DiscreteSet extends mathJS.Set
 
     ###########################################################################
     # CONSTRUCTOR
-    constructor: (elems = []) ->
-        if arguments.callee.caller isnt mathJS.Set
-            throw new mathJS.Errors.AbstractInstantiationError("mathJS.DiscreteSet can\'t be instantiated directly! Use mathJS.Set instead!")
+    constructor: (elems...) ->
+        if elems.first instanceof Array
+            elems = elems.first
 
-
-        @leftBoundary = null
-        @rightBoundary = null
-        @condition = null
         @elems = []
 
-        for elem in elems when mathJS.isComparable(elem) and not @contains(elem)
-            @elems.push elem
-
-        Object.defineProperties @, {
-            elems:
-                value: @elems
-                enumerable: false
-            _universe:
-                value: null
-                enumerable: false
-                writable: true
-            universe:
-                get: () ->
-                    return @_universe
-                set: (universe) ->
-                    if universe instanceof mathJS.Set or universe is null
-                        @_universe = universe
-                    return @
-                enumerable: true
-            size:
-                value: @elems.length
-                enumerable: false
-                writable: false
-                configurable: true # for overwriting in case of in-place union
-        }
+        for elem in elems when not @contains(elem)
+            if not mathJS.isNum(elem)
+                @elems.push elem
+            else
+                @elems.push new mathJS.Number(elem)
 
     ###########################################################################
     # PROTECTED METHODS
@@ -2224,111 +2268,113 @@ class mathJS.DiscreteSet extends mathJS.Set
     ###########################################################################
     # PUBLIC METHODS
 
-    isSubsetOf: (set) ->
+    # discrete sets only!
+    cartesianProduct: (set) ->
+        elements = []
         for e in @elems
-            if not set.contains e
-                return false
+            for x in set.elems
+                elements.push new mathJS.Tuple(e, x)
+
+        return new _mathJS.DiscreteSet(elements)
+
+    clone: () ->
+        return new _mathJS.DiscreteSet(@elems)
+
+    contains: (elem) ->
+        for e in @elems when elem.equals e
+            return true
+        return false
+
+    # discrete sets only!
+    equals: (set) ->
+        # return @isSubsetOf(set) and set.isSubsetOf(@)
+        for e in @elems when not set.contains e
+            return false
+
+        for e in set.elems when not @contains e
+            return false
+
+        return true
+
+    ###*
+    * Get the elements of the set.
+    * @method getElements
+    * @param sorted {Boolean}
+    * Optional. If set to `true` returns the elements in ascending order.
+    *###
+    getElements: (sorted=false) ->
+        if sorted isnt true
+            return @elems.clone()
+        return @elems.clone().sort(mathJS.sortFunction)
+
+    # discrete sets only!
+    intersection: (set) ->
+        elems = []
+        for x in @elems
+            for y in set.elems when x.equals y
+                elems.push x
+
+        return new _mathJS.DiscreteSet(elems)
+
+    isSubsetOf: (set) ->
+        for e in @elems when not set.contains e
+            return false
         return true
 
     isSupersetOf: (set) ->
         return set.isSubsetOf @
 
-    add: (elem) ->
-        for e in @elems when e is elem or e.equals(elem)
-            return @
+    size: () ->
+        # TODO: cache size
+        return @elems.length
 
-        @elems.push elem
-        return @
-
-
-    clone: () ->
-        return new mathJS.DiscreteSet(@elems)
-
-    ###*
-    * @Override
-    *###
-    equals: (set) ->
-        return @isSubsetOf(set) and set.isSubsetOf(@)
-
-    contains: (elem) ->
-        if mathJS.isComparable elem
-            for e in @elems when e is elem or e.equals?(elem)
-                return true
-        return false
-
+    # discrete sets only!
     union: (set) ->
-        if set instanceof mathJS.DiscreteSet
-            # console.log "here we are!", @elems.concat set.elems
-            return new mathJS.DiscreteSet(@elems.concat set.elems)
-        else if set instanceof mathJS.ConditionalSet
-            # throw new Error("Todo!") TODO
-            return "asdf"
+        return new _mathJS.DiscreteSet(set.elems.concat(@elems))
 
-    intersect: (set) ->
-        if set instanceof mathJS.DiscreteSet
-            elems = []
-            for x in @elems
-                for y in set.elems
-                    if x.equals y
-                        elems.push x
-            if elems.length > 0
-                res = new mathJS.DiscreteSet(@type, @universe)
-
-
-
-        else if set instanceof mathJS.ConditionalSet
-
-        else if set instanceof mathJS.EmptySet
-            return new mathJS.EmptySet()
-        return null
-
-
-
-    complement: () ->
-        if @universe?
-            return
-        return new mathJS.EmptySet()
-    ###*
-    * a.without b => returns: removed all common elements from a
-    *###
     without: (set) ->
+        return (elem for elem in @elems when not set.contains elem)
 # end js/Set/DiscreteSet.coffee
 
 # from js/Set/ConditionalSet.coffee
-class mathJS.ConditionalSet extends mathJS.Set
+class _mathJS.ConditionalSet extends mathJS.Set
 
     constructor: (condition, universe = null) ->
-        if condition instanceof mathJS.SetSpec
-            @condition = condition
-        else
-            @condition = null
+        # if condition instanceof mathJS.SetSpec
+        #     @condition = condition
+        # else
+        #     @condition = null
+        #
+        # @leftBoundary = null
+        # @rightBoundary = null
+        #
+        # Object.defineProperties @, {
+        #     # elems:
+        #     #     value: @elems
+        #     #     enumerable: false
+        #     _universe:
+        #         value: universe
+        #         enumerable: false
+        #         writable: true
+        #     universe:
+        #         get: () ->
+        #             return @_universe
+        #         set: (universe) ->
+        #             if universe instanceof mathJS.Set or universe is null
+        #                 @_universe = universe
+        #             return @
+        #         enumerable: true
+        #     size:
+        #         value: @elems.length
+        #         enumerable: false
+        #         writable: false
+        #         configurable: true # for overwriting in case of in-place union
+        # }
 
-        @leftBoundary = null
-        @rightBoundary = null
-
-        Object.defineProperties @, {
-            # elems:
-            #     value: @elems
-            #     enumerable: false
-            _universe:
-                value: universe
-                enumerable: false
-                writable: true
-            universe:
-                get: () ->
-                    return @_universe
-                set: (universe) ->
-                    if universe instanceof mathJS.Set or universe is null
-                        @_universe = universe
-                    return @
-                enumerable: true
-            size:
-                value: @elems.length
-                enumerable: false
-                writable: false
-                configurable: true # for overwriting in case of in-place union
-        }
-
+    getElements: (n, sorted=false) ->
+        res = []
+        # TODO
+        return res
 
 
     clone: () ->
@@ -2348,9 +2394,7 @@ class mathJS.ConditionalSet extends mathJS.Set
         # TODO
         throw new Error("todo!")
 
-    forAll: () ->
-
-    exists: () ->
+    size: () ->
 
     # addElem: (elem) ->
     #     if elem instanceof @type

@@ -9,45 +9,21 @@
 * Optional. This and the following parameters serve as elements for the new Set. They will be in the new Set immediately.
 * @extends Set
 *###
-class mathJS.DiscreteSet extends mathJS.Set
+class _mathJS.DiscreteSet extends mathJS.Set
 
     ###########################################################################
     # CONSTRUCTOR
-    constructor: (elems = []) ->
-        if arguments.callee.caller isnt mathJS.Set
-            throw new mathJS.Errors.AbstractInstantiationError("mathJS.DiscreteSet can\'t be instantiated directly! Use mathJS.Set instead!")
+    constructor: (elems...) ->
+        if elems.first instanceof Array
+            elems = elems.first
 
-
-        @leftBoundary = null
-        @rightBoundary = null
-        @condition = null
         @elems = []
 
-        for elem in elems when mathJS.isComparable(elem) and not @contains(elem)
-            @elems.push elem
-
-        Object.defineProperties @, {
-            elems:
-                value: @elems
-                enumerable: false
-            _universe:
-                value: null
-                enumerable: false
-                writable: true
-            universe:
-                get: () ->
-                    return @_universe
-                set: (universe) ->
-                    if universe instanceof mathJS.Set or universe is null
-                        @_universe = universe
-                    return @
-                enumerable: true
-            size:
-                value: @elems.length
-                enumerable: false
-                writable: false
-                configurable: true # for overwriting in case of in-place union
-        }
+        for elem in elems when not @contains(elem)
+            if not mathJS.isNum(elem)
+                @elems.push elem
+            else
+                @elems.push new mathJS.Number(elem)
 
     ###########################################################################
     # PROTECTED METHODS
@@ -56,71 +32,69 @@ class mathJS.DiscreteSet extends mathJS.Set
     ###########################################################################
     # PUBLIC METHODS
 
-    isSubsetOf: (set) ->
+    # discrete sets only!
+    cartesianProduct: (set) ->
+        elements = []
         for e in @elems
-            if not set.contains e
-                return false
+            for x in set.elems
+                elements.push new mathJS.Tuple(e, x)
+
+        return new _mathJS.DiscreteSet(elements)
+
+    clone: () ->
+        return new _mathJS.DiscreteSet(@elems)
+
+    contains: (elem) ->
+        for e in @elems when elem.equals e
+            return true
+        return false
+
+    # discrete sets only!
+    equals: (set) ->
+        # return @isSubsetOf(set) and set.isSubsetOf(@)
+        for e in @elems when not set.contains e
+            return false
+
+        for e in set.elems when not @contains e
+            return false
+
+        return true
+
+    ###*
+    * Get the elements of the set.
+    * @method getElements
+    * @param sorted {Boolean}
+    * Optional. If set to `true` returns the elements in ascending order.
+    *###
+    getElements: (sorted=false) ->
+        if sorted isnt true
+            return @elems.clone()
+        return @elems.clone().sort(mathJS.sortFunction)
+
+    # discrete sets only!
+    intersection: (set) ->
+        elems = []
+        for x in @elems
+            for y in set.elems when x.equals y
+                elems.push x
+
+        return new _mathJS.DiscreteSet(elems)
+
+    isSubsetOf: (set) ->
+        for e in @elems when not set.contains e
+            return false
         return true
 
     isSupersetOf: (set) ->
         return set.isSubsetOf @
 
-    add: (elem) ->
-        for e in @elems when e is elem or e.equals(elem)
-            return @
+    size: () ->
+        # TODO: cache size
+        return @elems.length
 
-        @elems.push elem
-        return @
-
-
-    clone: () ->
-        return new mathJS.DiscreteSet(@elems)
-
-    ###*
-    * @Override
-    *###
-    equals: (set) ->
-        return @isSubsetOf(set) and set.isSubsetOf(@)
-
-    contains: (elem) ->
-        if mathJS.isComparable elem
-            for e in @elems when e is elem or e.equals?(elem)
-                return true
-        return false
-
+    # discrete sets only!
     union: (set) ->
-        if set instanceof mathJS.DiscreteSet
-            # console.log "here we are!", @elems.concat set.elems
-            return new mathJS.DiscreteSet(@elems.concat set.elems)
-        else if set instanceof mathJS.ConditionalSet
-            # throw new Error("Todo!") TODO
-            return "asdf"
+        return new _mathJS.DiscreteSet(set.elems.concat(@elems))
 
-    intersect: (set) ->
-        if set instanceof mathJS.DiscreteSet
-            elems = []
-            for x in @elems
-                for y in set.elems
-                    if x.equals y
-                        elems.push x
-            if elems.length > 0
-                res = new mathJS.DiscreteSet(@type, @universe)
-
-
-
-        else if set instanceof mathJS.ConditionalSet
-
-        else if set instanceof mathJS.EmptySet
-            return new mathJS.EmptySet()
-        return null
-
-
-
-    complement: () ->
-        if @universe?
-            return
-        return new mathJS.EmptySet()
-    ###*
-    * a.without b => returns: removed all common elements from a
-    *###
     without: (set) ->
+        return (elem for elem in @elems when not set.contains elem)

@@ -341,3 +341,5 @@ class mathJS.Number extends mixOf mathJS.Orderable, mathJS.Poolable, mathJS.Pars
 
     # TODO: intercept destructor
     # .....
+
+    valueOf: @::_getValue

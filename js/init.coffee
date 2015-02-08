@@ -14,3 +14,8 @@ window.mathJS =
     Geometry: {}
     Operations: {}
     Sets: {}
+
+_mathJS = {}
+
+if DEBUG
+    window._mathJS = _mathJS

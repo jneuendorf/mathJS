@@ -193,7 +193,7 @@ mathJS.parseNumber = (str) ->
 mathJS.factorialInverse = (n) ->
     if (n = ~~n) < 0
         return NaN
-        
+
     x = 0
     # js: while((y = mathJS.factorial(++x)) < n) {}
     while (y = mathJS.factorial(++x)) < n then
@@ -277,3 +277,10 @@ mathJS.reciprocal = (n) ->
     if mathJS.isNum(n)
         return 1 / n
     return NaN
+
+mathJS.sortFunction = (a, b) ->
+    if a.lessThan b
+        return -1
+    if a.greaterThan b
+        return 1
+    return 0
