@@ -1,7 +1,7 @@
 class mathJS.Vector
 
     _isVectorLike: (v) ->
-        return v instanceof mathJS.Vector or v.instanceof?(mathJS.Vector) or v instanceof mathJS.Tuple or v.instanceof?(mathJS.Tuple)
+        return v instanceof mathJS.Vector or v.instanceof?(mathJS.Vector)# or v instanceof mathJS.Tuple or v.instanceof?(mathJS.Tuple)
 
     @_isVectorLike: @::_isVectorLike
 
@@ -168,8 +168,3 @@ class mathJS.Vector
         y = radius * Math.sin angle
 
         return @add( new TD.Point(x, y) )
-
-
-
-# same as vector with own prototype
-class mathJS.Tuple extends mathJS.Vector

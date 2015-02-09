@@ -19,3 +19,4 @@ _mathJS = {}
 
 if DEBUG
     window._mathJS = _mathJS
+    startTime = Date.now()

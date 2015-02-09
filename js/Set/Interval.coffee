@@ -1,68 +1,85 @@
 ###*
-*
 * @class Interval
 * @constructor
-* @param {Number} leftBoundary
-* @param {String} leftKind
-* Either "open" or "bounded" (case insensitive).
-* @param {Number} rightBoundary
-* @param {String} rightKind
-* Either "open" or "bounded" (case insensitive).
-* @param {Set} set
+* @param leftOpen {Boolean}
+* @param leftValue {Number|mathJS.Number}
+* @param rightValue {Number|mathJS.Number}
+* @param rightOpen {Boolean}
 * @extends Set
 *###
-class mathJS.Interval extends mathJS.ConditionalSet
+class mathJS.Interval extends mathJS.Set
 
     ###########################################################################
     # STATIC
-    @_valueIsValid: (value) ->
-        return (value instanceof mathJS.Number and value not instanceof mathJS.Complex) or mathJS.isNum(value)
+    @fromString: (str) ->
+        # remove spaces
+        str = str.replace /\s+/g, ""
+                 .split ","
 
-    @_kindIsValid: (kind) ->
-        return kind.lower() in ["open", "bounded"]
+        left =
+            open: str.first[0] is "("
+            value: new mathJS.Number(parseInt(str.first.slice(1), 10))
+        right =
+            open: str.second.last is ")"
+            value: new mathJS.Number(parseInt(str.second.slice(0, -1), 10))
+
+        return new mathJS.Interval(left, right)
+
+    # MAKE ALIAS
+    @parse: @fromString
+
 
     ###########################################################################
     # CONSTRUCTOR
-    constructor: (leftBoundary, leftKind, rightBoundary, rightKind, set) ->
-        if @_valueIsValid(leftBoundary) and @_valueIsValid(rightBoundary) and @_kindIsValid(leftKind) and @_kindIsValid(rightKind)
-            @leftBoundary   = leftBoundary.value or leftBoundary
-            @leftKind       = leftKind
-            @rightBoundary  = rightBoundary.value or rightBoundary
-            @rightKind      = rightKind
-        else
-            fStr = arguments.callee.caller.toString()
-            throw new Error("mathJS: Expected (number, string, number, string) number! Given (#{leftBoundary}, #{leftKind}, #{rightBoundary}, #{rightKind}) in '#{fStr.substring(0, fStr.indexOf(")") + 1)}'")
+    constructor: (parameters...) ->
+        if parameters.length >= 2
+            # first parameter has an .open property => assume ctor called from fromString()
+            if parameters.first.open?
+                @left = parameters.first
+                @right = parameters.second
+            else
+                second = parameters.second
+                fourth = parameters.fourth
+                @left =
+                    open: parameters.first
+                    value: (if second instanceof mathJS.Number then second else new mathJS.Number(second))
+                @right =
+                    open: parameters.third
+                    value: (if fourth instanceof mathJS.Number then fourth else new mathJS.Number(fourth))
+
 
     ###########################################################################
     # PROTECTED METHODS
-    _valueIsValid = @_valueIsValid
-
-    _kindIsValid = @_kindIsValid
 
     ###########################################################################
     # PUBLIC METHODS
-    shiftRight: (value) ->
-        if @_valueIsValid(value)
-            v = value.value or value
-            @leftBoundary += v
-            @rightBoundary += v
-        return @
+    cartesianProduct: (set) ->
 
-    shiftLeft: (value) ->
-        if @_valueIsValid(value)
-            v = value.value or value
-            @leftBoundary -= v
-            @rightBoundary -= v
-        return @
+    clone: () ->
+        return new mathJS.Interval(
+            {
+                open: @left.open
+                value: @left.value.clone()
+            }
+            {
+                open: @right.open
+                value: @right.value.clone()
+            }
+        )
 
-    setLeftBoundary: (value, kind) ->
-        if @_valueIsValid(value) and @_kindIsValid(kind)
-            @leftBoundary = value.value or value
-            @leftKind = kind
-        return @
+    contains: (elem) ->
+        return @left.value.lessThanOrEqualTo(elem) and @right.value.greaterThanOrEqualTo(elem) 
 
-    seRightBoundary: (value, kind) ->
-        if @_valueIsValid(value) and @_kindIsValid(kind)
-            @rightBoundary = value.value or value
-            @rightKind = kind
-        return @
+    equals: (set) ->
+
+    getElements: () ->
+
+    intersection: (set) ->
+
+    isSubsetOf: (set) ->
+
+    size: () ->
+
+    union: (set) ->
+
+    without: (set) ->

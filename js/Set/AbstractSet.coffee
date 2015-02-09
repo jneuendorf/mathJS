@@ -18,8 +18,6 @@ class _mathJS.AbstractSet
 
     isSubsetOf: (set) ->
 
-    isSupersetOf: (set) ->
-
     size: () ->
 
     union: (set) ->
@@ -31,11 +29,14 @@ class _mathJS.AbstractSet
     complement: (universe) ->
         return universe.minus(@)
 
+    intersects: (set) ->
+        return not @disjoint(set)
+
     isEmpty: () ->
         return @size() is 0
 
-    intersects: (set) ->
-        return not @disjoint(set)
+    isSupersetOf: (set) ->
+        return set.isSubsetOf @
 
     disjoint: (set) ->
         return @intersection(set).size() is 0

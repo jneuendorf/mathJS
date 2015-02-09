@@ -20,6 +20,7 @@ _mathJS = {}
 
 if DEBUG
     window._mathJS = _mathJS
+    startTime = Date.now()
 # end js/init.coffee
 
 # from js/globalFunctions.coffee
@@ -53,7 +54,7 @@ window.mixOf = (base, mixins...) ->
 
 # from js/prototyping.coffee
 # TODO: use object.defineProperties in order to hide methods from enumeration
-#######################################################################
+####################################################################################
 Array::reverseCopy = () ->
     res = []
     res.push(item) for item in @ by -1
@@ -84,12 +85,6 @@ Array::shuffle = () ->
     for elem, i in arr
         @[i] = elem
     return @
-
-Array::first = () ->
-    return @[0]
-
-Array::last = () ->
-    return @[@length - 1]
 
 Array::average = () ->
     sum = 0
@@ -155,6 +150,18 @@ Object.defineProperties Array::, {
             return @[2]
         set: (val) ->
             @[2] = val
+            return @
+    fourth:
+        get: () ->
+            return @[3]
+        set: (val) ->
+            @[3] = val
+            return @
+    last:
+        get: () ->
+            return @[@length - 1]
+        set: (val) ->
+            @[@length - 1] = val
             return @
 }
 
@@ -229,7 +236,8 @@ Array::sortProp = (getProp, order = "asc") ->
     return @sort cmpFunc
 
 
-#######################################################################
+####################################################################################
+# STRING
 String::camel = (spaces) ->
     if not spaces?
         spaces = false
@@ -297,6 +305,35 @@ String::camelToSnakeCase = () ->
 String::lower = String::toLowerCase
 String::upper = String::toUpperCase
 
+# convenient index getters and setters
+Object.defineProperties String::, {
+    first:
+        get: () ->
+            return @[0]
+        set: (val) ->
+            return @
+    second:
+        get: () ->
+            return @[1]
+        set: (val) ->
+            return @
+    third:
+        get: () ->
+            return @[2]
+        set: (val) ->
+            return @
+    fourth:
+        get: () ->
+            return @[3]
+        set: (val) ->
+            return @
+    last:
+        get: () ->
+            return @[@length - 1]
+        set: (val) ->
+            return @
+}
+
 # implement comparable and orderable interface for primitives
 String::equals = (str) ->
     return @valueOf() is str.valueOf()
@@ -321,7 +358,8 @@ String::greaterThanOrEqualTo = (str) ->
 
 String::gte
 
-
+####################################################################################
+# BOOLEAN
 Boolean::equals = (bool) ->
     return @valueOf() is bool.valueOf()
 
@@ -345,7 +383,7 @@ Boolean::greaterThanOrEqualTo = (bool) ->
 
 Boolean::gte
 
-#######################################################################
+####################################################################################
 # OBJECT
 
 Object.keysLike = (obj, pattern) ->
@@ -397,7 +435,7 @@ Object.defineProperties mathJS, {
         value: Infinity
         writable: false
     epsilon:
-        value: Number.EPSILON
+        value: Number.EPSILON or 2.220446049250313e-16 # 2.220446049250313080847263336181640625e-16
         writable: false
     maxValue:
         value: Number.MAX_VALUE
@@ -2083,8 +2121,6 @@ class _mathJS.AbstractSet
 
     isSubsetOf: (set) ->
 
-    isSupersetOf: (set) ->
-
     size: () ->
 
     union: (set) ->
@@ -2096,11 +2132,14 @@ class _mathJS.AbstractSet
     complement: (universe) ->
         return universe.minus(@)
 
+    intersects: (set) ->
+        return not @disjoint(set)
+
     isEmpty: () ->
         return @size() is 0
 
-    intersects: (set) ->
-        return not @disjoint(set)
+    isSupersetOf: (set) ->
+        return set.isSubsetOf @
 
     disjoint: (set) ->
         return @intersection(set).size() is 0
@@ -2189,7 +2228,7 @@ class mathJS.Set extends _mathJS.AbstractSet
     ###########################################################################
     # PUBLIC METHODS
     getElements: (n=mathJS.config.set.defaultNumberOfElements, sorted=false) ->
-        res = @discreteSet.elems.concat(@conditionalSet.getElements(n, false))
+        res = @discreteSet.elems.concat(@conditionalSet.getElements(n, sorted))
 
         if sorted isnt true
             return res
@@ -2302,7 +2341,7 @@ class _mathJS.DiscreteSet extends mathJS.Set
     * @param sorted {Boolean}
     * Optional. If set to `true` returns the elements in ascending order.
     *###
-    getElements: (sorted=false) ->
+    getElements: (sorted) ->
         if sorted isnt true
             return @elems.clone()
         return @elems.clone().sort(mathJS.sortFunction)
@@ -2320,9 +2359,6 @@ class _mathJS.DiscreteSet extends mathJS.Set
         for e in @elems when not set.contains e
             return false
         return true
-
-    isSupersetOf: (set) ->
-        return set.isSubsetOf @
 
     size: () ->
         # TODO: cache size
@@ -2371,70 +2407,19 @@ class _mathJS.ConditionalSet extends mathJS.Set
         #         configurable: true # for overwriting in case of in-place union
         # }
 
-    getElements: (n, sorted=false) ->
-        res = []
-        # TODO
-        return res
+    cartesianProduct: (sets...) ->
+        # generator = new mathJS.Generator()
+        # generator.tuple = new mathJS.Tuple([@generator].concat(set.generator for set in sets))
+        # generator.func = (n) ->
+        #     return @tuple.eval(n)
 
+        generators = [@generator].concat(set.generator for set in sets)
+
+        mathJS.Generator.newFromMany(generators...)
+
+        return new _mathJS.ConditionalSet(generator)
 
     clone: () ->
-        # TODO
-        throw new Error("todo!")
-        return
-
-    equals: (set) ->
-        # TODO
-        throw new Error("todo!")
-
-    isSubsetOf: (set) ->
-        # TODO
-        throw new Error("todo!")
-
-    isSupersetOf: (set) ->
-        # TODO
-        throw new Error("todo!")
-
-    size: () ->
-
-    # addElem: (elem) ->
-    #     if elem instanceof @type
-    #         return @union(new mathJS.DiscreteSet(@type, elem))
-    #     return @
-        # elem = @_getValueFromParam(elem)
-        #
-        # if elem?
-        #     for subset in @subsets
-        #         # element already in some subset => return
-        #         if subset.contains elem
-        #             return @
-        #
-        #     # element is in no subset and not in elements
-        #     for e in @elems when e.equals?(elem) or e is elem
-        #         return @
-        #
-        #     # at this point we know that the element is not in the set
-        #     @elems.push elem
-        #
-        # return @
-
-    # addElems: (elems) ->
-    #     set = new mathJS.EmptySet()
-    #     for elem in elems when elem instanceof @type
-    #         set.addElem elem
-
-    # removeElem: (elem) ->
-    #     if elem instanceof @type
-    #         return @without(new mathJS.DiscreteSet(@type, elem))
-    #         # subset.remove elem for subset in @subsets
-    #         #
-    #         # elems = []
-    #         # for e in @elems
-    #         #     if e.equals(elem) or e is elem
-    #         #         continue
-    #         #     elems.push e
-    #         #
-    #         # @elems = elems
-    #     return @
 
     contains: (elem) ->
         if mathJS.isComparable elem
@@ -2442,49 +2427,115 @@ class _mathJS.ConditionalSet extends mathJS.Set
                 return true
         return false
 
-    union: (set) ->
-        # TODO: how to avoid doubles?
-        # see if the set matches any already existing set
-        # if @intersects set
-        #     # remove duplicates from given set
-        #     set = set.without @
-        #     @subsets.push set
-        # # disjoint sets
-        # else
-        #     @subsets.push set
+    equals: (set) ->
 
+    getElements: (n, sorted) ->
+        res = []
+        # TODO
+        return res
+
+    intersection: (set) ->
+
+    isSubsetOf: (set) ->
+
+    size: () ->
+
+    union: (set) ->
+
+    without: (set) ->
+# end js/Set/ConditionalSet.coffee
+
+# from js/Set/Interval.coffee
+###*
+* @class Interval
+* @constructor
+* @param leftOpen {Boolean}
+* @param leftValue {Number|mathJS.Number}
+* @param rightValue {Number|mathJS.Number}
+* @param rightOpen {Boolean}
+* @extends Set
+*###
+class mathJS.Interval extends mathJS.Set
+
+    ###########################################################################
+    # STATIC
+    @_valueIsValid: (value) ->
+        return (value instanceof mathJS.Number and value not instanceof mathJS.Complex) or mathJS.isNum(value)
+
+    @_kindIsValid: (kind) ->
+        return kind.lower() in ["open", "bounded"]
+
+    @fromString: (str) ->
+        # remove spaces
+        str = str.replace /\s+/g, ""
+                 .split ","
+
+        left =
+            open: str.first[0] is "("
+            value: new mathJS.Number(parseInt(str.first.slice(1), 10))
+        right =
+            open: str.second.last is ")"
+            value: new mathJS.Number(parseInt(str.second.slice(0, -1), 10))
+
+        return new mathJS.Interval(left, right)
+
+    # MAKE ALIAS
+    @parse: @fromString
+
+
+    ###########################################################################
+    # CONSTRUCTOR
+    constructor: (parameters...) ->
+        if parameters.length >= 2
+            # first parameter has an .open property => assume ctor called from fromString()
+            if parameters.first.open?
+                @left = parameters.first
+                @right = parameters.second
+            else
+                second = parameters.second
+                fourth = parameters.fourth
+                @left =
+                    open: parameters.first
+                    value: (if second instanceof mathJS.Number then second else new mathJS.Number(second))
+                @right =
+                    open: parameters.third
+                    value: (if fourth instanceof mathJS.Number then fourth else new mathJS.Number(fourth))
+
+
+    ###########################################################################
+    # PROTECTED METHODS
+    _valueIsValid = @_valueIsValid
+
+    _kindIsValid = @_kindIsValid
+
+    ###########################################################################
+    # PUBLIC METHODS
+    shiftRight: (value) ->
+        if @_valueIsValid(value)
+            v = value.value or value
+            @leftBoundary += v
+            @rightBoundary += v
         return @
 
-    intersect: (set) ->
-        return
+    shiftLeft: (value) ->
+        if @_valueIsValid(value)
+            v = value.value or value
+            @leftBoundary -= v
+            @rightBoundary -= v
+        return @
 
-    intersects: (set) ->
-        return @intersection.size() > 0
+    setLeftBoundary: (value, kind) ->
+        if @_valueIsValid(value) and @_kindIsValid(kind)
+            @leftBoundary = value.value or value
+            @leftKind = kind
+        return @
 
-    disjoint: (set) ->
-        return @intersection.size() is 0
-
-    complement: () ->
-        if @universe?
-            return asdf
-        return new mathJS.EmptySet()
-    ###*
-    * a.without b => returns: removed all common elements from a
-    *###
-    without: (set) ->
-
-    cartesianProduct: (set) ->
-
-    times: @::cartesianProduct
-
-    # size: () ->
-    #     return @_discreteSet.size + @_conditionalSet.size
-
-    isEmpty: () ->
-        return @size > 0
-
-    cardinality: @::size
-# end js/Set/ConditionalSet.coffee
+    seRightBoundary: (value, kind) ->
+        if @_valueIsValid(value) and @_kindIsValid(kind)
+            @rightBoundary = value.value or value
+            @rightKind = kind
+        return @
+# end js/Set/Interval.coffee
 
 # from js/Set/Domains/N.coffee
 class mathJS.Sets.N extends mathJS.Set
@@ -2771,6 +2822,117 @@ do () ->
     }
 # end js/Set/Domains/N.coffee
 
+# from js/Set/Tuple.coffee
+class mathJS.Tuple
+
+    ###########################################################################
+    # CONSTRUCTOR
+    constructor: (elems...) ->
+        if elems.first instanceof Array
+            elems = elems.first
+
+        temp = []
+
+        for elem in elems
+            if not mathJS.isNum(elem)
+                temp.push elem
+            else
+                temp.push new mathJS.Number(elem)
+
+        @elems = temp
+        @_size = temp.length
+
+    ###########################################################################
+    # PUBLIC METHODS
+    add: (elems...) ->
+        return new mathJS.Tuple(@elems.concat(elems))
+
+    at: (idx) ->
+        return @elems[idx]
+
+    clone: () ->
+        return new mathJS.Tuple(@elems)
+
+    contains: (elem) ->
+        for e in @elems when e.equals elem
+            return true
+        return false
+
+    equals: (tuple) ->
+        if @_size isnt tuple._size
+            return false
+
+        elements = tuple.elems
+
+        for elem, idx in @elems when not elem.equals elements[idx]
+            return false
+
+        return true
+
+    eval: (values) ->
+        elems = (elem.eval(values) for elem in @elems)
+        return new mathJS.Tuple(elems)
+
+    ###*
+    * Get the elements of the Tuple.
+    * @method getElements
+    *###
+    getElements: () ->
+        return @elems.clone()
+
+    insert: (idx, elems...) ->
+        elements = []
+        for elem, i in @elems
+            if i is idx
+                elements = elements.concat(elems)
+            elements.push elem
+
+        return new mathJS.Tuple(elements)
+
+    isEmpty: () ->
+        return @_size() is 0
+
+    ###*
+    * Removes the first occurences of the given elements.
+    *###
+    remove: (elems...) ->
+        elements = @elems.clone()
+        for e in elems
+            for elem, i in elements when elem.equals e
+                elements.splice i, 1
+                break
+
+        return new mathJS.Tuple(elements)
+
+    removeAt: (idx, n=1) ->
+        elems = []
+        for elem, i in @elems when i < idx or i >= idx + n
+            elems.push elem
+
+        return new mathJS.Tuple(elems)
+
+    size: () ->
+        return @_size
+
+    slice: (startIdx, endIdx=@_size) ->
+        return new mathJS.Tuple(@elems.slice(startIdx, endIdx))
+
+    ###########################################################################
+    # ALIASES
+    cardinality: @::size
+
+    extendBy: @::add
+
+    get: @::at
+
+    has: @::contains
+
+    addAt: @::insert
+    insertAt: @::insert
+
+    reduceBy: @::remove
+# end js/Set/Tuple.coffee
+
 # from js/Calculus/Integral.coffee
 class mathJS.Integral
 
@@ -2934,7 +3096,7 @@ class mathJS.Integral
 class mathJS.Vector
 
     _isVectorLike: (v) ->
-        return v instanceof mathJS.Vector or v.instanceof?(mathJS.Vector) or v instanceof mathJS.Tuple or v.instanceof?(mathJS.Tuple)
+        return v instanceof mathJS.Vector or v.instanceof?(mathJS.Vector)# or v instanceof mathJS.Tuple or v.instanceof?(mathJS.Tuple)
 
     @_isVectorLike: @::_isVectorLike
 
@@ -3101,11 +3263,6 @@ class mathJS.Vector
         y = radius * Math.sin angle
 
         return @add( new TD.Point(x, y) )
-
-
-
-# same as vector with own prototype
-class mathJS.Tuple extends mathJS.Vector
 # end js/LinearAlgebra/Vector.coffee
 
 # from js/Initializer.coffee
@@ -3117,6 +3274,9 @@ class mathJS.Initializer
 
 # from js/start.coffee
 mathJS.Initializer.start()
+
+if DEBUG
+    console.log "time to load mathJS: ", Date.now() - startTime, "ms"
 
 # $(document).ready () ->
 #     console.log "dom ready"

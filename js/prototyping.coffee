@@ -1,5 +1,5 @@
 # TODO: use object.defineProperties in order to hide methods from enumeration
-#######################################################################
+####################################################################################
 Array::reverseCopy = () ->
     res = []
     res.push(item) for item in @ by -1
@@ -30,12 +30,6 @@ Array::shuffle = () ->
     for elem, i in arr
         @[i] = elem
     return @
-
-Array::first = () ->
-    return @[0]
-
-Array::last = () ->
-    return @[@length - 1]
 
 Array::average = () ->
     sum = 0
@@ -101,6 +95,18 @@ Object.defineProperties Array::, {
             return @[2]
         set: (val) ->
             @[2] = val
+            return @
+    fourth:
+        get: () ->
+            return @[3]
+        set: (val) ->
+            @[3] = val
+            return @
+    last:
+        get: () ->
+            return @[@length - 1]
+        set: (val) ->
+            @[@length - 1] = val
             return @
 }
 
@@ -175,7 +181,8 @@ Array::sortProp = (getProp, order = "asc") ->
     return @sort cmpFunc
 
 
-#######################################################################
+####################################################################################
+# STRING
 String::camel = (spaces) ->
     if not spaces?
         spaces = false
@@ -243,6 +250,35 @@ String::camelToSnakeCase = () ->
 String::lower = String::toLowerCase
 String::upper = String::toUpperCase
 
+# convenient index getters and setters
+Object.defineProperties String::, {
+    first:
+        get: () ->
+            return @[0]
+        set: (val) ->
+            return @
+    second:
+        get: () ->
+            return @[1]
+        set: (val) ->
+            return @
+    third:
+        get: () ->
+            return @[2]
+        set: (val) ->
+            return @
+    fourth:
+        get: () ->
+            return @[3]
+        set: (val) ->
+            return @
+    last:
+        get: () ->
+            return @[@length - 1]
+        set: (val) ->
+            return @
+}
+
 # implement comparable and orderable interface for primitives
 String::equals = (str) ->
     return @valueOf() is str.valueOf()
@@ -267,7 +303,8 @@ String::greaterThanOrEqualTo = (str) ->
 
 String::gte
 
-
+####################################################################################
+# BOOLEAN
 Boolean::equals = (bool) ->
     return @valueOf() is bool.valueOf()
 
@@ -291,7 +328,7 @@ Boolean::greaterThanOrEqualTo = (bool) ->
 
 Boolean::gte
 
-#######################################################################
+####################################################################################
 # OBJECT
 
 Object.keysLike = (obj, pattern) ->

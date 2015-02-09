@@ -31,13 +31,13 @@ js/Formals/Equation
 
 js/Logic/Predicate
 
-# js/Set/SetSpec
 js/Set/AbstractSet
 js/Set/Set
 js/Set/DiscreteSet
 js/Set/ConditionalSet
-# js/Set/EmptySet
+js/Set/Interval
 js/Set/Domains/N
+js/Set/Tuple
 
 js/Function
 

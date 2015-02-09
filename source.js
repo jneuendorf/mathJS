@@ -7,7 +7,7 @@
  */
 
 (function() {
-  var cached, _mathJS,
+  var cached, startTime, _mathJS,
     __slice = [].slice,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -31,6 +31,7 @@
 
   if (DEBUG) {
     window._mathJS = _mathJS;
+    startTime = Date.now();
   }
 
   window.mixOf = function() {
@@ -124,14 +125,6 @@
     return this;
   };
 
-  Array.prototype.first = function() {
-    return this[0];
-  };
-
-  Array.prototype.last = function() {
-    return this[this.length - 1];
-  };
-
   Array.prototype.average = function() {
     var elem, elems, sum, _i, _len;
     sum = 0;
@@ -202,6 +195,24 @@
       },
       set: function(val) {
         this[2] = val;
+        return this;
+      }
+    },
+    fourth: {
+      get: function() {
+        return this[3];
+      },
+      set: function(val) {
+        this[3] = val;
+        return this;
+      }
+    },
+    last: {
+      get: function() {
+        return this[this.length - 1];
+      },
+      set: function(val) {
+        this[this.length - 1] = val;
         return this;
       }
     }
@@ -372,6 +383,49 @@
 
   String.prototype.upper = String.prototype.toUpperCase;
 
+  Object.defineProperties(String.prototype, {
+    first: {
+      get: function() {
+        return this[0];
+      },
+      set: function(val) {
+        return this;
+      }
+    },
+    second: {
+      get: function() {
+        return this[1];
+      },
+      set: function(val) {
+        return this;
+      }
+    },
+    third: {
+      get: function() {
+        return this[2];
+      },
+      set: function(val) {
+        return this;
+      }
+    },
+    fourth: {
+      get: function() {
+        return this[3];
+      },
+      set: function(val) {
+        return this;
+      }
+    },
+    last: {
+      get: function() {
+        return this[this.length - 1];
+      },
+      set: function(val) {
+        return this;
+      }
+    }
+  });
+
   String.prototype.equals = function(str) {
     return this.valueOf() === str.valueOf();
   };
@@ -475,7 +529,7 @@
       writable: false
     },
     epsilon: {
-      value: Number.EPSILON,
+      value: Number.EPSILON || 2.220446049250313e-16,
       writable: false
     },
     maxValue: {
@@ -2432,8 +2486,6 @@
 
     AbstractSet.prototype.isSubsetOf = function(set) {};
 
-    AbstractSet.prototype.isSupersetOf = function(set) {};
-
     AbstractSet.prototype.size = function() {};
 
     AbstractSet.prototype.union = function(set) {};
@@ -2444,12 +2496,16 @@
       return universe.minus(this);
     };
 
+    AbstractSet.prototype.intersects = function(set) {
+      return !this.disjoint(set);
+    };
+
     AbstractSet.prototype.isEmpty = function() {
       return this.size() === 0;
     };
 
-    AbstractSet.prototype.intersects = function(set) {
-      return !this.disjoint(set);
+    AbstractSet.prototype.isSupersetOf = function(set) {
+      return set.isSubsetOf(this);
     };
 
     AbstractSet.prototype.disjoint = function(set) {
@@ -2533,7 +2589,7 @@
       if (sorted == null) {
         sorted = false;
       }
-      res = this.discreteSet.elems.concat(this.conditionalSet.getElements(n, false));
+      res = this.discreteSet.elems.concat(this.conditionalSet.getElements(n, sorted));
       if (sorted !== true) {
         return res;
       }
@@ -2688,9 +2744,6 @@
      */
 
     DiscreteSet.prototype.getElements = function(sorted) {
-      if (sorted == null) {
-        sorted = false;
-      }
       if (sorted !== true) {
         return this.elems.clone();
       }
@@ -2724,10 +2777,6 @@
         }
       }
       return true;
-    };
-
-    DiscreteSet.prototype.isSupersetOf = function(set) {
-      return set.isSubsetOf(this);
     };
 
     DiscreteSet.prototype.size = function() {
@@ -2767,32 +2816,23 @@
       }
     }
 
-    ConditionalSet.prototype.getElements = function(n, sorted) {
-      var res;
-      if (sorted == null) {
-        sorted = false;
-      }
-      res = [];
-      return res;
+    ConditionalSet.prototype.cartesianProduct = function() {
+      var generators, set, sets, _ref;
+      sets = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      generators = [this.generator].concat((function() {
+        var _i, _len, _results;
+        _results = [];
+        for (_i = 0, _len = sets.length; _i < _len; _i++) {
+          set = sets[_i];
+          _results.push(set.generator);
+        }
+        return _results;
+      })());
+      (_ref = mathJS.Generator).newFromMany.apply(_ref, generators);
+      return new _mathJS.ConditionalSet(generator);
     };
 
-    ConditionalSet.prototype.clone = function() {
-      throw new Error("todo!");
-    };
-
-    ConditionalSet.prototype.equals = function(set) {
-      throw new Error("todo!");
-    };
-
-    ConditionalSet.prototype.isSubsetOf = function(set) {
-      throw new Error("todo!");
-    };
-
-    ConditionalSet.prototype.isSupersetOf = function(set) {
-      throw new Error("todo!");
-    };
-
-    ConditionalSet.prototype.size = function() {};
+    ConditionalSet.prototype.clone = function() {};
 
     ConditionalSet.prototype.contains = function(elem) {
       var _ref;
@@ -2804,46 +2844,133 @@
       return false;
     };
 
-    ConditionalSet.prototype.union = function(set) {
-      return this;
+    ConditionalSet.prototype.equals = function(set) {};
+
+    ConditionalSet.prototype.getElements = function(n, sorted) {
+      var res;
+      res = [];
+      return res;
     };
 
-    ConditionalSet.prototype.intersect = function(set) {};
+    ConditionalSet.prototype.intersection = function(set) {};
 
-    ConditionalSet.prototype.intersects = function(set) {
-      return this.intersection.size() > 0;
-    };
+    ConditionalSet.prototype.isSubsetOf = function(set) {};
 
-    ConditionalSet.prototype.disjoint = function(set) {
-      return this.intersection.size() === 0;
-    };
+    ConditionalSet.prototype.size = function() {};
 
-    ConditionalSet.prototype.complement = function() {
-      if (this.universe != null) {
-        return asdf;
-      }
-      return new mathJS.EmptySet();
-    };
-
-
-    /**
-    * a.without b => returns: removed all common elements from a
-    *
-     */
+    ConditionalSet.prototype.union = function(set) {};
 
     ConditionalSet.prototype.without = function(set) {};
 
-    ConditionalSet.prototype.cartesianProduct = function(set) {};
+    return ConditionalSet;
 
-    ConditionalSet.prototype.times = ConditionalSet.prototype.cartesianProduct;
+  })(mathJS.Set);
 
-    ConditionalSet.prototype.isEmpty = function() {
-      return this.size > 0;
+
+  /**
+  * @class Interval
+  * @constructor
+  * @param leftOpen {Boolean}
+  * @param leftValue {Number|mathJS.Number}
+  * @param rightValue {Number|mathJS.Number}
+  * @param rightOpen {Boolean}
+  * @extends Set
+  *
+   */
+
+  mathJS.Interval = (function(_super) {
+    var _kindIsValid, _valueIsValid;
+
+    __extends(Interval, _super);
+
+    Interval._valueIsValid = function(value) {
+      return (value instanceof mathJS.Number && !(value instanceof mathJS.Complex)) || mathJS.isNum(value);
     };
 
-    ConditionalSet.prototype.cardinality = ConditionalSet.prototype.size;
+    Interval._kindIsValid = function(kind) {
+      var _ref;
+      return (_ref = kind.lower()) === "open" || _ref === "bounded";
+    };
 
-    return ConditionalSet;
+    Interval.fromString = function(str) {
+      var left, right;
+      str = str.replace(/\s+/g, "").split(",");
+      left = {
+        open: str.first[0] === "(",
+        value: new mathJS.Number(parseInt(str.first.slice(1), 10))
+      };
+      right = {
+        open: str.second.last === ")",
+        value: new mathJS.Number(parseInt(str.second.slice(0, -1), 10))
+      };
+      return new mathJS.Interval(left, right);
+    };
+
+    Interval.parse = Interval.fromString;
+
+    function Interval() {
+      var fourth, parameters, second;
+      parameters = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      if (parameters.length >= 2) {
+        if (parameters.first.open != null) {
+          this.left = parameters.first;
+          this.right = parameters.second;
+        } else {
+          second = parameters.second;
+          fourth = parameters.fourth;
+          this.left = {
+            open: parameters.first,
+            value: (second instanceof mathJS.Number ? second : new mathJS.Number(second))
+          };
+          this.right = {
+            open: parameters.third,
+            value: (fourth instanceof mathJS.Number ? fourth : new mathJS.Number(fourth))
+          };
+        }
+      }
+    }
+
+    _valueIsValid = Interval._valueIsValid;
+
+    _kindIsValid = Interval._kindIsValid;
+
+    Interval.prototype.shiftRight = function(value) {
+      var v;
+      if (this._valueIsValid(value)) {
+        v = value.value || value;
+        this.leftBoundary += v;
+        this.rightBoundary += v;
+      }
+      return this;
+    };
+
+    Interval.prototype.shiftLeft = function(value) {
+      var v;
+      if (this._valueIsValid(value)) {
+        v = value.value || value;
+        this.leftBoundary -= v;
+        this.rightBoundary -= v;
+      }
+      return this;
+    };
+
+    Interval.prototype.setLeftBoundary = function(value, kind) {
+      if (this._valueIsValid(value) && this._kindIsValid(kind)) {
+        this.leftBoundary = value.value || value;
+        this.leftKind = kind;
+      }
+      return this;
+    };
+
+    Interval.prototype.seRightBoundary = function(value, kind) {
+      if (this._valueIsValid(value) && this._kindIsValid(kind)) {
+        this.rightBoundary = value.value || value;
+        this.rightKind = kind;
+      }
+      return this;
+    };
+
+    return Interval;
 
   })(mathJS.Set);
 
@@ -3101,6 +3228,182 @@
     });
   })();
 
+  mathJS.Tuple = (function() {
+    function Tuple() {
+      var elem, elems, temp, _i, _len;
+      elems = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      if (elems.first instanceof Array) {
+        elems = elems.first;
+      }
+      temp = [];
+      for (_i = 0, _len = elems.length; _i < _len; _i++) {
+        elem = elems[_i];
+        if (!mathJS.isNum(elem)) {
+          temp.push(elem);
+        } else {
+          temp.push(new mathJS.Number(elem));
+        }
+      }
+      this.elems = temp;
+      this._size = temp.length;
+    }
+
+    Tuple.prototype.add = function() {
+      var elems;
+      elems = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      return new mathJS.Tuple(this.elems.concat(elems));
+    };
+
+    Tuple.prototype.at = function(idx) {
+      return this.elems[idx];
+    };
+
+    Tuple.prototype.clone = function() {
+      return new mathJS.Tuple(this.elems);
+    };
+
+    Tuple.prototype.contains = function(elem) {
+      var e, _i, _len, _ref;
+      _ref = this.elems;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        e = _ref[_i];
+        if (e.equals(elem)) {
+          return true;
+        }
+      }
+      return false;
+    };
+
+    Tuple.prototype.equals = function(tuple) {
+      var elem, elements, idx, _i, _len, _ref;
+      if (this._size !== tuple._size) {
+        return false;
+      }
+      elements = tuple.elems;
+      _ref = this.elems;
+      for (idx = _i = 0, _len = _ref.length; _i < _len; idx = ++_i) {
+        elem = _ref[idx];
+        if (!elem.equals(elements[idx])) {
+          return false;
+        }
+      }
+      return true;
+    };
+
+    Tuple.prototype["eval"] = function(values) {
+      var elem, elems;
+      elems = (function() {
+        var _i, _len, _ref, _results;
+        _ref = this.elems;
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          elem = _ref[_i];
+          _results.push(elem["eval"](values));
+        }
+        return _results;
+      }).call(this);
+      return new mathJS.Tuple(elems);
+    };
+
+
+    /**
+    * Get the elements of the Tuple.
+    * @method getElements
+    *
+     */
+
+    Tuple.prototype.getElements = function() {
+      return this.elems.clone();
+    };
+
+    Tuple.prototype.insert = function() {
+      var elem, elements, elems, i, idx, _i, _len, _ref;
+      idx = arguments[0], elems = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+      elements = [];
+      _ref = this.elems;
+      for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
+        elem = _ref[i];
+        if (i === idx) {
+          elements = elements.concat(elems);
+        }
+        elements.push(elem);
+      }
+      return new mathJS.Tuple(elements);
+    };
+
+    Tuple.prototype.isEmpty = function() {
+      return this._size() === 0;
+    };
+
+
+    /**
+    * Removes the first occurences of the given elements.
+    *
+     */
+
+    Tuple.prototype.remove = function() {
+      var e, elem, elements, elems, i, _i, _j, _len, _len1;
+      elems = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      elements = this.elems.clone();
+      for (_i = 0, _len = elems.length; _i < _len; _i++) {
+        e = elems[_i];
+        for (i = _j = 0, _len1 = elements.length; _j < _len1; i = ++_j) {
+          elem = elements[i];
+          if (!(elem.equals(e))) {
+            continue;
+          }
+          elements.splice(i, 1);
+          break;
+        }
+      }
+      return new mathJS.Tuple(elements);
+    };
+
+    Tuple.prototype.removeAt = function(idx, n) {
+      var elem, elems, i, _i, _len, _ref;
+      if (n == null) {
+        n = 1;
+      }
+      elems = [];
+      _ref = this.elems;
+      for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
+        elem = _ref[i];
+        if (i < idx || i >= idx + n) {
+          elems.push(elem);
+        }
+      }
+      return new mathJS.Tuple(elems);
+    };
+
+    Tuple.prototype.size = function() {
+      return this._size;
+    };
+
+    Tuple.prototype.slice = function(startIdx, endIdx) {
+      if (endIdx == null) {
+        endIdx = this._size;
+      }
+      return new mathJS.Tuple(this.elems.slice(startIdx, endIdx));
+    };
+
+    Tuple.prototype.cardinality = Tuple.prototype.size;
+
+    Tuple.prototype.extendBy = Tuple.prototype.add;
+
+    Tuple.prototype.get = Tuple.prototype.at;
+
+    Tuple.prototype.has = Tuple.prototype.contains;
+
+    Tuple.prototype.addAt = Tuple.prototype.insert;
+
+    Tuple.prototype.insertAt = Tuple.prototype.insert;
+
+    Tuple.prototype.reduceBy = Tuple.prototype.remove;
+
+    return Tuple;
+
+  })();
+
   mathJS.Integral = (function() {
     var CLASS, _solvePrepareVars;
 
@@ -3276,7 +3579,7 @@
 
   mathJS.Vector = (function() {
     Vector.prototype._isVectorLike = function(v) {
-      return v instanceof mathJS.Vector || (typeof v["instanceof"] === "function" ? v["instanceof"](mathJS.Vector) : void 0) || v instanceof mathJS.Tuple || (typeof v["instanceof"] === "function" ? v["instanceof"](mathJS.Tuple) : void 0);
+      return v instanceof mathJS.Vector || (typeof v["instanceof"] === "function" ? v["instanceof"](mathJS.Vector) : void 0);
     };
 
     Vector._isVectorLike = Vector.prototype._isVectorLike;
@@ -3504,17 +3807,6 @@
 
   })();
 
-  mathJS.Tuple = (function(_super) {
-    __extends(Tuple, _super);
-
-    function Tuple() {
-      return Tuple.__super__.constructor.apply(this, arguments);
-    }
-
-    return Tuple;
-
-  })(mathJS.Vector);
-
   mathJS.Initializer = (function() {
     function Initializer() {}
 
@@ -3527,5 +3819,9 @@
   })();
 
   mathJS.Initializer.start();
+
+  if (DEBUG) {
+    console.log("time to load mathJS: ", Date.now() - startTime, "ms");
+  }
 
 }).call(this);

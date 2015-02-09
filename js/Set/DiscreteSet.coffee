@@ -66,7 +66,7 @@ class _mathJS.DiscreteSet extends mathJS.Set
     * @param sorted {Boolean}
     * Optional. If set to `true` returns the elements in ascending order.
     *###
-    getElements: (sorted=false) ->
+    getElements: (sorted) ->
         if sorted isnt true
             return @elems.clone()
         return @elems.clone().sort(mathJS.sortFunction)
@@ -84,9 +84,6 @@ class _mathJS.DiscreteSet extends mathJS.Set
         for e in @elems when not set.contains e
             return false
         return true
-
-    isSupersetOf: (set) ->
-        return set.isSubsetOf @
 
     size: () ->
         # TODO: cache size

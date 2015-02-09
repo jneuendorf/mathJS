@@ -62,7 +62,7 @@ class mathJS.Set extends _mathJS.AbstractSet
     ###########################################################################
     # PUBLIC METHODS
     getElements: (n=mathJS.config.set.defaultNumberOfElements, sorted=false) ->
-        res = @discreteSet.elems.concat(@conditionalSet.getElements(n, false))
+        res = @discreteSet.elems.concat(@conditionalSet.getElements(n, sorted))
 
         if sorted isnt true
             return res

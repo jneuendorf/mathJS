@@ -38,7 +38,7 @@ Object.defineProperties mathJS, {
         value: Infinity
         writable: false
     epsilon:
-        value: Number.EPSILON
+        value: Number.EPSILON or 2.220446049250313e-16 # 2.220446049250313080847263336181640625e-16
         writable: false
     maxValue:
         value: Number.MAX_VALUE
