@@ -1,3 +1,4 @@
+# TODO: mathJS.Number should also somehow be a mathJS.Expression!!!
 ###*
  * @abstract
  * @class Number

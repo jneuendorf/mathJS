@@ -1,36 +1,8 @@
 class _mathJS.ConditionalSet extends mathJS.Set
 
-    constructor: (condition, universe = null) ->
-        # if condition instanceof mathJS.SetSpec
-        #     @condition = condition
-        # else
-        #     @condition = null
-        #
-        # @leftBoundary = null
-        # @rightBoundary = null
-        #
-        # Object.defineProperties @, {
-        #     # elems:
-        #     #     value: @elems
-        #     #     enumerable: false
-        #     _universe:
-        #         value: universe
-        #         enumerable: false
-        #         writable: true
-        #     universe:
-        #         get: () ->
-        #             return @_universe
-        #         set: (universe) ->
-        #             if universe instanceof mathJS.Set or universe is null
-        #                 @_universe = universe
-        #             return @
-        #         enumerable: true
-        #     size:
-        #         value: @elems.length
-        #         enumerable: false
-        #         writable: false
-        #         configurable: true # for overwriting in case of in-place union
-        # }
+    constructor: (expression, domains, predicate) ->
+        # TODO: try to find out if the set is actually discrete!
+
 
     cartesianProduct: (sets...) ->
         # generator = new mathJS.Generator()

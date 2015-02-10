@@ -35,9 +35,10 @@ js/Set/AbstractSet
 js/Set/Set
 js/Set/DiscreteSet
 js/Set/ConditionalSet
-js/Set/Interval
+# js/Set/Interval
 js/Set/Domains/N
 js/Set/Tuple
+js/Set/Generator
 
 js/Function
 

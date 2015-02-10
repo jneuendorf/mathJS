@@ -816,12 +816,17 @@
 
   mathJS.settings = {
     set: {
+      defaultNumberOfElements: 1e3,
       maxIterations: 1e3,
-      maxMatches: 60,
-      defaultNumberOfElements: 1e3
+      maxMatches: 60
     },
     integral: {
       maxSteps: 1e10
+    },
+    number: {
+      real: {
+        distance: 1e-6
+      }
     }
   };
 
@@ -2542,7 +2547,8 @@
   * To create an empty set pass no parameters.
   * To create a discrete set list the elements. Those elements must implement the comparable interface and must not be arrays. Non-comparable elements will be ignored unless they are primitives.
   * To create a set from set-builder notation pass the parameters must have the following types:
-  * mathJS.Expression, [mathJS.Domains], mathJS.Predicate
+  * mathJS.Expression|mathJS.Tuple|mathJS.Number|mathJS.Variable, [mathJS.Domains], mathJS.Predicate
+   * TODO: package all those types (expression-like) into 1 prototype
   *
    */
 
@@ -2550,6 +2556,52 @@
     var newFromConditional, newFromDiscrete;
 
     __extends(Set, _super);
+
+
+    /**
+    * Optionally the left and right configuration can be passed directly (each with an open- and value-property) or the Interval can be parsed from String (like "(2, 6 ]").
+    * @static
+    * @method createInterval
+    * @param leftOpen {Boolean}
+    * @param leftValue {Number|mathJS.Number}
+    * @param rightValue {Number|mathJS.Number}
+    * @param rightOpen {Boolean}
+    *
+     */
+
+    Set.createInterval = function() {
+      var domains, expression, fourth, left, parameters, predicate, right, second, str;
+      parameters = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      if (typeof (str = parameters.first) === "string") {
+        str = str.replace(/\s+/g, "").split(",");
+        left = {
+          open: str.first[0] === "(",
+          value: new mathJS.Number(parseInt(str.first.slice(1), 10))
+        };
+        right = {
+          open: str.second.last === ")",
+          value: new mathJS.Number(parseInt(str.second.slice(0, -1), 10))
+        };
+      } else if (parameters.first.open != null) {
+        left = parameters.first;
+        right = parameters.second;
+      } else {
+        second = parameters.second;
+        fourth = parameters.fourth;
+        left = {
+          open: parameters.first,
+          value: (second instanceof mathJS.Number ? second : new mathJS.Number(second))
+        };
+        right = {
+          open: parameters.third,
+          value: (fourth instanceof mathJS.Number ? fourth : new mathJS.Number(fourth))
+        };
+      }
+      expression = new mathJS.Variable("x", mathJS.Number);
+      domains = [mathJS.Domains.N];
+      predicate = null;
+      return new mathJS.Set(expression, domains, predicate);
+    };
 
     function Set() {
       var parameters;
@@ -2810,11 +2862,7 @@
   _mathJS.ConditionalSet = (function(_super) {
     __extends(ConditionalSet, _super);
 
-    function ConditionalSet(condition, universe) {
-      if (universe == null) {
-        universe = null;
-      }
-    }
+    function ConditionalSet(expression, domains, predicate) {}
 
     ConditionalSet.prototype.cartesianProduct = function() {
       var generators, set, sets, _ref;
@@ -2863,114 +2911,6 @@
     ConditionalSet.prototype.without = function(set) {};
 
     return ConditionalSet;
-
-  })(mathJS.Set);
-
-
-  /**
-  * @class Interval
-  * @constructor
-  * @param leftOpen {Boolean}
-  * @param leftValue {Number|mathJS.Number}
-  * @param rightValue {Number|mathJS.Number}
-  * @param rightOpen {Boolean}
-  * @extends Set
-  *
-   */
-
-  mathJS.Interval = (function(_super) {
-    var _kindIsValid, _valueIsValid;
-
-    __extends(Interval, _super);
-
-    Interval._valueIsValid = function(value) {
-      return (value instanceof mathJS.Number && !(value instanceof mathJS.Complex)) || mathJS.isNum(value);
-    };
-
-    Interval._kindIsValid = function(kind) {
-      var _ref;
-      return (_ref = kind.lower()) === "open" || _ref === "bounded";
-    };
-
-    Interval.fromString = function(str) {
-      var left, right;
-      str = str.replace(/\s+/g, "").split(",");
-      left = {
-        open: str.first[0] === "(",
-        value: new mathJS.Number(parseInt(str.first.slice(1), 10))
-      };
-      right = {
-        open: str.second.last === ")",
-        value: new mathJS.Number(parseInt(str.second.slice(0, -1), 10))
-      };
-      return new mathJS.Interval(left, right);
-    };
-
-    Interval.parse = Interval.fromString;
-
-    function Interval() {
-      var fourth, parameters, second;
-      parameters = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-      if (parameters.length >= 2) {
-        if (parameters.first.open != null) {
-          this.left = parameters.first;
-          this.right = parameters.second;
-        } else {
-          second = parameters.second;
-          fourth = parameters.fourth;
-          this.left = {
-            open: parameters.first,
-            value: (second instanceof mathJS.Number ? second : new mathJS.Number(second))
-          };
-          this.right = {
-            open: parameters.third,
-            value: (fourth instanceof mathJS.Number ? fourth : new mathJS.Number(fourth))
-          };
-        }
-      }
-    }
-
-    _valueIsValid = Interval._valueIsValid;
-
-    _kindIsValid = Interval._kindIsValid;
-
-    Interval.prototype.shiftRight = function(value) {
-      var v;
-      if (this._valueIsValid(value)) {
-        v = value.value || value;
-        this.leftBoundary += v;
-        this.rightBoundary += v;
-      }
-      return this;
-    };
-
-    Interval.prototype.shiftLeft = function(value) {
-      var v;
-      if (this._valueIsValid(value)) {
-        v = value.value || value;
-        this.leftBoundary -= v;
-        this.rightBoundary -= v;
-      }
-      return this;
-    };
-
-    Interval.prototype.setLeftBoundary = function(value, kind) {
-      if (this._valueIsValid(value) && this._kindIsValid(kind)) {
-        this.leftBoundary = value.value || value;
-        this.leftKind = kind;
-      }
-      return this;
-    };
-
-    Interval.prototype.seRightBoundary = function(value, kind) {
-      if (this._valueIsValid(value) && this._kindIsValid(kind)) {
-        this.rightBoundary = value.value || value;
-        this.rightKind = kind;
-      }
-      return this;
-    };
-
-    return Interval;
 
   })(mathJS.Set);
 
@@ -3248,6 +3188,25 @@
       this._size = temp.length;
     }
 
+    Object.defineProperties(Tuple.prototype, {
+      first: {
+        get: function() {
+          return this.at(0);
+        },
+        set: function() {
+          return this;
+        }
+      },
+      length: {
+        get: function() {
+          return this._size;
+        },
+        set: function() {
+          return this;
+        }
+      }
+    });
+
     Tuple.prototype.add = function() {
       var elems;
       elems = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
@@ -3290,15 +3249,24 @@
       return true;
     };
 
+
+    /**
+    * Evaluates the tuple.
+    * @param values {Array}
+    * # TODO: also enables hash of vars
+    * A value for each tuple element.
+    *
+     */
+
     Tuple.prototype["eval"] = function(values) {
-      var elem, elems;
+      var elem, elems, i;
       elems = (function() {
         var _i, _len, _ref, _results;
         _ref = this.elems;
         _results = [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          elem = _ref[_i];
-          _results.push(elem["eval"](values));
+        for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
+          elem = _ref[i];
+          _results.push(elem["eval"](values[i]));
         }
         return _results;
       }).call(this);
@@ -3401,6 +3369,157 @@
     Tuple.prototype.reduceBy = Tuple.prototype.remove;
 
     return Tuple;
+
+  })();
+
+  mathJS.Generator = (function() {
+    Generator.newFromMany = function() {
+      var generator, generators;
+      generators = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      generator = new mathJS.Generator(null, 0, Infinity, null, new mathJS.Tuple(generators), generators.first);
+      return generator;
+    };
+
+    function Generator(f, minX, maxX, stepSize, tuple, currentGenerator) {
+      if (minX == null) {
+        minX = 0;
+      }
+      if (maxX == null) {
+        maxX = Infinity;
+      }
+      if (stepSize == null) {
+        stepSize = mathJS.config.number.real.distance;
+      }
+      this.f = f;
+      this.minX = minX;
+      this.maxX = maxX;
+      this.stepSize = stepSize;
+      this.tuple = tuple;
+      this.currentGenerator = currentGenerator;
+      this.x = minX;
+      this.overflowed = false;
+    }
+
+    Generator.prototype["eval"] = function(n) {
+      if (this.tuple != null) {
+        return this.tuple["eval"](n);
+      }
+      return this.f.call(this, n);
+    };
+
+    Generator.prototype.hasNext = function() {
+      var g, i, _i, _len, _ref;
+      if (this.tuple != null) {
+        _ref = this.tuple.elems;
+        for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
+          g = _ref[i];
+          if (g.hasNext()) {
+            return true;
+          }
+        }
+        return false;
+      }
+      return this.x < this.maxX;
+    };
+
+    Generator.prototype._incX = function() {
+      this.x += this.stepSize;
+      if (this.x > this.maxX) {
+        this.x = this.minX;
+        this.overflowed = true;
+      }
+      return this.x;
+    };
+
+    Generator.prototype.next = function() {
+
+      /*
+      0 0 0
+      0 0 1
+      0 1 0
+      0 1 1
+      1 0 0
+      1 0 1
+      1 1 0
+      1 1 1
+       */
+      var g, generator, i, maxI, res;
+      if (this.tuple != null) {
+        res = this["eval"]((function() {
+          var _i, _len, _ref, _results;
+          _ref = this.tuple.elems;
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            g = _ref[_i];
+            _results.push(g.x);
+          }
+          return _results;
+        }).call(this));
+        i = 0;
+        maxI = this.tuple.length;
+        generator = this.tuple.first;
+        generator._incX();
+        while (i < maxI && generator.overflowed) {
+          generator.overflowed = false;
+          generator = this.tuple.at(++i);
+          if (generator != null) {
+            generator._incX();
+          }
+        }
+        return res;
+      }
+      res = this["eval"](this.x);
+      this._incX();
+      return res;
+    };
+
+    Generator.prototype.reset = function() {
+      this.x = this.minX;
+      return this;
+    };
+
+    if (DEBUG) {
+      Generator.test = function() {
+        var g, g1, g2, res, tmp, x;
+        g1 = new mathJS.Generator(function(x) {
+          return x;
+        }, 0, 5, 0.5);
+        g2 = new mathJS.Generator(function(x) {
+          return 2 * x;
+        }, -2, 10, 2);
+        g = mathJS.Generator.newFromMany(g1, g2);
+        res = [];
+        while (g.hasNext()) {
+          tmp = g.next();
+          res.push(tmp);
+          console.log((function() {
+            var _i, _len, _ref, _results;
+            _ref = tmp.elems;
+            _results = [];
+            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+              x = _ref[_i];
+              _results.push(x.value);
+            }
+            return _results;
+          })());
+        }
+        tmp = g.next();
+        res.push(tmp);
+        console.log((function() {
+          var _i, _len, _ref, _results;
+          _ref = tmp.elems;
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            x = _ref[_i];
+            _results.push(x.value);
+          }
+          return _results;
+        })());
+        return res.length === ((5 - 0) / 0.5 + 1) * ((10 - (-2)) / 2 + 1);
+      };
+    }
+
+    return Generator;
 
   })();
 

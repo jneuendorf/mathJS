@@ -686,11 +686,15 @@ mathJS.sortFunction = (a, b) ->
 # from js/settings.coffee
 mathJS.settings =
     set:
+        defaultNumberOfElements: 1e3
         maxIterations: 1e3
         maxMatches: 60
-        defaultNumberOfElements: 1e3
     integral:
         maxSteps: 1e10
+    number:
+        real:
+            distance: 1e-6
+
 
 mathJS.config = mathJS.settings
 # end js/settings.coffee
@@ -827,6 +831,7 @@ class mathJS.Evaluable
 # end js/interfaces/Evaluable.coffee
 
 # from js/Numbers/Number.coffee
+# TODO: mathJS.Number should also somehow be a mathJS.Expression!!!
 ###*
  * @abstract
  * @class Number
@@ -2171,15 +2176,57 @@ class _mathJS.AbstractSet
 * To create an empty set pass no parameters.
 * To create a discrete set list the elements. Those elements must implement the comparable interface and must not be arrays. Non-comparable elements will be ignored unless they are primitives.
 * To create a set from set-builder notation pass the parameters must have the following types:
-* mathJS.Expression, [mathJS.Domains], mathJS.Predicate
+* mathJS.Expression|mathJS.Tuple|mathJS.Number|mathJS.Variable, [mathJS.Domains], mathJS.Predicate
+# TODO: package all those types (expression-like) into 1 prototype
 *###
 class mathJS.Set extends _mathJS.AbstractSet
 # class mathJS.Set extends mixOf mathJS.Poolable, mathJS.Comparable, mathJS.Parseable
 
     ###########################################################################
     # STATIC
-    # @_isSet = (set) ->
-    #     return set instanceof mathJS.Set or set.instanceof(mathJS.Set)
+
+    ###*
+    * Optionally the left and right configuration can be passed directly (each with an open- and value-property) or the Interval can be parsed from String (like "(2, 6 ]").
+    * @static
+    * @method createInterval
+    * @param leftOpen {Boolean}
+    * @param leftValue {Number|mathJS.Number}
+    * @param rightValue {Number|mathJS.Number}
+    * @param rightOpen {Boolean}
+    *###
+    @createInterval: (parameters...) ->
+        if typeof (str = parameters.first) is "string"
+            # remove spaces
+            str = str.replace /\s+/g, ""
+                     .split ","
+
+            left =
+                open: str.first[0] is "("
+                value: new mathJS.Number(parseInt(str.first.slice(1), 10))
+            right =
+                open: str.second.last is ")"
+                value: new mathJS.Number(parseInt(str.second.slice(0, -1), 10))
+        # first parameter has an .open property => assume ctor called from fromString()
+        else if parameters.first.open?
+            left = parameters.first
+            right = parameters.second
+        else
+            second = parameters.second
+            fourth = parameters.fourth
+            left =
+                open: parameters.first
+                value: (if second instanceof mathJS.Number then second else new mathJS.Number(second))
+            right =
+                open: parameters.third
+                value: (if fourth instanceof mathJS.Number then fourth else new mathJS.Number(fourth))
+
+        # an interval can be expressed with a conditional set: (a,b) = {x | x in R, a < x < b}
+        expression = new mathJS.Variable("x", mathJS.Number)
+        domains = [mathJS.Domains.N]
+        predicate = null
+
+        return new mathJS.Set(expression, domains, predicate)
+
 
     ###########################################################################
     # CONSTRUCTOR
@@ -2375,37 +2422,9 @@ class _mathJS.DiscreteSet extends mathJS.Set
 # from js/Set/ConditionalSet.coffee
 class _mathJS.ConditionalSet extends mathJS.Set
 
-    constructor: (condition, universe = null) ->
-        # if condition instanceof mathJS.SetSpec
-        #     @condition = condition
-        # else
-        #     @condition = null
-        #
-        # @leftBoundary = null
-        # @rightBoundary = null
-        #
-        # Object.defineProperties @, {
-        #     # elems:
-        #     #     value: @elems
-        #     #     enumerable: false
-        #     _universe:
-        #         value: universe
-        #         enumerable: false
-        #         writable: true
-        #     universe:
-        #         get: () ->
-        #             return @_universe
-        #         set: (universe) ->
-        #             if universe instanceof mathJS.Set or universe is null
-        #                 @_universe = universe
-        #             return @
-        #         enumerable: true
-        #     size:
-        #         value: @elems.length
-        #         enumerable: false
-        #         writable: false
-        #         configurable: true # for overwriting in case of in-place union
-        # }
+    constructor: (expression, domains, predicate) ->
+        # TODO: try to find out if the set is actually discrete!
+
 
     cartesianProduct: (sets...) ->
         # generator = new mathJS.Generator()
@@ -2444,98 +2463,6 @@ class _mathJS.ConditionalSet extends mathJS.Set
 
     without: (set) ->
 # end js/Set/ConditionalSet.coffee
-
-# from js/Set/Interval.coffee
-###*
-* @class Interval
-* @constructor
-* @param leftOpen {Boolean}
-* @param leftValue {Number|mathJS.Number}
-* @param rightValue {Number|mathJS.Number}
-* @param rightOpen {Boolean}
-* @extends Set
-*###
-class mathJS.Interval extends mathJS.Set
-
-    ###########################################################################
-    # STATIC
-    @_valueIsValid: (value) ->
-        return (value instanceof mathJS.Number and value not instanceof mathJS.Complex) or mathJS.isNum(value)
-
-    @_kindIsValid: (kind) ->
-        return kind.lower() in ["open", "bounded"]
-
-    @fromString: (str) ->
-        # remove spaces
-        str = str.replace /\s+/g, ""
-                 .split ","
-
-        left =
-            open: str.first[0] is "("
-            value: new mathJS.Number(parseInt(str.first.slice(1), 10))
-        right =
-            open: str.second.last is ")"
-            value: new mathJS.Number(parseInt(str.second.slice(0, -1), 10))
-
-        return new mathJS.Interval(left, right)
-
-    # MAKE ALIAS
-    @parse: @fromString
-
-
-    ###########################################################################
-    # CONSTRUCTOR
-    constructor: (parameters...) ->
-        if parameters.length >= 2
-            # first parameter has an .open property => assume ctor called from fromString()
-            if parameters.first.open?
-                @left = parameters.first
-                @right = parameters.second
-            else
-                second = parameters.second
-                fourth = parameters.fourth
-                @left =
-                    open: parameters.first
-                    value: (if second instanceof mathJS.Number then second else new mathJS.Number(second))
-                @right =
-                    open: parameters.third
-                    value: (if fourth instanceof mathJS.Number then fourth else new mathJS.Number(fourth))
-
-
-    ###########################################################################
-    # PROTECTED METHODS
-    _valueIsValid = @_valueIsValid
-
-    _kindIsValid = @_kindIsValid
-
-    ###########################################################################
-    # PUBLIC METHODS
-    shiftRight: (value) ->
-        if @_valueIsValid(value)
-            v = value.value or value
-            @leftBoundary += v
-            @rightBoundary += v
-        return @
-
-    shiftLeft: (value) ->
-        if @_valueIsValid(value)
-            v = value.value or value
-            @leftBoundary -= v
-            @rightBoundary -= v
-        return @
-
-    setLeftBoundary: (value, kind) ->
-        if @_valueIsValid(value) and @_kindIsValid(kind)
-            @leftBoundary = value.value or value
-            @leftKind = kind
-        return @
-
-    seRightBoundary: (value, kind) ->
-        if @_valueIsValid(value) and @_kindIsValid(kind)
-            @rightBoundary = value.value or value
-            @rightKind = kind
-        return @
-# end js/Set/Interval.coffee
 
 # from js/Set/Domains/N.coffee
 class mathJS.Sets.N extends mathJS.Set
@@ -2844,6 +2771,19 @@ class mathJS.Tuple
 
     ###########################################################################
     # PUBLIC METHODS
+    Object.defineProperties @::, {
+        first:
+            get: () ->
+                return @at(0)
+            set: () ->
+                return @
+        length:
+            get: () ->
+                return @_size
+            set: () ->
+                return @
+    }
+
     add: (elems...) ->
         return new mathJS.Tuple(@elems.concat(elems))
 
@@ -2869,8 +2809,14 @@ class mathJS.Tuple
 
         return true
 
+    ###*
+    * Evaluates the tuple.
+    * @param values {Array}
+    * # TODO: also enables hash of vars
+    * A value for each tuple element.
+    *###
     eval: (values) ->
-        elems = (elem.eval(values) for elem in @elems)
+        elems = (elem.eval(values[i]) for elem, i in @elems)
         return new mathJS.Tuple(elems)
 
     ###*
@@ -2932,6 +2878,132 @@ class mathJS.Tuple
 
     reduceBy: @::remove
 # end js/Set/Tuple.coffee
+
+# from js/Set/Generator.coffee
+class mathJS.Generator
+
+    @newFromMany: (generators...) ->
+        # minX = generators.getMin (generator) ->
+        #     return generator.minX
+
+        # # is the offset to all 'child' generators
+        # minX = 0
+        #
+        # maxX = generators.getMin (generator) ->
+        #     return generator.maxX
+
+        # 2x^2 - 3x, x in [0, 99]
+        # x - 7    , x in (0, 1)
+
+        generator = new mathJS.Generator(null, 0, Infinity, null, new mathJS.Tuple(generators), generators.first)
+        # generator.x = (g.minX for g in generators)
+        # generator.tuple = new mathJS.Tuple(generators)
+
+        # TODO: each must be eval'd with its own minX to maxX
+        # generator.f = (n) ->
+        #     return @tuple.eval(n)
+
+        return generator
+
+    constructor: (f, minX=0, maxX=Infinity, stepSize=mathJS.config.number.real.distance, tuple, currentGenerator) ->
+        @f = f
+        @minX = minX
+        @maxX = maxX
+        @stepSize = stepSize
+        @tuple = tuple
+        @currentGenerator = currentGenerator
+        @x = minX
+        @overflowed = false
+
+    eval: (n) ->
+        # eval each tuple element individually (the tuple knows how to do that)
+        if @tuple?
+            return @tuple.eval(n)
+        return @f.call(@, n)
+
+    hasNext: () ->
+        if @tuple?
+            for g, i in @tuple.elems when g.hasNext()
+                return true
+            return false
+        return @x < @maxX
+
+    _incX: () ->
+        @x += @stepSize
+        if @x > @maxX
+            @x = @minX
+            @overflowed = true
+        return @x
+
+    next: () ->
+        ###
+        0 0 0
+        0 0 1
+        0 1 0
+        0 1 1
+        1 0 0
+        1 0 1
+        1 1 0
+        1 1 1
+        ###
+        if @tuple?
+            res = @eval(g.x for g in @tuple.elems)
+
+            # start binary-like counting (so all possibilities are done)
+            i = 0
+            maxI = @tuple.length
+            generator = @tuple.first
+            generator._incX()
+
+            while i < maxI and generator.overflowed
+                generator.overflowed = false
+                generator = @tuple.at(++i)
+                # # 'if' needed for very last value -> i should theoretically overflow
+                if generator?
+                    generator._incX()
+                # generator._incX()
+
+            return res
+
+        # no tuple => simple generator
+        # if @overflowed
+        #     @overflowed = false
+        res = @eval(@x)
+        @_incX()
+        return res
+
+    reset: () ->
+        @x = @minX
+        return @
+
+    if DEBUG
+        @test = () ->
+            g1 = new mathJS.Generator(
+                (x) -> x,
+                0,
+                5,
+                0.5
+            )
+            g2 = new mathJS.Generator(
+                (x) -> 2*x,
+                -2,
+                10,
+                2
+            )
+            g = mathJS.Generator.newFromMany(g1, g2)
+
+            res = []
+            while g.hasNext()
+                tmp = g.next()
+                res.push tmp
+                console.log (x.value for x in tmp.elems)
+
+            tmp = g.next()
+            res.push tmp
+            console.log (x.value for x in tmp.elems)
+
+            return res.length is ((5-0)/0.5 + 1) * ((10 - (-2))/2 + 1)
+# end js/Set/Generator.coffee
 
 # from js/Calculus/Integral.coffee
 class mathJS.Integral

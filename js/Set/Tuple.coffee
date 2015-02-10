@@ -19,6 +19,19 @@ class mathJS.Tuple
 
     ###########################################################################
     # PUBLIC METHODS
+    Object.defineProperties @::, {
+        first:
+            get: () ->
+                return @at(0)
+            set: () ->
+                return @
+        length:
+            get: () ->
+                return @_size
+            set: () ->
+                return @
+    }
+
     add: (elems...) ->
         return new mathJS.Tuple(@elems.concat(elems))
 
@@ -44,8 +57,14 @@ class mathJS.Tuple
 
         return true
 
+    ###*
+    * Evaluates the tuple.
+    * @param values {Array}
+    * # TODO: also enables hash of vars
+    * A value for each tuple element.
+    *###
     eval: (values) ->
-        elems = (elem.eval(values) for elem in @elems)
+        elems = (elem.eval(values[i]) for elem, i in @elems)
         return new mathJS.Tuple(elems)
 
     ###*
