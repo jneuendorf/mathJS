@@ -815,10 +815,8 @@
   };
 
   mathJS.settings = {
-    set: {
-      defaultNumberOfElements: 1e3,
-      maxIterations: 1e3,
-      maxMatches: 60
+    generator: {
+      maxIndex: 1e4
     },
     integral: {
       maxSteps: 1e10
@@ -827,6 +825,11 @@
       real: {
         distance: 1e-6
       }
+    },
+    set: {
+      defaultNumberOfElements: 1e3,
+      maxIterations: 1e3,
+      maxMatches: 60
     }
   };
 
@@ -3374,13 +3377,12 @@
 
   mathJS.Generator = (function() {
     Generator.newFromMany = function() {
-      var generator, generators;
+      var generators;
       generators = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-      generator = new mathJS.Generator(null, 0, Infinity, null, new mathJS.Tuple(generators), generators.first);
-      return generator;
+      return new mathJS.Generator(null, 0, Infinity, null, null, new mathJS.Tuple(generators));
     };
 
-    function Generator(f, minX, maxX, stepSize, tuple, currentGenerator) {
+    function Generator(f, minX, maxX, stepSize, maxIndex, tuple) {
       if (minX == null) {
         minX = 0;
       }
@@ -3390,14 +3392,18 @@
       if (stepSize == null) {
         stepSize = mathJS.config.number.real.distance;
       }
+      if (maxIndex == null) {
+        maxIndex = mathJS.config.generator.maxIndex;
+      }
       this.f = f;
       this.minX = minX;
       this.maxX = maxX;
       this.stepSize = stepSize;
+      this.maxIndex = maxIndex;
       this.tuple = tuple;
-      this.currentGenerator = currentGenerator;
       this.x = minX;
       this.overflowed = false;
+      this.index = 0;
     }
 
     Generator.prototype["eval"] = function(n) {
@@ -3419,30 +3425,21 @@
         }
         return false;
       }
-      return this.x < this.maxX;
+      return !this.overflowed && this.x < this.maxX && this.index < this.maxIndex;
     };
 
     Generator.prototype._incX = function() {
-      this.x += this.stepSize;
+      this.index++;
+      this.x = this.minX + this.index * this.stepSize;
       if (this.x > this.maxX) {
         this.x = this.minX;
+        this.index = 0;
         this.overflowed = true;
       }
       return this.x;
     };
 
     Generator.prototype.next = function() {
-
-      /*
-      0 0 0
-      0 0 1
-      0 1 0
-      0 1 1
-      1 0 0
-      1 0 1
-      1 1 0
-      1 1 1
-       */
       var g, generator, i, maxI, res;
       if (this.tuple != null) {
         res = this["eval"]((function() {
@@ -3455,6 +3452,13 @@
           }
           return _results;
         }).call(this));
+
+        /*
+        0 0
+        0 1
+        1 0
+        1 1
+         */
         i = 0;
         maxI = this.tuple.length;
         generator = this.tuple.first;
@@ -3475,12 +3479,24 @@
 
     Generator.prototype.reset = function() {
       this.x = this.minX;
+      this.index = 0;
       return this;
     };
 
     if (DEBUG) {
       Generator.test = function() {
-        var g, g1, g2, res, tmp, x;
+        var g, g1, g2, res, tmp;
+        g = new mathJS.Generator(function(x) {
+          return 3 * x * x + 2 * x - 5;
+        }, -10, 10, 0.2);
+        res = [];
+        while (g.hasNext()) {
+          tmp = g.next();
+          res.push(tmp);
+        }
+        tmp = g.next();
+        res.push(tmp);
+        console.log("simple test:", (res.length === ((g.maxX - g.minX) / g.stepSize + 1) ? "successful" : "failed"));
         g1 = new mathJS.Generator(function(x) {
           return x;
         }, 0, 5, 0.5);
@@ -3492,30 +3508,18 @@
         while (g.hasNext()) {
           tmp = g.next();
           res.push(tmp);
-          console.log((function() {
-            var _i, _len, _ref, _results;
-            _ref = tmp.elems;
-            _results = [];
-            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-              x = _ref[_i];
-              _results.push(x.value);
-            }
-            return _results;
-          })());
         }
         tmp = g.next();
         res.push(tmp);
-        console.log((function() {
-          var _i, _len, _ref, _results;
-          _ref = tmp.elems;
-          _results = [];
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            x = _ref[_i];
-            _results.push(x.value);
-          }
-          return _results;
-        })());
-        return res.length === ((5 - 0) / 0.5 + 1) * ((10 - (-2)) / 2 + 1);
+        console.log("tuple test:", (res.length === ((g1.maxX - g1.minX) / g1.stepSize + 1) * ((g2.maxX - g2.minX) / g2.stepSize + 1) ? "successful" : "failed"));
+        g = new mathJS.Generator(function(x) {
+          return x;
+        });
+        while (g.hasNext()) {
+          tmp = g.next();
+        }
+        tmp = g.next();
+        return "done";
       };
     }
 

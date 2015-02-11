@@ -5,8 +5,8 @@
 * To create an empty set pass no parameters.
 * To create a discrete set list the elements. Those elements must implement the comparable interface and must not be arrays. Non-comparable elements will be ignored unless they are primitives.
 * To create a set from set-builder notation pass the parameters must have the following types:
-* mathJS.Expression|mathJS.Tuple|mathJS.Number|mathJS.Variable, [mathJS.Domains], mathJS.Predicate
-# TODO: package all those types (expression-like) into 1 prototype
+* mathJS.Expression|mathJS.Tuple|mathJS.Number, mathJS.Predicate
+# TODO: package all those types (expression-like) into 1 prototype (Variable already is)
 *###
 class mathJS.Set extends _mathJS.AbstractSet
 # class mathJS.Set extends mixOf mathJS.Poolable, mathJS.Comparable, mathJS.Parseable
@@ -50,11 +50,10 @@ class mathJS.Set extends _mathJS.AbstractSet
                 value: (if fourth instanceof mathJS.Number then fourth else new mathJS.Number(fourth))
 
         # an interval can be expressed with a conditional set: (a,b) = {x | x in R, a < x < b}
-        expression = new mathJS.Variable("x", mathJS.Number)
-        domains = [mathJS.Domains.N]
+        expression = new mathJS.Variable("x", mathJS.Domains.N)
         predicate = null
 
-        return new mathJS.Set(expression, domains, predicate)
+        return new mathJS.Set(expression, predicate)
 
 
     ###########################################################################

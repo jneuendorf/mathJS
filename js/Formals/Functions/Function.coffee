@@ -1,10 +1,9 @@
 class mathJS.Function
 
-    constructor: (name, domain, range, variableNames, expression) ->
+    constructor: (name, domain, range, expression) ->
         @name = name
         @domain = domain
         @range = range
-        @variableNames = variableNames
         @expression = expression
 
         @_cache = {}

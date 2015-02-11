@@ -685,15 +685,17 @@ mathJS.sortFunction = (a, b) ->
 
 # from js/settings.coffee
 mathJS.settings =
-    set:
-        defaultNumberOfElements: 1e3
-        maxIterations: 1e3
-        maxMatches: 60
+    generator:
+        maxIndex: 1e4
     integral:
         maxSteps: 1e10
     number:
         real:
             distance: 1e-6
+    set:
+        defaultNumberOfElements: 1e3
+        maxIterations: 1e3
+        maxMatches: 60
 
 
 mathJS.config = mathJS.settings
@@ -2883,37 +2885,19 @@ class mathJS.Tuple
 class mathJS.Generator
 
     @newFromMany: (generators...) ->
-        # minX = generators.getMin (generator) ->
-        #     return generator.minX
+        return new mathJS.Generator(null, 0, Infinity, null, null, new mathJS.Tuple(generators))
 
-        # # is the offset to all 'child' generators
-        # minX = 0
-        #
-        # maxX = generators.getMin (generator) ->
-        #     return generator.maxX
-
-        # 2x^2 - 3x, x in [0, 99]
-        # x - 7    , x in (0, 1)
-
-        generator = new mathJS.Generator(null, 0, Infinity, null, new mathJS.Tuple(generators), generators.first)
-        # generator.x = (g.minX for g in generators)
-        # generator.tuple = new mathJS.Tuple(generators)
-
-        # TODO: each must be eval'd with its own minX to maxX
-        # generator.f = (n) ->
-        #     return @tuple.eval(n)
-
-        return generator
-
-    constructor: (f, minX=0, maxX=Infinity, stepSize=mathJS.config.number.real.distance, tuple, currentGenerator) ->
+    constructor: (f, minX=0, maxX=Infinity, stepSize=mathJS.config.number.real.distance, maxIndex=mathJS.config.generator.maxIndex, tuple) ->
         @f = f
         @minX = minX
         @maxX = maxX
         @stepSize = stepSize
+        @maxIndex = maxIndex
         @tuple = tuple
-        @currentGenerator = currentGenerator
+
         @x = minX
         @overflowed = false
+        @index = 0
 
     eval: (n) ->
         # eval each tuple element individually (the tuple knows how to do that)
@@ -2926,29 +2910,29 @@ class mathJS.Generator
             for g, i in @tuple.elems when g.hasNext()
                 return true
             return false
-        return @x < @maxX
+        return not @overflowed and @x < @maxX and @index < @maxIndex
 
     _incX: () ->
-        @x += @stepSize
+        @index++
+        # more calculation than just '@x += @stepSize' but more precise!
+        @x = @minX + @index * @stepSize
+
         if @x > @maxX
             @x = @minX
+            @index = 0
             @overflowed = true
         return @x
 
     next: () ->
-        ###
-        0 0 0
-        0 0 1
-        0 1 0
-        0 1 1
-        1 0 0
-        1 0 1
-        1 1 0
-        1 1 1
-        ###
         if @tuple?
             res = @eval(g.x for g in @tuple.elems)
 
+            ###
+            0 0
+            0 1
+            1 0
+            1 1
+            ###
             # start binary-like counting (so all possibilities are done)
             i = 0
             maxI = @tuple.length
@@ -2959,25 +2943,46 @@ class mathJS.Generator
                 generator.overflowed = false
                 generator = @tuple.at(++i)
                 # # 'if' needed for very last value -> i should theoretically overflow
+                # => i refers to the (n+1)st tuple element (which only has n elements)
                 if generator?
                     generator._incX()
-                # generator._incX()
 
             return res
 
         # no tuple => simple generator
-        # if @overflowed
-        #     @overflowed = false
         res = @eval(@x)
         @_incX()
         return res
 
     reset: () ->
         @x = @minX
+        @index = 0
         return @
 
     if DEBUG
         @test = () ->
+            # simple
+            g = new mathJS.Generator(
+                (x) ->
+                    return 3*x*x+2*x-5
+                -10
+                10
+                0.2
+            )
+
+            res = []
+            while g.hasNext()
+                tmp = g.next()
+                # console.log tmp
+                res.push tmp
+
+            tmp = g.next()
+            # console.log tmp
+            res.push tmp
+
+            console.log "simple test:", (if res.length is ((g.maxX - g.minX) / g.stepSize + 1) then "successful" else "failed")
+
+            # "nested"
             g1 = new mathJS.Generator(
                 (x) -> x,
                 0,
@@ -2996,13 +3001,23 @@ class mathJS.Generator
             while g.hasNext()
                 tmp = g.next()
                 res.push tmp
-                console.log (x.value for x in tmp.elems)
+                # console.log (x.value for x in tmp.elems)
 
             tmp = g.next()
             res.push tmp
-            console.log (x.value for x in tmp.elems)
+            # console.log (x.value for x in tmp.elems)
 
-            return res.length is ((5-0)/0.5 + 1) * ((10 - (-2))/2 + 1)
+            console.log "tuple test:", (if res.length is ((g1.maxX - g1.minX) / g1.stepSize + 1) * ((g2.maxX - g2.minX) / g2.stepSize + 1) then "successful" else "failed")
+
+            g = new mathJS.Generator((x) -> x)
+
+            while g.hasNext()
+                tmp = g.next()
+                # console.log tmp
+            tmp = g.next()
+            # console.log tmp
+
+            return "done"
 # end js/Set/Generator.coffee
 
 # from js/Calculus/Integral.coffee

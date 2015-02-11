@@ -1,20 +1,17 @@
 class _mathJS.ConditionalSet extends mathJS.Set
 
-    constructor: (expression, domains, predicate) ->
+    constructor: (expression, predicate) ->
         # TODO: try to find out if the set is actually discrete!
+        if expression not instanceof mathJS.Generator
+            @expression = expression
+            @predicate = predicate
+        else
+            true
 
 
     cartesianProduct: (sets...) ->
-        # generator = new mathJS.Generator()
-        # generator.tuple = new mathJS.Tuple([@generator].concat(set.generator for set in sets))
-        # generator.func = (n) ->
-        #     return @tuple.eval(n)
-
         generators = [@generator].concat(set.generator for set in sets)
-
-        mathJS.Generator.newFromMany(generators...)
-
-        return new _mathJS.ConditionalSet(generator)
+        return new _mathJS.ConditionalSet(mathJS.Generator.newFromMany(generators...))
 
     clone: () ->
 
