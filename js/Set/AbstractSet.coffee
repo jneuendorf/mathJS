@@ -24,6 +24,14 @@ class _mathJS.AbstractSet
 
     without: (set) ->
 
+    min: () ->
+
+    max: () ->
+
+    infimum: () ->
+
+    supremum: () ->
+
     ###########################################################################
     # PRE-IMPLEMENTED
     complement: (universe) ->

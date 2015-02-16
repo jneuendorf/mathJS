@@ -156,6 +156,35 @@ class mathJS.Expression
         # TODO: gather simplification patterns
         return @
 
+    getVariables: () ->
+        if not @operation?
+            if (val = @expressions.first) instanceof mathJS.Variable
+                return [val]
+            return []
+
+        res = []
+        for expression in @expressions
+            res = res.concat expression.getVariables()
+        return res
+
+    ###*
+    * Get the 'range' of the expression (the set of all possible results).
+    * @method getSet
+    *###
+    getSet: () ->
+        # leaf
+        if not @operation?
+            return @expressions.first.getSet()
+
+        # no leaf => union sub expressions' sets
+        res = new mathJS.Set()
+        for expression in @expressions
+            res = res.union expression.getSet()
+        return res
+
+    # MAKE ALIASES
+    evaluatesTo: @::getSet
+
     if DEBUG
         @test = () ->
             # e1 = new CLASS(5)
@@ -167,9 +196,10 @@ class mathJS.Expression
             # # e5 = (5 + 2) * 4 = 28
             # console.log e5.eval()
             #
-            # e1 = new CLASS(5)
-            # e2 = new CLASS(new mathJS.Variable("x", mathJS.Number))
-            # e4 = new CLASS("+", e1, e2)
+            e1 = new CLASS(5)
+            e2 = new CLASS(new mathJS.Variable("x", mathJS.Number))
+            e4 = new CLASS("+", e1, e2)
+            console.log e4.getVariables()
             # console.log e4.eval({x: new mathJS.Number(5)})
             # console.log e4.eval()
             # e5 = e4.eval()

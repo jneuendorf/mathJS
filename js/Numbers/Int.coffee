@@ -25,6 +25,9 @@ class mathJS.Int extends mathJS.Number
     @random: (max, min) ->
         return @fromPool mathJS.randInt(max, min)
 
+    @getSet: () ->
+        return mathJS.Domains.N
+
 
     ###########################################################################
     # CONSTRUCTOR
@@ -94,3 +97,6 @@ class mathJS.Int extends mathJS.Number
 
     toInt: () ->
         return mathJS.Int.fromPool @value
+
+    getSet: () ->
+        return mathJS.Domains.N

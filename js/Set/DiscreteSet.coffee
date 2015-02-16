@@ -95,3 +95,13 @@ class _mathJS.DiscreteSet extends mathJS.Set
 
     without: (set) ->
         return (elem for elem in @elems when not set.contains elem)
+
+    min: () ->
+        return mathJS.min @elems
+
+    max: () ->
+        return mathJS.max @elems
+
+    infimum: () ->
+
+    supremum: () ->

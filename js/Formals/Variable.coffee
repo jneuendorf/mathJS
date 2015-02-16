@@ -9,9 +9,17 @@
 # class mathJS.Variable extends mathJS.Evaluable
 class mathJS.Variable extends mathJS.Expression
 
+    # TODO: change this to mathJS.Domains.R when R is implemented
     constructor: (name, elementOf=mathJS.Domains.N) ->
         @name = name
-        @elementOf = elementOf
+        if elementOf.getSet?
+            @elementOf = elementOf.getSet()
+        else
+            @elementOf = elementOf
+
+
+    getSet: () ->
+        return @elementOf
 
     equals: (variable) ->
         return @name is variable.name and @elementOf.equals variable.elementOf
@@ -30,7 +38,7 @@ class mathJS.Variable extends mathJS.Expression
 
     eval: (values) ->
         if values? and (val = values[@name])?
-            if @elementOf.equals val
-                console.warn "Given value '#{val}' doesn't match variable elementOf '#{@elementOf.name}'."
-            return val
+            if @elementOf.contains val
+                return val
+            console.warn "Given value '#{val}' is not in the set '#{@elementOf.name}'."
         return @

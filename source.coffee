@@ -665,6 +665,56 @@ mathJS.sign = (n) ->
         return 1
     return NaN
 
+mathJS.min = (elems...) ->
+    if elems.first instanceof Array
+        elems = elems.first
+        propGetter = null
+    else if elems.first instanceof Function
+        propGetter = elems.first
+        elems = elems.slice(1)
+        if elems.first instanceof Array
+            elems = elems.first
+
+    res = []
+    min = null
+    for item in elems
+        if propGetter?
+            item = propGetter(item)
+
+        if min is null or item.lessThan(min) or item < min
+            min = item
+            res = [elem]
+        # same as min found => add to list
+        else if item.equals(min) or item is min
+            res.push elem
+
+    return res
+
+mathJS.max = (elems...) ->
+    if elems.first instanceof Array
+        elems = elems.first
+        propGetter = null
+    else if elems.first instanceof Function
+        propGetter = elems.first
+        elems = elems.slice(1)
+        if elems.first instanceof Array
+            elems = elems.first
+
+    res = []
+    max = null
+    for item in elems
+        if propGetter?
+            item = propGetter(item)
+
+        if max is null or item.greaterThan(max) or item > max
+            max = item
+            res = [elem]
+        # same as max found => add to list
+        else if item.equals(max) or item is max
+            res.push elem
+
+    return res
+
 mathJS.log = (n, base = 10) ->
     return Math.log(n) / Math.log(base)
 
@@ -903,6 +953,9 @@ class mathJS.Number extends mixOf mathJS.Orderable, mathJS.Poolable, mathJS.Pars
         if n instanceof mathJS.Number
             return n
         return new mathJS.Number(n)
+
+    @getSet: () ->
+        return mathJS.Domains.R
 
     ###########################################################################
     # CONSTRUCTOR
@@ -1178,6 +1231,9 @@ class mathJS.Number extends mixOf mathJS.Orderable, mathJS.Poolable, mathJS.Pars
     # TODO: intercept destructor
     # .....
 
+    getSet: () ->
+        return mathJS.Domains.R
+
     valueOf: @::_getValue
 # end js/Numbers/Number.coffee
 
@@ -1232,6 +1288,9 @@ class mathJS.Int extends mathJS.Number
 
     @random: (max, min) ->
         return @fromPool mathJS.randInt(max, min)
+
+    @getSet: () ->
+        return mathJS.Domains.N
 
 
     ###########################################################################
@@ -1302,6 +1361,9 @@ class mathJS.Int extends mathJS.Number
 
     toInt: () ->
         return mathJS.Int.fromPool @value
+
+    getSet: () ->
+        return mathJS.Domains.N
 # end js/Numbers/Int.coffee
 
 # from js/Numbers/Complex.coffee
@@ -1698,47 +1760,6 @@ class mathJS.Algorithms.ShuntingYard
         return postfix.first
 # end js/Algorithms/ShuntingYard.coffee
 
-# from js/Formals/Variable.coffee
-###*
-* @class Variable
-* @constructor
-* @param {String} name
-* This is name name of the variable (mathematically)
-* @param {Function|Class} type
-* @param {Object} value
-* Optional. This param is passed upon evaluation.
-*###
-# TODO: make interfaces meta: eg. have a Variable@Evaluable.coffee file that contains the interface and inset on build
-class mathJS.Variable extends mathJS.Evaluable
-
-    constructor: (name, type=mathJS.Number) ->
-        @name = name
-        @type = type
-
-    equals: (variable) ->
-        return @type is variable.type
-
-    plus: (n) ->
-        return new mathJS.Expression("+", @, n)
-
-    minus: (n) ->
-        return new mathJS.Expression("-", @, n)
-
-    times: (n) ->
-        return new mathJS.Expression("*", @, n)
-
-    divide: (n) ->
-        return new mathJS.Expression("/", @, n)
-
-    eval: (values) ->
-        if values? and (val = values[@name])?
-            if val not instanceof @type
-                console.warn "Given value '#{val}' doesn't match variable type '#{@type.name}'."
-            return val
-
-        return @
-# end js/Formals/Variable.coffee
-
 # from js/Formals/Operation.coffee
 class mathJS.Operation
 
@@ -1765,6 +1786,7 @@ class mathJS.Operation
 # TODO: no DRY
 mathJS.Abstract =
     Operations:
+        # arithmetical
         divide: (x, y) ->
             if mathJS.Number.valueIsValid(x) and mathJS.Number.valueIsValid(y)
                 x = new mathJS.Number(x)
@@ -1802,6 +1824,21 @@ mathJS.Abstract =
             if mathJS.Number.valueIsValid(x)
                 x = new mathJS.Number(x)
             return x.clone()
+        # boolean / logical (converting from primitives to numbers doesn't make sense because 3 and 4 is not defined)
+        and: (x, y) ->
+            return x.and(y)
+        or: (x, y) ->
+            return x.or(y)
+        not: (x) ->
+            return x.not()
+        nand: (x, y) ->
+            return x.nand(y)
+        nor: (x, y) ->
+            return x.nor(y)
+        xor: (x, y) ->
+            return x.xor(y)
+        equals: (x, y) ->
+            return x.equals(y)
 
 ###
 PRECEDENCE (top to bottom):
@@ -1878,9 +1915,66 @@ cached =
         mathJS.Abstract.Operations.unaryPlus
         mathJS.Abstract.Operations.unaryPlus
     )
+    and: new mathJS.Operation(
+        "and"
+        1
+        "left"
+        true
+        mathJS.Abstract.Operations.and
+        null
+    )
+    or: new mathJS.Operation(
+        "or"
+        1
+        "left"
+        true
+        mathJS.Abstract.Operations.or
+        null
+    )
+    not: new mathJS.Operation(
+        "not"
+        5
+        "none"
+        false
+        mathJS.Abstract.Operations.not
+        mathJS.Abstract.Operations.not
+    )
+    nand: new mathJS.Operation(
+        "nand"
+        1
+        "left"
+        true
+        mathJS.Abstract.Operations.nand
+        null
+    )
+    nor: new mathJS.Operation(
+        "nor"
+        1
+        "left"
+        true
+        mathJS.Abstract.Operations.nor
+        null
+    )
+    xor: new mathJS.Operation(
+        "xor"
+        1
+        "left"
+        true
+        mathJS.Abstract.Operations.xor
+        null
+    )
+    equals: new mathJS.Operation(
+        "equals"
+        1
+        "left"
+        true
+        mathJS.Abstract.Operations.equals
+        null
+    )
 
 
 mathJS.Operations =
+    # arithmetical
     "+":            cached.addition
     "plus":         cached.addition
     "-":            cached.subtraction
@@ -1902,6 +1996,16 @@ mathJS.Operations =
     "u+":           cached.unaryPlus
     "unaryPlus":    cached.unaryPlus
     "neutralPlus":  cached.unaryPlus
+    # logical
+    "and":          cached.and
+    "or":           cached.or
+    "not":          cached.not
+    "nand":         cached.nand
+    "nor":          cached.nor
+    "xor":          cached.xor
+    "equals":       cached.equals
+    "=":            cached.equals
+    "xnor":         cached.equals
 # end js/Formals/Operation.coffee
 
 # from js/Formals/Expression.coffee
@@ -2063,6 +2167,35 @@ class mathJS.Expression
         # TODO: gather simplification patterns
         return @
 
+    getVariables: () ->
+        if not @operation?
+            if (val = @expressions.first) instanceof mathJS.Variable
+                return [val]
+            return []
+
+        res = []
+        for expression in @expressions
+            res = res.concat expression.getVariables()
+        return res
+
+    ###*
+    * Get the 'range' of the expression (the set of all possible results).
+    * @method getSet
+    *###
+    getSet: () ->
+        # leaf
+        if not @operation?
+            return @expressions.first.getSet()
+
+        # no leaf => union sub expressions' sets
+        res = new mathJS.Set()
+        for expression in @expressions
+            res = res.union expression.getSet()
+        return res
+
+    # MAKE ALIASES
+    evaluatesTo: @::getSet
+
     if DEBUG
         @test = () ->
             # e1 = new CLASS(5)
@@ -2074,9 +2207,10 @@ class mathJS.Expression
             # # e5 = (5 + 2) * 4 = 28
             # console.log e5.eval()
             #
-            # e1 = new CLASS(5)
-            # e2 = new CLASS(new mathJS.Variable("x", mathJS.Number))
-            # e4 = new CLASS("+", e1, e2)
+            e1 = new CLASS(5)
+            e2 = new CLASS(new mathJS.Variable("x", mathJS.Number))
+            e4 = new CLASS("+", e1, e2)
+            console.log e4.getVariables()
             # console.log e4.eval({x: new mathJS.Number(5)})
             # console.log e4.eval()
             # e5 = e4.eval()
@@ -2089,16 +2223,89 @@ class mathJS.Expression
             return "test done"
 # end js/Formals/Expression.coffee
 
+# from js/Formals/Variable.coffee
+###*
+* @class Variable
+* @constructor
+* @param {String} name
+* This is name name of the variable (mathematically)
+* @param {mathJS.Set} type
+*###
+# TODO: make interfaces meta: eg. have a Variable@Evaluable.coffee file that contains the interface and inset on build
+# class mathJS.Variable extends mathJS.Evaluable
+class mathJS.Variable extends mathJS.Expression
+
+    # TODO: change this to mathJS.Domains.R when R is implemented
+    constructor: (name, elementOf=mathJS.Domains.N) ->
+        @name = name
+        if elementOf.getSet?
+            @elementOf = elementOf.getSet()
+        else
+            @elementOf = elementOf
+
+
+    getSet: () ->
+        return @elementOf
+
+    equals: (variable) ->
+        return @name is variable.name and @elementOf.equals variable.elementOf
+
+    plus: (n) ->
+        return new mathJS.Expression("+", @, n)
+
+    minus: (n) ->
+        return new mathJS.Expression("-", @, n)
+
+    times: (n) ->
+        return new mathJS.Expression("*", @, n)
+
+    divide: (n) ->
+        return new mathJS.Expression("/", @, n)
+
+    eval: (values) ->
+        if values? and (val = values[@name])?
+            if @elementOf.contains val
+                return val
+            console.warn "Given value '#{val}' is not in the set '#{@elementOf.name}'."
+        return @
+# end js/Formals/Variable.coffee
+
 # from js/Formals/Equation.coffee
 class mathJS.Equation
 
     constructor: (left, right) ->
-        if left.mathEquals(right)
-            @left = left
-            @right = right
-        else
-            # TODO: only if no variables are contained
-            throw new mathJS.Errors.InvalidParametersError("The 2 expressions are not (mathematically) equal!")
+        # if left.mathEquals(right)
+        #     @left = left
+        #     @right = right
+        # else
+        #     # TODO: only if no variables are contained
+        #     throw new mathJS.Errors.InvalidParametersError("The 2 expressions are not (mathematically) equal!")
+        @left = left
+        @right = right
+
+    solve: (variable) ->
+        left = @left.simplify()
+        right = @right.simplify()
+
+        solutions = new mathJS.Set()
+
+        # convert to actual variable if only the name was given
+        if variable not instanceof mathJS.Variable
+            variables = left.getVariables().concat right.getVariables()
+            variable = (v for v in variables when v.name is variable).first
+
+        return solutions
+
+    eval: (values) ->
+        return @left.eval(values).equals @right.eval(values)
+
+    simplify: () ->
+        @left = @left.simplify()
+        @right = @right.simplify()
+        return @
+
+    # MAKE ALIASES
+    # ...
 # end js/Formals/Equation.coffee
 
 # from js/Logic/Predicate.coffee
@@ -2133,6 +2340,14 @@ class _mathJS.AbstractSet
     union: (set) ->
 
     without: (set) ->
+
+    min: () ->
+
+    max: () ->
+
+    infimum: () ->
+
+    supremum: () ->
 
     ###########################################################################
     # PRE-IMPLEMENTED
@@ -2178,8 +2393,8 @@ class _mathJS.AbstractSet
 * To create an empty set pass no parameters.
 * To create a discrete set list the elements. Those elements must implement the comparable interface and must not be arrays. Non-comparable elements will be ignored unless they are primitives.
 * To create a set from set-builder notation pass the parameters must have the following types:
-* mathJS.Expression|mathJS.Tuple|mathJS.Number|mathJS.Variable, [mathJS.Domains], mathJS.Predicate
-# TODO: package all those types (expression-like) into 1 prototype
+* mathJS.Expression|mathJS.Tuple|mathJS.Number, mathJS.Predicate
+# TODO: package all those types (expression-like) into 1 prototype (Variable already is)
 *###
 class mathJS.Set extends _mathJS.AbstractSet
 # class mathJS.Set extends mixOf mathJS.Poolable, mathJS.Comparable, mathJS.Parseable
@@ -2208,10 +2423,10 @@ class mathJS.Set extends _mathJS.AbstractSet
             right =
                 open: str.second.last is ")"
                 value: new mathJS.Number(parseInt(str.second.slice(0, -1), 10))
-        # first parameter has an .open property => assume ctor called from fromString()
-        else if parameters.first.open?
-            left = parameters.first
-            right = parameters.second
+        # # first parameter has an .open property => assume ctor called from fromString()
+        # else if parameters.first.open?
+        #     left = parameters.first
+        #     right = parameters.second
         else
             second = parameters.second
             fourth = parameters.fourth
@@ -2223,11 +2438,10 @@ class mathJS.Set extends _mathJS.AbstractSet
                 value: (if fourth instanceof mathJS.Number then fourth else new mathJS.Number(fourth))
 
         # an interval can be expressed with a conditional set: (a,b) = {x | x in R, a < x < b}
-        expression = new mathJS.Variable("x", mathJS.Number)
-        domains = [mathJS.Domains.N]
+        expression = new mathJS.Variable("x", mathJS.Domains.N)
         predicate = null
 
-        return new mathJS.Set(expression, domains, predicate)
+        return new mathJS.Set(expression, predicate)
 
 
     ###########################################################################
@@ -2238,15 +2452,16 @@ class mathJS.Set extends _mathJS.AbstractSet
         if parameters.length is 0
             @discreteSet = new _mathJS.DiscreteSet()
             @conditionalSet = new _mathJS.ConditionalSet()
-            true
 
-        # setset-builder notation
-        else if parameters.length is 3 and parameters.second instanceof Array
-            console.log "set builder"
         # discrete and conditional set given (from internal calls like union())
         else if parameters.first instanceof _mathJS.DiscreteSet and parameters.second instanceof _mathJS.ConditionalSet
-            @discreteSet = parameters.first.clone()
-            @conditionalSet = parameters.second.clone()
+            @discreteSet = parameters.first#.clone()
+            @conditionalSet = parameters.second#.clone()
+        # set-builder notation
+        else if parameters.first instanceof mathJS.Expression and parameters.second instanceof mathJS.Expression
+            console.log "set builder"
+            @discreteSet = new _mathJS.DiscreteSet()
+            @conditionalSet = new _mathJS.ConditionalSet(parameters.first, parameters.slice(1))
         # discrete set
         else
             # array given -> make its elements the set elements
@@ -2255,11 +2470,8 @@ class mathJS.Set extends _mathJS.AbstractSet
 
             console.log "params:", parameters
 
-            # list of set elements -> discrete
             @discreteSet = new _mathJS.DiscreteSet(parameters)
             @conditionalSet = new _mathJS.ConditionalSet()
-            # for param in parameters
-            #     @discreteSet.add param
 
 
     ###########################################################################
@@ -2295,6 +2507,9 @@ class mathJS.Set extends _mathJS.AbstractSet
             return false
         return set.discreteSet.equals(@discreteSet) and set.conditionalSet.equals(@conditionalSet)
 
+    getSet: () ->
+        return @
+
     isSubsetOf: (set) ->
         # TODO
         throw new Error("todo!")
@@ -2304,21 +2519,32 @@ class mathJS.Set extends _mathJS.AbstractSet
         throw new Error("todo!")
 
     contains: (elem) ->
-        return set.conditionalSet.contains(@conditionalSet) or set.discreteSet.contains(@discreteSet)
+        return @conditionalSet.contains(@conditionalSet) or @discreteSet.contains(@discreteSet)
 
     union: (set) ->
+        # if domain (N, Z, Q, R, C) let it handle the union because it knows know more about itself than this does
+        if set.isDomain
+            return set.union(@)
         return new mathJS.Set(@discreteSet.union(set.discreteSet), @conditionalSet.union(set.conditionalSet))
 
     complement: () ->
         if @universe?
             return asdf
         return new mathJS.EmptySet()
-    ###*
-    * a.without b => returns: removed all common elements from a
-    *###
+
     without: (set) ->
 
     cartesianProduct: (set) ->
+
+    min: () ->
+        return mathJS.min(@discreteSet.min().concat @conditionalSet.min())
+
+    max: () ->
+        return mathJS.max(@discreteSet.max().concat @conditionalSet.max())
+
+    infimum: () ->
+
+    supremum: () ->
 # end js/Set/Set.coffee
 
 # from js/Set/DiscreteSet.coffee
@@ -2419,26 +2645,67 @@ class _mathJS.DiscreteSet extends mathJS.Set
 
     without: (set) ->
         return (elem for elem in @elems when not set.contains elem)
+
+    min: () ->
+        return mathJS.min @elems
+
+    max: () ->
+        return mathJS.max @elems
+
+    infimum: () ->
+
+    supremum: () ->
 # end js/Set/DiscreteSet.coffee
 
 # from js/Set/ConditionalSet.coffee
+# ###*
+# * @class ConditionalSet
+# * @constructor
+# * @param {mathJS.Expression}
+# *###
 class _mathJS.ConditionalSet extends mathJS.Set
 
-    constructor: (expression, domains, predicate) ->
-        # TODO: try to find out if the set is actually discrete!
+    ###
+    {2x^2 | x in R and 0 <= x < 20 and x = x^2} ==> {0, 1}
+    x in R and 0 <= x < 20 and x = x^2 <=> R intersect [0, 20) intersect {0,1} (where 0 and 1 have to be part of the previous set)
+    do the following:
+    1. map domains to domains
+    2. map unequations to intervals
+    3. map equations to (discrete?!) sets
+    4. create intersection of all!
 
+    simplifications:
+    1.  domains intersect interval = interval (because in this notation the domain is the superset)
+        so it wouldn't make sense to say: x in N and x in [0, 10] and expect the set to be infinite!!
+        the order does not matter (otherwise (x in [0, 10] and x in N) would be infinite!!)
+    2.  when trying to get equation solutions numerically (should this ever happen??) look for interval first to get boundaries
+    ###
+
+    # predicate is an boolean expression
+    # TODO: try to find out if the set is actually discrete!
+    constructor: (expression, predicate) ->
+        if arguments.length is 0
+            @generator = null
+        else if expression instanceof mathJS.Generator
+            @expression = expression
+            @predicate = predicate
+        # no generator passed => standard parameters
+        else
+            if predicate instanceof mathJS.Expression
+                predicate = predicate.getSet()
+
+            # f, minX=0, maxX=Infinity, stepSize=mathJS.config.number.real.distance, maxIndex=mathJS.config.generator.maxIndex, tuple
+            @generator = new mathJS.Generator(
+                # f: predicate -> ?? (expression.getSet())
+                # x |-> expression(x)
+                new mathJS.Function("f", expression, predicate, expression.getSet())
+                predicate.min()
+                predicate.max()
+            )
 
     cartesianProduct: (sets...) ->
-        # generator = new mathJS.Generator()
-        # generator.tuple = new mathJS.Tuple([@generator].concat(set.generator for set in sets))
-        # generator.func = (n) ->
-        #     return @tuple.eval(n)
-
         generators = [@generator].concat(set.generator for set in sets)
-
-        mathJS.Generator.newFromMany(generators...)
-
-        return new _mathJS.ConditionalSet(generator)
+        return new _mathJS.ConditionalSet(mathJS.Generator.newFromMany(generators...))
 
     clone: () ->
 
@@ -2464,7 +2731,384 @@ class _mathJS.ConditionalSet extends mathJS.Set
     union: (set) ->
 
     without: (set) ->
+
+    if DEBUG
+        @test = () ->
+            e1 = new mathJS.Expression(5)
+            e2 = new mathJS.Expression(new mathJS.Variable("x", mathJS.Number))
+            e3 = new mathJS.Expression("+", e1, e2)
+
+            p1 = new mathJS.Expression(new mathJS.Variable("x", mathJS.Number))
+            p2 = new mathJS.Expression(4)
+            p3 = new mathJS.Expression("=", p1, p2)
+
+            console.log p3.eval(x: 4)
+
+            console.log p3.getSet()
+
+            # set = new _mathJS.ConditionalSet(e3, p3)
+
+            # console.log set
+
+            return "done"
 # end js/Set/ConditionalSet.coffee
+
+# from js/Set/Tuple.coffee
+class mathJS.Tuple
+
+    ###########################################################################
+    # CONSTRUCTOR
+    constructor: (elems...) ->
+        if elems.first instanceof Array
+            elems = elems.first
+
+        temp = []
+
+        for elem in elems
+            if not mathJS.isNum(elem)
+                temp.push elem
+            else
+                temp.push new mathJS.Number(elem)
+
+        @elems = temp
+        @_size = temp.length
+
+    ###########################################################################
+    # PUBLIC METHODS
+    Object.defineProperties @::, {
+        first:
+            get: () ->
+                return @at(0)
+            set: () ->
+                return @
+        length:
+            get: () ->
+                return @_size
+            set: () ->
+                return @
+    }
+
+    add: (elems...) ->
+        return new mathJS.Tuple(@elems.concat(elems))
+
+    at: (idx) ->
+        return @elems[idx]
+
+    clone: () ->
+        return new mathJS.Tuple(@elems)
+
+    contains: (elem) ->
+        for e in @elems when e.equals elem
+            return true
+        return false
+
+    equals: (tuple) ->
+        if @_size isnt tuple._size
+            return false
+
+        elements = tuple.elems
+
+        for elem, idx in @elems when not elem.equals elements[idx]
+            return false
+
+        return true
+
+    ###*
+    * Evaluates the tuple.
+    * @param values {Array}
+    * # TODO: also enables hash of vars
+    * A value for each tuple element.
+    *###
+    eval: (values) ->
+        elems = (elem.eval(values[i]) for elem, i in @elems)
+        return new mathJS.Tuple(elems)
+
+    ###*
+    * Get the elements of the Tuple.
+    * @method getElements
+    *###
+    getElements: () ->
+        return @elems.clone()
+
+    insert: (idx, elems...) ->
+        elements = []
+        for elem, i in @elems
+            if i is idx
+                elements = elements.concat(elems)
+            elements.push elem
+
+        return new mathJS.Tuple(elements)
+
+    isEmpty: () ->
+        return @_size() is 0
+
+    ###*
+    * Removes the first occurences of the given elements.
+    *###
+    remove: (elems...) ->
+        elements = @elems.clone()
+        for e in elems
+            for elem, i in elements when elem.equals e
+                elements.splice i, 1
+                break
+
+        return new mathJS.Tuple(elements)
+
+    removeAt: (idx, n=1) ->
+        elems = []
+        for elem, i in @elems when i < idx or i >= idx + n
+            elems.push elem
+
+        return new mathJS.Tuple(elems)
+
+    size: () ->
+        return @_size
+
+    slice: (startIdx, endIdx=@_size) ->
+        return new mathJS.Tuple(@elems.slice(startIdx, endIdx))
+
+    ###########################################################################
+    # ALIASES
+    cardinality: @::size
+
+    extendBy: @::add
+
+    get: @::at
+
+    has: @::contains
+
+    addAt: @::insert
+    insertAt: @::insert
+
+    reduceBy: @::remove
+# end js/Set/Tuple.coffee
+
+# from js/Set/Generator.coffee
+class mathJS.Generator
+
+    @newFromMany: (generators...) ->
+        return new mathJS.Generator(null, 0, Infinity, null, null, new mathJS.Tuple(generators))
+
+    constructor: (f, minX=0, maxX=Infinity, stepSize=mathJS.config.number.real.distance, maxIndex=mathJS.config.generator.maxIndex, tuple) ->
+        @f = f
+        @inverseF = f.getInverse()
+        @minX = minX
+        @maxX = maxX
+        @stepSize = stepSize
+        @maxIndex = maxIndex
+        @tuple = tuple
+
+        @x = minX
+        @overflowed = false
+        @index = 0
+
+    ###*
+    * Indicates whether the set the generator creates contains the given value or not.
+    * @method generates
+    *###
+    generates: (y) ->
+        if @f.range.contains(y)
+            # 
+            if @inverseF?
+                return @inverseF.eval(y)
+            return
+        return false
+
+    eval: (n) ->
+        # eval each tuple element individually (the tuple knows how to do that)
+        if @tuple?
+            return @tuple.eval(n)
+        # eval expression
+        if @f.eval?
+            @f.eval(n)
+        # eval js function
+        return @f.call(@, n)
+
+    hasNext: () ->
+        if @tuple?
+            for g, i in @tuple.elems when g.hasNext()
+                return true
+            return false
+        return not @overflowed and @x < @maxX and @index < @maxIndex
+
+    _incX: () ->
+        @index++
+        # more calculation than just '@x += @stepSize' but more precise!
+        @x = @minX + @index * @stepSize
+
+        if @x > @maxX
+            @x = @minX
+            @index = 0
+            @overflowed = true
+        return @x
+
+    next: () ->
+        if @tuple?
+            res = @eval(g.x for g in @tuple.elems)
+
+            ###
+            0 0
+            0 1
+            1 0
+            1 1
+            ###
+            # start binary-like counting (so all possibilities are done)
+            i = 0
+            maxI = @tuple.length
+            generator = @tuple.first
+            generator._incX()
+
+            while i < maxI and generator.overflowed
+                generator.overflowed = false
+                generator = @tuple.at(++i)
+                # # 'if' needed for very last value -> i should theoretically overflow
+                # => i refers to the (n+1)st tuple element (which only has n elements)
+                if generator?
+                    generator._incX()
+
+            return res
+
+        # no tuple => simple generator
+        res = @eval(@x)
+        @_incX()
+        return res
+
+    reset: () ->
+        @x = @minX
+        @index = 0
+        return @
+
+    if DEBUG
+        @test = () ->
+            # simple
+            g = new mathJS.Generator(
+                (x) ->
+                    return 3*x*x+2*x-5
+                -10
+                10
+                0.2
+            )
+
+            res = []
+            while g.hasNext()
+                tmp = g.next()
+                # console.log tmp
+                res.push tmp
+
+            tmp = g.next()
+            # console.log tmp
+            res.push tmp
+
+            console.log "simple test:", (if res.length is ((g.maxX - g.minX) / g.stepSize + 1) then "successful" else "failed")
+
+            # "nested"
+            g1 = new mathJS.Generator(
+                (x) -> x,
+                0,
+                5,
+                0.5
+            )
+            g2 = new mathJS.Generator(
+                (x) -> 2*x,
+                -2,
+                10,
+                2
+            )
+            g = mathJS.Generator.newFromMany(g1, g2)
+
+            res = []
+            while g.hasNext()
+                tmp = g.next()
+                res.push tmp
+                # console.log (x.value for x in tmp.elems)
+
+            tmp = g.next()
+            res.push tmp
+            # console.log (x.value for x in tmp.elems)
+
+            console.log "tuple test:", (if res.length is ((g1.maxX - g1.minX) / g1.stepSize + 1) * ((g2.maxX - g2.minX) / g2.stepSize + 1) then "successful" else "failed")
+
+            g = new mathJS.Generator((x) -> x)
+
+            while g.hasNext()
+                tmp = g.next()
+                # console.log tmp
+            tmp = g.next()
+            # console.log tmp
+
+            return "done"
+# end js/Set/Generator.coffee
+
+# from js/Set/Function.coffee
+class mathJS.Function extends mathJS.Set
+
+    # EQUAL!
+    # function:
+    # f: X -> Y, f(x) = 3x^2 - 5x + 7
+    # set:
+    # {(x, 3x^2 - 5x + 7) | x in X}
+
+    # domain is implicit by variables' types contained in the expression
+    # range is implicit by the expression
+    # constructor: (name, domain, range, expression) ->
+    constructor: (name, expression, domain, range) ->
+        @name = name
+        @expression = expression
+
+        if domain instanceof mathJS.Set
+            @domain = domain
+        else
+            @domain = new mathJS.Set(expression.getVariables())
+
+        if range instanceof mathJS.Set
+            @range = range
+        else
+            @range = expression.getSet()
+
+        @_cache = {}
+        @caching = true
+
+        super()
+
+    ###*
+    * Empty the cache or reset to given cache.
+    * @method clearCache
+    * @param cache {Object}
+    * @return mathJS.Function
+    * @chainable
+    *###
+    clearCache: (cache) ->
+        if not cache?
+            @_cache = {}
+        else
+            @_cache = cache
+        return @
+
+    ###*
+    * Evaluate the function for given values.
+    * @method get
+    * @param values {Array|Object}
+    * If an array the first value will be associated with the first variable name. Otherwise an object like {x: 42} is expected.
+    * @return
+    *###
+    eval: (values...) ->
+        tmp = {}
+        if values instanceof Array
+            for value, i in values
+                tmp[@variableNames[i]] = value
+            values = tmp
+
+        # check if values are in domain
+        for varName, val of values
+            if not domain.contains(val)
+                return null
+
+        return @expression.eval(values)
+
+    # make alias
+    at: @eval
+    get: @eval
+# end js/Set/Function.coffee
 
 # from js/Set/Domains/N.coffee
 class mathJS.Sets.N extends mathJS.Set
@@ -2751,274 +3395,270 @@ do () ->
     }
 # end js/Set/Domains/N.coffee
 
-# from js/Set/Tuple.coffee
-class mathJS.Tuple
+# from js/Set/Domains/R.coffee
+class mathJS.Sets.R extends mathJS.Set
 
-    ###########################################################################
-    # CONSTRUCTOR
-    constructor: (elems...) ->
-        if elems.first instanceof Array
-            elems = elems.first
+    CLASS = @
 
-        temp = []
+    @new: () ->
+        return new CLASS()
 
-        for elem in elems
-            if not mathJS.isNum(elem)
-                temp.push elem
-            else
-                temp.push new mathJS.Number(elem)
+    constructor: () ->
 
-        @elems = temp
-        @_size = temp.length
+        # define everything (and make things non-overwritable)
+        Object.defineProperties @, {
+            name:
+                value: "R"
+                writable: false
+                enumerable: true
+                configurable: false
+            # PRIVATE
+            # generator function.
+            # generally it is a mapper from N -> X that has to be continuous and increasing
+            generator:
+                value: (n) ->
+                    return n
+                writable: false
+                enumerable: false
+                configurable: false
+            expression:
+                value: (x) ->
+                    return x
+                writable: false
+                enumerable: false
+                configurable: false
+            # PROPERTIES
+            # id:
+            #     value: "N"
+            #     enumerable: false
+            #     writable: false
+            #     configurable: false
+            isCountable:
+                value: true
+                enumerable: true
+                writable: false
+                configurable: false
+            size:
+                value: Infinity
+                enumerable: true
+                writable: false
+                configurable: false
+            isMutable:
+                value: false
+                writable: false
+                enumerable: false
+                configurable: false
+            leftBoundary:
+                value:
+                    value: -Infinity
+                    open: true # implicit but listed here for clarity
+                writable: false
+                enumerable: false
+                configurable: false
+            rightBoundary:
+                value:
+                    value: +Infinity
+                    open: true # implicit but listed here for clarity
+                writable: false
+                enumerable: false
+                configurable: false
+            # FUNCTIONS (overriding prototype)
+            # contains:
+            #     value: contains
+            #     writable: false
+            #     enumerable: true
+            #     configurable: false
+            # has:
+            #     value: contains
+            #     writable: false
+            #     enumerable: true
+            #     configurable: false
+        }
 
-    ###########################################################################
-    # PUBLIC METHODS
-    Object.defineProperties @::, {
-        first:
-            get: () ->
-                return @at(0)
-            set: () ->
-                return @
-        length:
-            get: () ->
-                return @_size
-            set: () ->
-                return @
-    }
 
-    add: (elems...) ->
-        return new mathJS.Tuple(@elems.concat(elems))
+    #################################################################################
+    # STATIC
 
-    at: (idx) ->
-        return @elems[idx]
 
-    clone: () ->
-        return new mathJS.Tuple(@elems)
+    #################################################################################
+    # PUBLIC
+    contains: (x) ->
+        return new mathJS.Number(x).equals(x)
 
-    contains: (elem) ->
-        for e in @elems when e.equals elem
-            return true
+    clone: @new
+
+    equals: (set, n = mathJS.settings.set.maxIterations * 10) ->
+        # TODO
+        # what about {x | x in R and x >= 0 and floor(x) = x} ?? should become true but how?!
+        # try n steps and see if values equal. if so assume the sets equal as well
+        if @_isSet set
+            if set.size is Infinity
+                generator = @generator
+                i = 0
+                while i++ < n
+                    # TODO: write intervall class that extends conditionalSet and sets implicit generators
+                    val = generator(i)
+                    if not set.contains val
+                        return false
+                    if DEBUG
+                        console.log "japp"
+                return true
+            # set is finite => can't be equal
+            return false
+        # set has no generator => no infinite set => is finite => can't be equal
         return false
 
-    equals: (tuple) ->
-        if @_size isnt tuple._size
-            return false
-
-        elements = tuple.elems
-
-        for elem, idx in @elems when not elem.equals elements[idx]
-            return false
-
-        return true
-
     ###*
-    * Evaluates the tuple.
-    * @param values {Array}
-    * # TODO: also enables hash of vars
-    * A value for each tuple element.
+    * This method checks if `this` is a subset of the given set `set`. Since equality must be checked by checking an arbitrary number of values this method actually does the same as `this.equals()`. For `this.equals()` the number of compared elements is 10x bigger.
     *###
-    eval: (values) ->
-        elems = (elem.eval(values[i]) for elem, i in @elems)
-        return new mathJS.Tuple(elems)
+    isSubsetOf: (set, n = mathJS.settings.set.maxIterations) ->
+        return @equals(set, n * 10)
 
-    ###*
-    * Get the elements of the Tuple.
-    * @method getElements
-    *###
-    getElements: () ->
-        return @elems.clone()
+    isSupersetOf: (set) ->
+        if @_isSet set
+            return set.isSubsetOf @
+        return false
 
-    insert: (idx, elems...) ->
-        elements = []
-        for elem, i in @elems
-            if i is idx
-                elements = elements.concat(elems)
-            elements.push elem
-
-        return new mathJS.Tuple(elements)
-
-    isEmpty: () ->
-        return @_size() is 0
-
-    ###*
-    * Removes the first occurences of the given elements.
-    *###
-    remove: (elems...) ->
-        elements = @elems.clone()
-        for e in elems
-            for elem, i in elements when elem.equals e
-                elements.splice i, 1
-                break
-
-        return new mathJS.Tuple(elements)
-
-    removeAt: (idx, n=1) ->
-        elems = []
-        for elem, i in @elems when i < idx or i >= idx + n
-            elems.push elem
-
-        return new mathJS.Tuple(elems)
-
-    size: () ->
-        return @_size
-
-    slice: (startIdx, endIdx=@_size) ->
-        return new mathJS.Tuple(@elems.slice(startIdx, endIdx))
-
-    ###########################################################################
-    # ALIASES
-    cardinality: @::size
-
-    extendBy: @::add
-
-    get: @::at
-
-    has: @::contains
-
-    addAt: @::insert
-    insertAt: @::insert
-
-    reduceBy: @::remove
-# end js/Set/Tuple.coffee
-
-# from js/Set/Generator.coffee
-class mathJS.Generator
-
-    @newFromMany: (generators...) ->
-        return new mathJS.Generator(null, 0, Infinity, null, null, new mathJS.Tuple(generators))
-
-    constructor: (f, minX=0, maxX=Infinity, stepSize=mathJS.config.number.real.distance, maxIndex=mathJS.config.generator.maxIndex, tuple) ->
-        @f = f
-        @minX = minX
-        @maxX = maxX
-        @stepSize = stepSize
-        @maxIndex = maxIndex
-        @tuple = tuple
-
-        @x = minX
-        @overflowed = false
-        @index = 0
-
-    eval: (n) ->
-        # eval each tuple element individually (the tuple knows how to do that)
-        if @tuple?
-            return @tuple.eval(n)
-        return @f.call(@, n)
-
-    hasNext: () ->
-        if @tuple?
-            for g, i in @tuple.elems when g.hasNext()
-                return true
-            return false
-        return not @overflowed and @x < @maxX and @index < @maxIndex
-
-    _incX: () ->
-        @index++
-        # more calculation than just '@x += @stepSize' but more precise!
-        @x = @minX + @index * @stepSize
-
-        if @x > @maxX
-            @x = @minX
-            @index = 0
-            @overflowed = true
-        return @x
-
-    next: () ->
-        if @tuple?
-            res = @eval(g.x for g in @tuple.elems)
-
-            ###
-            0 0
-            0 1
-            1 0
-            1 1
-            ###
-            # start binary-like counting (so all possibilities are done)
-            i = 0
-            maxI = @tuple.length
-            generator = @tuple.first
-            generator._incX()
-
-            while i < maxI and generator.overflowed
-                generator.overflowed = false
-                generator = @tuple.at(++i)
-                # # 'if' needed for very last value -> i should theoretically overflow
-                # => i refers to the (n+1)st tuple element (which only has n elements)
-                if generator?
-                    generator._incX()
-
-            return res
-
-        # no tuple => simple generator
-        res = @eval(@x)
-        @_incX()
-        return res
-
-    reset: () ->
-        @x = @minX
-        @index = 0
+    union: (set) ->
+        # if set.name 
         return @
 
-    if DEBUG
-        @test = () ->
-            # simple
-            g = new mathJS.Generator(
-                (x) ->
-                    return 3*x*x+2*x-5
-                -10
-                10
-                0.2
-            )
+    intersect: (set) ->
+        # AND both checker functions
+        checker = (elem) ->
+            return self.checker(elem) and set.checker(elem)
 
-            res = []
-            while g.hasNext()
-                tmp = g.next()
-                # console.log tmp
-                res.push tmp
+        # if the f2-invert of the y-value of f1 lies within f2' domain/universe both ranges include that value
+        # or vice versa
+        # we know this' generator function has N as domain (and as range of course)
+        # we even know the set's generator function also has N as domain as we assume that (because the mapping is always a bijection from N -> X)
+        # so we can only check a single value at a time so we have to have to boundaries for the number of iterations and the number of matches
+        # after x matches we try to find a series that produces those matches (otherwise a discrete set will be created)
+        commonElements = []
+        x = 0 # current iteration = current x value
+        m = 0 # current matches
+        f1 = @generator
+        f2 = set.generator
+        f1Elems = [] # in ascending order because generators are increasing
+        f2Elems = [] # in ascending order because generators are increasing
 
-            tmp = g.next()
-            # console.log tmp
-            res.push tmp
+        while x < n and m < matches
+            y1 = f1(x) # TODO: maybe inline generator function here?? but that would mean every sub class has to overwrite
+            y2 = f2(x)
 
-            console.log "simple test:", (if res.length is ((g.maxX - g.minX) / g.stepSize + 1) then "successful" else "failed")
+            # f1 is bigger than f2 at current x => check for y2 in f1Elems
+            if mathJS.gt(y1, y2)
+                found = false
+                for f1Elem, i in f1Elems when mathJS.equals(y2, f1Elem)
+                    # new match!
+                    m++
+                    found = true
+                    # y2 found in f1Elems => add to common elements
+                    commonElements.push y2
+                    # because both functions are increasing dispose of earlier elements
+                    # remove all unneeded elements from f1Elems incl. (current) y1
+                    f1Elems = f1Elems.slice(i + 1)
+                    # y2 was a match (the last in f2Elems) and y1 is bigger than y2 so we can forget everything in f2Elems
+                    f2Elems = []
+                    # exit loop
+                    break
 
-            # "nested"
-            g1 = new mathJS.Generator(
-                (x) -> x,
-                0,
-                5,
-                0.5
-            )
-            g2 = new mathJS.Generator(
-                (x) -> 2*x,
-                -2,
-                10,
-                2
-            )
-            g = mathJS.Generator.newFromMany(g1, g2)
+                if not found
+                    f1Elems.push y1
+                    f2Elems.push y2
+            # f2 is bigger than f1 at current x => check for y1 in f2Elems
+            else if mathJS.lt(y1, y2)
+                found = false
+                for f2Elem, i in f2Elems when mathJS.equals(y1, f2Elem)
+                    # new match!
+                    m++
+                    found = true
+                    # y1 found in f2Elems => add to common elements
+                    commonElements.push y1
+                    # because both functions are increasing dispose of earlier elements
+                    # remove all unneeded elements from f2Elems incl. (current) y1
+                    f2Elems = f2Elems.slice(i + 1)
+                    # y1 was a match (the last in f2Elems) and y1 is bigger than y1 so we can forget everything in f1Elems
+                    f1Elems = []
+                    # exit loop
+                    break
 
-            res = []
-            while g.hasNext()
-                tmp = g.next()
-                res.push tmp
-                # console.log (x.value for x in tmp.elems)
+                if not found
+                    f1Elems.push y1
+                    f2Elems.push y2
+            # equal
+            else
+                m++
+                commonElements.push y1
+                # all previous values are unimportant because in the next iteration the new values will BOTH be greater than y1=y2 and the 2 lists contain only smaller elements than y1=y2 so there can't be a match with the next elements
+                f1Elems = []
+                f2Elems = []
+            # increment
+            x++
 
-            tmp = g.next()
-            res.push tmp
-            # console.log (x.value for x in tmp.elems)
+        console.log "x=#{x}", "m=#{m}", commonElements
 
-            console.log "tuple test:", (if res.length is ((g1.maxX - g1.minX) / g1.stepSize + 1) * ((g2.maxX - g2.minX) / g2.stepSize + 1) then "successful" else "failed")
+        # try to find formular from series (supported is: +,-,*,/)
+        ops = []
+        for elem in commonElements
+            true
 
-            g = new mathJS.Generator((x) -> x)
 
-            while g.hasNext()
-                tmp = g.next()
-                # console.log tmp
-            tmp = g.next()
-            # console.log tmp
+        # example: c1 = x^2, c2 = 2x+1
+        # c1: 0, 1, 4, 9, 16, 25, 36, 49, 64, 81...
+        # c2: 1, 3, 5, 7, 9, 11, 13, 15, 17, ...
+        # => 1, 9, 25, 49, 81, 121, 169, 225, 289, 361, 441, 529, 625, 729, 841, 961, 1089, 1225, 1369, 1521, 1681, 1849
+        # this is all odd squares (all odd numbers squared!) ==> f(x) = (2x + 1)^2
+        # ==> slower increasing function = f, faster increasing function = g -> new-f(x) = g(f(x)) = (g o f)(x)
+        # actually it is the "bigger function" with a constraint
 
-            return "done"
-# end js/Set/Generator.coffee
+        # inserting smaller in bigger works also for 2x, 3x
+        # what about 2x, 3x+1 -> 3(2x) + 1 = 6x+1
+        # but 2x, 2x => 2(2x) = 4x wrong!
+
+        # series like   *2, +1, *3, -1, *4, +1,  *5,  -1,  *6,  +1, ...
+        # would create 1, 2,  3,  9,  8, 32, 33, 165, 164, 984, 985
+        # indices:     0  1   2   3   4   5   6    7    8    9   10
+        # f would be y = x^2 + (-1)^x
+        return
+
+    intersects: (set) ->
+        return @intersection(set).size > 0
+
+    disjoint: (set) ->
+        return @intersection(set).size is 0
+
+    complement: () ->
+        if @universe?
+            return @universe.without @
+        return new mathJS.EmptySet()
+    ###*
+    * a.without b => returns: removed all common elements from a
+    *###
+    without: (set) ->
+
+    cartesianProduct: (set) ->
+        # size becomes the bigger one
+
+    times: @::cartesianProduct
+
+    # inherited
+    # isEmpty: () ->
+    #     return @size is 0
+
+
+
+# MAKE MATHJS.DOMAINS.N AN INSTANCE
+do () ->
+    # mathJS.Domains.N = new mathJS.Sets.N()
+    Object.defineProperties mathJS.Domains, {
+        R:
+            value: new mathJS.Sets.R()
+            writable: false
+            enumerable: true
+            configurable: false
+    }
+# end js/Set/Domains/R.coffee
 
 # from js/Calculus/Integral.coffee
 class mathJS.Integral

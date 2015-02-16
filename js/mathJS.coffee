@@ -268,6 +268,56 @@ mathJS.sign = (n) ->
         return 1
     return NaN
 
+mathJS.min = (elems...) ->
+    if elems.first instanceof Array
+        elems = elems.first
+        propGetter = null
+    else if elems.first instanceof Function
+        propGetter = elems.first
+        elems = elems.slice(1)
+        if elems.first instanceof Array
+            elems = elems.first
+
+    res = []
+    min = null
+    for item in elems
+        if propGetter?
+            item = propGetter(item)
+
+        if min is null or item.lessThan(min) or item < min
+            min = item
+            res = [elem]
+        # same as min found => add to list
+        else if item.equals(min) or item is min
+            res.push elem
+
+    return res
+
+mathJS.max = (elems...) ->
+    if elems.first instanceof Array
+        elems = elems.first
+        propGetter = null
+    else if elems.first instanceof Function
+        propGetter = elems.first
+        elems = elems.slice(1)
+        if elems.first instanceof Array
+            elems = elems.first
+
+    res = []
+    max = null
+    for item in elems
+        if propGetter?
+            item = propGetter(item)
+
+        if max is null or item.greaterThan(max) or item > max
+            max = item
+            res = [elem]
+        # same as max found => add to list
+        else if item.equals(max) or item is max
+            res.push elem
+
+    return res
+
 mathJS.log = (n, base = 10) ->
     return Math.log(n) / Math.log(base)
 

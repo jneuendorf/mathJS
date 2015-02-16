@@ -23,6 +23,7 @@ class mathJS.Operation
 # TODO: no DRY
 mathJS.Abstract =
     Operations:
+        # arithmetical
         divide: (x, y) ->
             if mathJS.Number.valueIsValid(x) and mathJS.Number.valueIsValid(y)
                 x = new mathJS.Number(x)
@@ -60,6 +61,21 @@ mathJS.Abstract =
             if mathJS.Number.valueIsValid(x)
                 x = new mathJS.Number(x)
             return x.clone()
+        # boolean / logical (converting from primitives to numbers doesn't make sense because 3 and 4 is not defined)
+        and: (x, y) ->
+            return x.and(y)
+        or: (x, y) ->
+            return x.or(y)
+        not: (x) ->
+            return x.not()
+        nand: (x, y) ->
+            return x.nand(y)
+        nor: (x, y) ->
+            return x.nor(y)
+        xor: (x, y) ->
+            return x.xor(y)
+        equals: (x, y) ->
+            return x.equals(y)
 
 ###
 PRECEDENCE (top to bottom):
@@ -136,9 +152,66 @@ cached =
         mathJS.Abstract.Operations.unaryPlus
         mathJS.Abstract.Operations.unaryPlus
     )
+    and: new mathJS.Operation(
+        "and"
+        1
+        "left"
+        true
+        mathJS.Abstract.Operations.and
+        null
+    )
+    or: new mathJS.Operation(
+        "or"
+        1
+        "left"
+        true
+        mathJS.Abstract.Operations.or
+        null
+    )
+    not: new mathJS.Operation(
+        "not"
+        5
+        "none"
+        false
+        mathJS.Abstract.Operations.not
+        mathJS.Abstract.Operations.not
+    )
+    nand: new mathJS.Operation(
+        "nand"
+        1
+        "left"
+        true
+        mathJS.Abstract.Operations.nand
+        null
+    )
+    nor: new mathJS.Operation(
+        "nor"
+        1
+        "left"
+        true
+        mathJS.Abstract.Operations.nor
+        null
+    )
+    xor: new mathJS.Operation(
+        "xor"
+        1
+        "left"
+        true
+        mathJS.Abstract.Operations.xor
+        null
+    )
+    equals: new mathJS.Operation(
+        "equals"
+        1
+        "left"
+        true
+        mathJS.Abstract.Operations.equals
+        null
+    )
 
 
 mathJS.Operations =
+    # arithmetical
     "+":            cached.addition
     "plus":         cached.addition
     "-":            cached.subtraction
@@ -160,3 +233,13 @@ mathJS.Operations =
     "u+":           cached.unaryPlus
     "unaryPlus":    cached.unaryPlus
     "neutralPlus":  cached.unaryPlus
+    # logical
+    "and":          cached.and
+    "or":           cached.or
+    "not":          cached.not
+    "nand":         cached.nand
+    "nor":          cached.nor
+    "xor":          cached.xor
+    "equals":       cached.equals
+    "=":            cached.equals
+    "xnor":         cached.equals

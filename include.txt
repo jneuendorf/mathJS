@@ -24,9 +24,10 @@ js/Numbers/Complex
 
 js/Algorithms/ShuntingYard
 
-js/Formals/Variable
 js/Formals/Operation
 js/Formals/Expression
+# Variable has to be after Expression
+js/Formals/Variable
 js/Formals/Equation
 
 js/Logic/Predicate
@@ -35,12 +36,12 @@ js/Set/AbstractSet
 js/Set/Set
 js/Set/DiscreteSet
 js/Set/ConditionalSet
-# js/Set/Interval
-js/Set/Domains/N
 js/Set/Tuple
 js/Set/Generator
+js/Set/Function
 
-js/Function
+js/Set/Domains/N
+js/Set/Domains/R
 
 js/Calculus/Integral
 

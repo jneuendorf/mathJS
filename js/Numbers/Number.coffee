@@ -69,6 +69,9 @@ class mathJS.Number extends mixOf mathJS.Orderable, mathJS.Poolable, mathJS.Pars
             return n
         return new mathJS.Number(n)
 
+    @getSet: () ->
+        return mathJS.Domains.R
+
     ###########################################################################
     # CONSTRUCTOR
     constructor: (value) ->
@@ -342,5 +345,8 @@ class mathJS.Number extends mixOf mathJS.Orderable, mathJS.Poolable, mathJS.Pars
 
     # TODO: intercept destructor
     # .....
+
+    getSet: () ->
+        return mathJS.Domains.R
 
     valueOf: @::_getValue

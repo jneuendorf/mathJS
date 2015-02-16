@@ -35,10 +35,10 @@ class mathJS.Set extends _mathJS.AbstractSet
             right =
                 open: str.second.last is ")"
                 value: new mathJS.Number(parseInt(str.second.slice(0, -1), 10))
-        # first parameter has an .open property => assume ctor called from fromString()
-        else if parameters.first.open?
-            left = parameters.first
-            right = parameters.second
+        # # first parameter has an .open property => assume ctor called from fromString()
+        # else if parameters.first.open?
+        #     left = parameters.first
+        #     right = parameters.second
         else
             second = parameters.second
             fourth = parameters.fourth
@@ -64,15 +64,16 @@ class mathJS.Set extends _mathJS.AbstractSet
         if parameters.length is 0
             @discreteSet = new _mathJS.DiscreteSet()
             @conditionalSet = new _mathJS.ConditionalSet()
-            true
 
-        # setset-builder notation
-        else if parameters.length is 3 and parameters.second instanceof Array
-            console.log "set builder"
         # discrete and conditional set given (from internal calls like union())
         else if parameters.first instanceof _mathJS.DiscreteSet and parameters.second instanceof _mathJS.ConditionalSet
-            @discreteSet = parameters.first.clone()
-            @conditionalSet = parameters.second.clone()
+            @discreteSet = parameters.first#.clone()
+            @conditionalSet = parameters.second#.clone()
+        # set-builder notation
+        else if parameters.first instanceof mathJS.Expression and parameters.second instanceof mathJS.Expression
+            console.log "set builder"
+            @discreteSet = new _mathJS.DiscreteSet()
+            @conditionalSet = new _mathJS.ConditionalSet(parameters.first, parameters.slice(1))
         # discrete set
         else
             # array given -> make its elements the set elements
@@ -81,11 +82,8 @@ class mathJS.Set extends _mathJS.AbstractSet
 
             console.log "params:", parameters
 
-            # list of set elements -> discrete
             @discreteSet = new _mathJS.DiscreteSet(parameters)
             @conditionalSet = new _mathJS.ConditionalSet()
-            # for param in parameters
-            #     @discreteSet.add param
 
 
     ###########################################################################
@@ -121,6 +119,9 @@ class mathJS.Set extends _mathJS.AbstractSet
             return false
         return set.discreteSet.equals(@discreteSet) and set.conditionalSet.equals(@conditionalSet)
 
+    getSet: () ->
+        return @
+
     isSubsetOf: (set) ->
         # TODO
         throw new Error("todo!")
@@ -130,18 +131,29 @@ class mathJS.Set extends _mathJS.AbstractSet
         throw new Error("todo!")
 
     contains: (elem) ->
-        return set.conditionalSet.contains(@conditionalSet) or set.discreteSet.contains(@discreteSet)
+        return @conditionalSet.contains(@conditionalSet) or @discreteSet.contains(@discreteSet)
 
     union: (set) ->
+        # if domain (N, Z, Q, R, C) let it handle the union because it knows know more about itself than this does
+        if set.isDomain
+            return set.union(@)
         return new mathJS.Set(@discreteSet.union(set.discreteSet), @conditionalSet.union(set.conditionalSet))
 
     complement: () ->
         if @universe?
             return asdf
         return new mathJS.EmptySet()
-    ###*
-    * a.without b => returns: removed all common elements from a
-    *###
+
     without: (set) ->
 
     cartesianProduct: (set) ->
+
+    min: () ->
+        return mathJS.min(@discreteSet.min().concat @conditionalSet.min())
+
+    max: () ->
+        return mathJS.max(@discreteSet.max().concat @conditionalSet.max())
+
+    infimum: () ->
+
+    supremum: () ->
