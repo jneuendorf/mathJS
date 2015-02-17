@@ -6,7 +6,7 @@ class mathJS.Function extends mathJS.Set
     # set:
     # {(x, 3x^2 - 5x + 7) | x in X}
 
-    # domain is implicit by variables' types contained in the expression
+    # domain is implicit by variables" types contained in the expression
     # range is implicit by the expression
     # constructor: (name, domain, range, expression) ->
     constructor: (name, expression, domain, range) ->
@@ -49,7 +49,7 @@ class mathJS.Function extends mathJS.Set
     * If an array the first value will be associated with the first variable name. Otherwise an object like {x: 42} is expected.
     * @return
     *###
-    eval: (values...) ->
+    'eval': (values...) ->
         tmp = {}
         if values instanceof Array
             for value, i in values
@@ -61,8 +61,8 @@ class mathJS.Function extends mathJS.Set
             if not domain.contains(val)
                 return null
 
-        return @expression.eval(values)
+        return @expression.'eval'(values)
 
     # make alias
-    at: @eval
-    get: @eval
+    at: @'eval'
+    get: @'eval'

@@ -1,3 +1,5 @@
+macros
+
 js/init
 
 js/globalFunctions

@@ -31,7 +31,7 @@ class mathJS.Interval extends mathJS.ConditionalSet
             @rightKind      = rightKind
         else
             fStr = arguments.callee.caller.toString()
-            throw new Error("mathJS: Expected (number, string, number, string) number! Given (#{leftBoundary}, #{leftKind}, #{rightBoundary}, #{rightKind}) in '#{fStr.substring(0, fStr.indexOf(")") + 1)}'")
+            throw new Error("mathJS: Expected (number, string, number, string) number! Given (#{leftBoundary}, #{leftKind}, #{rightBoundary}, #{rightKind}) in \"#{fStr.substring(0, fStr.indexOf(")") + 1)}\"")
 
     ###########################################################################
     # PROTECTED METHODS

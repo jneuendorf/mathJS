@@ -135,9 +135,15 @@ class mathJS.Set extends _mathJS.AbstractSet
 
     union: (set) ->
         # if domain (N, Z, Q, R, C) let it handle the union because it knows know more about itself than this does
+        # also domains have neither discrete nor conditional sets
         if set.isDomain
             return set.union(@)
         return new mathJS.Set(@discreteSet.union(set.discreteSet), @conditionalSet.union(set.conditionalSet))
+
+    intersection: (set) ->
+        if set.isDomain
+            return set.intersection(@)
+        return new mathJS.Set(@discreteSet.intersection(set.discreteSet), @conditionalSet.intersection(set.conditionalSet))
 
     complement: () ->
         if @universe?

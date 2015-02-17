@@ -46,7 +46,7 @@ class mathJS.Expression
             if mathJS.Operations[operation]?
                 operation = mathJS.Operations[operation]
             else
-                throw new mathJS.Errors.InvalidParametersError("Invalid operation string given: '#{operation}'.")
+                throw new mathJS.Errors.InvalidParametersError("Invalid operation string given: \"#{operation}\".")
 
         # if constructor was called from static .new()
         if expressions.first instanceof Array
@@ -73,7 +73,7 @@ class mathJS.Expression
             @operation = operation
             @expressions = expressions
         else
-            throw new mathJS.Errors.InvalidArityError("Invalid number of parameters (#{expressions.length}) for Operation '#{operation.name}'. Expected number of parameters is #{operation.arity}.")
+            throw new mathJS.Errors.InvalidArityError("Invalid number of parameters (#{expressions.length}) for Operation \"#{operation.name}\". Expected number of parameters is #{operation.arity}.")
 
     ###*
     * This method tests for the equality of structure. So 2*3x does not equal 6x!
@@ -89,7 +89,7 @@ class mathJS.Expression
         if not @operation?
             return not expression.operation? and expression.expressions.first.equals(@expressions.first)
 
-        # order of expressions doesn't matter
+        # order of expressions doesnt matter
         if @operation.commutative is true
             doneExpressions = []
             for exp, i in @expressions
@@ -122,12 +122,12 @@ class mathJS.Expression
         return @simplify().equals expression.simplify()
 
     ###*
-    * @method eval
+    * @method 'eval'
     * @param values {Object}
     * An object of the form {varKey: varVal}.
     * @returns The value of the expression (specified by the values).
     *###
-    eval: (values) ->
+    'eval': (values) ->
         # replace primitives with mathJS objects
         for k, v of values
             if mathJS.isPrimitive(v) and mathJS.Number.valueIsValid(v)
@@ -135,23 +135,23 @@ class mathJS.Expression
 
         # leaf => first expression is either a mathJS.Variable or a constant (-> Number)
         if not @operation?
-            return @expressions.first.eval(values)
+            return @expressions.first.'eval'(values)
 
-        # no leaf => eval substrees
+        # no leaf => 'eval' substrees
         args = []
         for expression in @expressions
-            # evaluated expression is a variable => stop because this and the 'above' expression can't be evaluated further
-            value = expression.eval(values)
+            # evaluated expression is a variable => stop because this and the "above" expression cant be evaluated further
+            value = expression.'eval'(values)
             if value instanceof mathJS.Variable
                 return @
             # evaluation succeeded => add to list of evaluated values (which will be passed to the operation)
             args.push value
 
-        return @operation.eval(args)
+        return @operation.'eval'(args)
 
     simplify: () ->
         # simplify numeric values aka. non-variable arithmetics
-        evaluated = @eval()
+        evaluated = @'eval'()
         # actual simplification: less ops!
         # TODO: gather simplification patterns
         return @
@@ -167,43 +167,42 @@ class mathJS.Expression
             res = res.concat expression.getVariables()
         return res
 
+    _getSet: () ->
+        # leaf
+        if not @operation?
+            return @expressions.first._getSet()
+
+        # no leaf
+        res = null
+        for expression in @expressions
+            if res?
+                res = res[@operation.setEquivalent] expression._getSet()
+            else
+                res = expression._getSet()
+
+        # TODO: the "or new mathJS.Set()" should be unnecessary
+        return res or new mathJS.Set()
+
     ###*
-    * Get the 'range' of the expression (the set of all possible results).
+    * Get the "range" of the expression (the set of all possible results).
     * @method getSet
     *###
     getSet: () ->
-        # leaf
-        if not @operation?
-            return @expressions.first.getSet()
-
-        # no leaf => union sub expressions' sets
-        res = new mathJS.Set()
-        for expression in @expressions
-            res = res.union expression.getSet()
-        return res
+        return @'eval'()._getSet()
 
     # MAKE ALIASES
     evaluatesTo: @::getSet
 
     if DEBUG
         @test = () ->
-            # e1 = new CLASS(5)
-            # e2 = new CLASS(2)
-            # e3 = new CLASS(4)
-            # e4 = new CLASS("+", e1, e2)
-            # console.log e4.eval()
-            # e5 = new CLASS("*", e4, e3)
-            # # e5 = (5 + 2) * 4 = 28
-            # console.log e5.eval()
-            #
             e1 = new CLASS(5)
             e2 = new CLASS(new mathJS.Variable("x", mathJS.Number))
             e4 = new CLASS("+", e1, e2)
             console.log e4.getVariables()
-            # console.log e4.eval({x: new mathJS.Number(5)})
-            # console.log e4.eval()
-            # e5 = e4.eval()
-            # console.log e5.eval({x: new mathJS.Number(5)})
+            # console.log e4.'eval'({x: new mathJS.Number(5)})
+            # console.log e4.'eval'()
+            # e5 = e4.'eval'()
+            # console.log e5.'eval'({x: new mathJS.Number(5)})
 
             str = "(5x - 3)  ^ 2 * 2 / (4y + 3!)"
 

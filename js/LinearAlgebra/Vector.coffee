@@ -64,7 +64,7 @@ class mathJS.Vector
 
     ###*
      * This method calculates the distance between 2 points.
-     * It's a shortcut for substracting 2 vectors and getting that vector's magnitude (because no new object is created).
+     * It"s a shortcut for substracting 2 vectors and getting that vector"s magnitude (because no new object is created).
      * For that reason this method should be used for pure distance calculations.
      *
      * @method distanceTo
@@ -112,7 +112,7 @@ class mathJS.Vector
 
     ###*
      * Returns the angle of a vector. Beware that the angle is measured in counter clockwise direction beginning at 0˚ which equals the x axis in positive direction.
-     * So on a computer grid the angle won't be what you expect! Use anglePC() in that case!
+     * So on a computer grid the angle won"t be what you expect! Use anglePC() in that case!
      *
      * @method angle
      * @return {Number} Angle of the vector in degrees. 0 degrees means pointing to the right.

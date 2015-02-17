@@ -1,6 +1,6 @@
 class mathJS.Operation
 
-    constructor: (name, precedence, associativity="left", commutative, func, inverse) ->
+    constructor: (name, precedence, associativity="left", commutative, func, inverse, setEquivalent) ->
         @name = name
         @precedence = precedence
         @associativity = associativity
@@ -8,8 +8,9 @@ class mathJS.Operation
         @func = func
         @arity = func.length # number of parameters => unary, binary, ternary...
         @inverse = inverse or null
+        @setEquivalent = setEquivalent or null
 
-    eval: (args) ->
+    'eval': (args) ->
         return @func.apply(@, args)
 
     invert: () ->
@@ -18,7 +19,7 @@ class mathJS.Operation
         return null
 
 # ABSTRACT OPERATIONS
-# Those functions make sure primitives are converted correctly and calls the according operation on it's first argument.
+# Those functions make sure primitives are converted correctly and calls the according operation on it"s first argument.
 # They are the actual functions of the operations.
 # TODO: no DRY
 mathJS.Abstract =
@@ -61,7 +62,7 @@ mathJS.Abstract =
             if mathJS.Number.valueIsValid(x)
                 x = new mathJS.Number(x)
             return x.clone()
-        # boolean / logical (converting from primitives to numbers doesn't make sense because 3 and 4 is not defined)
+        # boolean / logical (converting from primitives to numbers doesn"t make sense because 3 and 4 is not defined)
         and: (x, y) ->
             return x.and(y)
         or: (x, y) ->
@@ -159,6 +160,7 @@ cached =
         true
         mathJS.Abstract.Operations.and
         null
+        "intersection"
     )
     or: new mathJS.Operation(
         "or"
@@ -167,6 +169,7 @@ cached =
         true
         mathJS.Abstract.Operations.or
         null
+        "union"
     )
     not: new mathJS.Operation(
         "not"
@@ -175,6 +178,7 @@ cached =
         false
         mathJS.Abstract.Operations.not
         mathJS.Abstract.Operations.not
+        "complement"
     )
     nand: new mathJS.Operation(
         "nand"
@@ -207,6 +211,7 @@ cached =
         true
         mathJS.Abstract.Operations.equals
         null
+        "intersection"
     )
 
 

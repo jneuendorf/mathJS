@@ -1,4 +1,4 @@
 class mathJS.Evaluable
 
-    eval: () ->
+    'eval': () ->
         throw new Error("to do!")

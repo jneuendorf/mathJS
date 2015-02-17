@@ -318,7 +318,7 @@
     if (spaces) {
       str = str.split(" ");
       for (i = _i = 1, _ref = str.length; 1 <= _ref ? _i < _ref : _i > _ref; i = 1 <= _ref ? ++_i : --_i) {
-        str[i] = str[i].charAt(0).toUpperCase() + str[i].substr(1);
+        str[i] = str[i].charAt(0).toUpperCase() + str[i].substring(1);
       }
       str = str.join("");
     }
@@ -981,7 +981,7 @@
 
 
     /**
-    * This method checks for mathmatical '<'. This means new mathJS.Double(4.2).lessThan(5.2) is true.
+    * This method checks for mathmatical "<". This means new mathJS.Double(4.2).lessThan(5.2) is true.
     * @method lessThan
     * @param {Number} n
     * @return {Boolean}
@@ -1003,7 +1003,7 @@
 
 
     /**
-    * This method checks for mathmatical '>'. This means new mathJS.Double(4.2).greaterThan(3.2) is true.
+    * This method checks for mathmatical ">". This means new mathJS.Double(4.2).greaterThan(3.2) is true.
     * @method greaterThan
     * @param {Number} n
     * @return {Boolean}
@@ -1025,7 +1025,7 @@
 
 
     /**
-    * This method checks for mathmatical '<='. This means new mathJS.Double(4.2).lessThanOrEqualTo(5.2) is true.
+    * This method checks for mathmatical "<=". This means new mathJS.Double(4.2).lessThanOrEqualTo(5.2) is true.
     * @method lessThanOrEqualTo
     * @param {Number} n
     * @return {Boolean}
@@ -1047,7 +1047,7 @@
 
 
     /**
-    * This method checks for mathmatical '>='. This means new mathJS.Double(4.2).greaterThanOrEqualTo(3.2) is true.
+    * This method checks for mathmatical ">=". This means new mathJS.Double(4.2).greaterThanOrEqualTo(3.2) is true.
     * @method greaterThanOrEqualTo
     * @param {Number} n
     * @return {Boolean}
@@ -1221,11 +1221,6 @@
     };
 
     function Number(value) {
-      var fStr;
-      if (!this.valueIsValid(value)) {
-        fStr = arguments.callee.caller.toString();
-        throw new Error("mathJS: Expected plain number! Given " + value + " in '" + (fStr.substring(0, fStr.indexOf(")") + 1)) + "'");
-      }
       Object.defineProperties(this, {
         value: {
           get: this._getValue,
@@ -1273,7 +1268,7 @@
 
     /**
     * @Override mathJS.Orderable
-    * This method check for mathmatical '<'. This means new mathJS.Double(4.2).lessThan(5.2) is true.
+    * This method check for mathmatical "<". This means new mathJS.Double(4.2).lessThan(5.2) is true.
     * @method lessThan
     *
      */
@@ -1285,7 +1280,7 @@
 
     /**
     * @Override mathJS.Orderable
-    * This method check for mathmatical '>'. This means new mathJS.Double(4.2).greaterThan(3.2) is true.
+    * This method check for mathmatical ">". This means new mathJS.Double(4.2).greaterThan(3.2) is true.
     * @method greaterThan
     * @param {Number} n
     * @return {Boolean}
@@ -1568,8 +1563,12 @@
       return this;
     };
 
-    Number.prototype.getSet = function() {
-      return mathJS.Domains.R;
+    Number.prototype._getSet = function() {
+      return new mathJS.Set(this);
+    };
+
+    Number.prototype["in"] = function(set) {
+      return set.contains(this);
     };
 
     Number.prototype.valueOf = Number.prototype._getValue;
@@ -1758,7 +1757,7 @@
 
     /**
     * @Override
-    * This method creates an object with the keys 'real' and 'img' which have primitive numbers as their values.
+    * This method creates an object with the keys "real" and "img" which have primitive numbers as their values.
     * @static
     * @method _getValueFromParam
     * @param {Complex|Number} real
@@ -1821,12 +1820,8 @@
     };
 
     function Complex(real, img) {
-      var fStr, values;
+      var values;
       values = this._getValueFromParam(real, img);
-      if (values == null) {
-        fStr = arguments.callee.caller.toString();
-        throw new Error("mathJS: Expected 2 numbers or a complex number! Given (" + real + ", " + img + ") in '" + (fStr.substring(0, fStr.indexOf(")") + 1)) + "'");
-      }
       Object.defineProperties(this, {
         real: {
           get: this._getReal,
@@ -2158,7 +2153,7 @@
   })();
 
   mathJS.Operation = (function() {
-    function Operation(name, precedence, associativity, commutative, func, inverse) {
+    function Operation(name, precedence, associativity, commutative, func, inverse, setEquivalent) {
       if (associativity == null) {
         associativity = "left";
       }
@@ -2169,6 +2164,7 @@
       this.func = func;
       this.arity = func.length;
       this.inverse = inverse || null;
+      this.setEquivalent = setEquivalent || null;
     }
 
     Operation.prototype["eval"] = function(args) {
@@ -2272,13 +2268,13 @@
     factorial: new mathJS.Operation("factorial", 10, "right", false, mathJS.factorial, mathJS.factorialInverse),
     negate: new mathJS.Operation("negate", 11, "none", false, mathJS.Abstract.Operations.negate, mathJS.Abstract.Operations.negate),
     unaryPlus: new mathJS.Operation("unaryPlus", 11, "none", false, mathJS.Abstract.Operations.unaryPlus, mathJS.Abstract.Operations.unaryPlus),
-    and: new mathJS.Operation("and", 1, "left", true, mathJS.Abstract.Operations.and, null),
-    or: new mathJS.Operation("or", 1, "left", true, mathJS.Abstract.Operations.or, null),
-    not: new mathJS.Operation("not", 5, "none", false, mathJS.Abstract.Operations.not, mathJS.Abstract.Operations.not),
+    and: new mathJS.Operation("and", 1, "left", true, mathJS.Abstract.Operations.and, null, "intersection"),
+    or: new mathJS.Operation("or", 1, "left", true, mathJS.Abstract.Operations.or, null, "union"),
+    not: new mathJS.Operation("not", 5, "none", false, mathJS.Abstract.Operations.not, mathJS.Abstract.Operations.not, "complement"),
     nand: new mathJS.Operation("nand", 1, "left", true, mathJS.Abstract.Operations.nand, null),
     nor: new mathJS.Operation("nor", 1, "left", true, mathJS.Abstract.Operations.nor, null),
     xor: new mathJS.Operation("xor", 1, "left", true, mathJS.Abstract.Operations.xor, null),
-    equals: new mathJS.Operation("equals", 1, "left", true, mathJS.Abstract.Operations.equals, null)
+    equals: new mathJS.Operation("equals", 1, "left", true, mathJS.Abstract.Operations.equals, null, "intersection")
   };
 
   mathJS.Operations = {
@@ -2373,7 +2369,7 @@
         if (mathJS.Operations[operation] != null) {
           operation = mathJS.Operations[operation];
         } else {
-          throw new mathJS.Errors.InvalidParametersError("Invalid operation string given: '" + operation + "'.");
+          throw new mathJS.Errors.InvalidParametersError("Invalid operation string given: \"" + operation + "\".");
         }
       }
       if (expressions.first instanceof Array) {
@@ -2396,7 +2392,7 @@
         this.operation = operation;
         this.expressions = expressions;
       } else {
-        throw new mathJS.Errors.InvalidArityError("Invalid number of parameters (" + expressions.length + ") for Operation '" + operation.name + "'. Expected number of parameters is " + operation.arity + ".");
+        throw new mathJS.Errors.InvalidArityError("Invalid number of parameters (" + expressions.length + ") for Operation \"" + operation.name + "\". Expected number of parameters is " + operation.arity + ".");
       }
     }
 
@@ -2516,25 +2512,33 @@
       return res;
     };
 
+    Expression.prototype._getSet = function() {
+      var expression, res, _i, _len, _ref;
+      if (this.operation == null) {
+        return this.expressions.first._getSet();
+      }
+      res = null;
+      _ref = this.expressions;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        expression = _ref[_i];
+        if (res != null) {
+          res = res[this.operation.setEquivalent](expression._getSet());
+        } else {
+          res = expression._getSet();
+        }
+      }
+      return res || new mathJS.Set();
+    };
+
 
     /**
-    * Get the 'range' of the expression (the set of all possible results).
+    * Get the "range" of the expression (the set of all possible results).
     * @method getSet
     *
      */
 
     Expression.prototype.getSet = function() {
-      var expression, res, _i, _len, _ref;
-      if (this.operation == null) {
-        return this.expressions.first.getSet();
-      }
-      res = new mathJS.Set();
-      _ref = this.expressions;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        expression = _ref[_i];
-        res = res.union(expression.getSet());
-      }
-      return res;
+      return this["eval"]()._getSet();
     };
 
     Expression.prototype.evaluatesTo = Expression.prototype.getSet;
@@ -2580,7 +2584,7 @@
       }
     }
 
-    Variable.prototype.getSet = function() {
+    Variable.prototype._getSet = function() {
       return this.elementOf;
     };
 
@@ -2610,7 +2614,7 @@
         if (this.elementOf.contains(val)) {
           return val;
         }
-        console.warn("Given value '" + val + "' is not in the set '" + this.elementOf.name + "'.");
+        console.warn("Given value \"" + val + "\" is not in the set \"" + this.elementOf.name + "\".");
       }
       return this;
     };
@@ -2685,9 +2689,13 @@
 
     AbstractSet.prototype.isSubsetOf = function(set) {};
 
-    AbstractSet.prototype.size = function() {};
+    AbstractSet.prototype.size = function() {
+      return Infinity;
+    };
 
     AbstractSet.prototype.union = function(set) {};
+
+    AbstractSet.prototype.intersection = function(set) {};
 
     AbstractSet.prototype.without = function(set) {};
 
@@ -2883,6 +2891,13 @@
         return set.union(this);
       }
       return new mathJS.Set(this.discreteSet.union(set.discreteSet), this.conditionalSet.union(set.conditionalSet));
+    };
+
+    Set.prototype.intersection = function(set) {
+      if (set.isDomain) {
+        return set.intersection(this);
+      }
+      return new mathJS.Set(this.discreteSet.intersection(set.discreteSet), this.conditionalSet.intersection(set.conditionalSet));
     };
 
     Set.prototype.complement = function() {
@@ -3098,7 +3113,7 @@
     
     simplifications:
     1.  domains intersect interval = interval (because in this notation the domain is the superset)
-        so it wouldn't make sense to say: x in N and x in [0, 10] and expect the set to be infinite!!
+        so it wouldnt make sense to say: x in N and x in [0, 10] and expect the set to be infinite!!
         the order does not matter (otherwise (x in [0, 10] and x in N) would be infinite!!)
     2.  when trying to get equation solutions numerically (should this ever happen??) look for interval first to get boundaries
      */
@@ -3175,6 +3190,7 @@
           x: 4
         }));
         console.log(p3.getSet());
+        console.log(2);
         return "done";
       };
     }
@@ -3905,12 +3921,6 @@
 
     function R() {
       Object.defineProperties(this, {
-        name: {
-          value: "R",
-          writable: false,
-          enumerable: true,
-          configurable: false
-        },
         generator: {
           value: function(n) {
             return n;
@@ -3927,16 +3937,23 @@
           enumerable: false,
           configurable: false
         },
-        isCountable: {
+        name: {
+          value: "R",
+          writable: false,
+          enumerable: true,
+          configurable: false
+        },
+        isDomain: {
           value: true,
           enumerable: true,
           writable: false,
           configurable: false
         },
-        size: {
-          value: Infinity,
+        isCountable: {
+          value: true,
           enumerable: true,
           writable: false,
+          configurable: false,
           configurable: false
         },
         isMutable: {
@@ -4021,71 +4038,8 @@
       return this;
     };
 
-    R.prototype.intersect = function(set) {
-      var checker, commonElements, elem, f1, f1Elem, f1Elems, f2, f2Elem, f2Elems, found, i, m, ops, x, y1, y2, _i, _j, _k, _len, _len1, _len2;
-      checker = function(elem) {
-        return self.checker(elem) && set.checker(elem);
-      };
-      commonElements = [];
-      x = 0;
-      m = 0;
-      f1 = this.generator;
-      f2 = set.generator;
-      f1Elems = [];
-      f2Elems = [];
-      while (x < n && m < matches) {
-        y1 = f1(x);
-        y2 = f2(x);
-        if (mathJS.gt(y1, y2)) {
-          found = false;
-          for (i = _i = 0, _len = f1Elems.length; _i < _len; i = ++_i) {
-            f1Elem = f1Elems[i];
-            if (!(mathJS.equals(y2, f1Elem))) {
-              continue;
-            }
-            m++;
-            found = true;
-            commonElements.push(y2);
-            f1Elems = f1Elems.slice(i + 1);
-            f2Elems = [];
-            break;
-          }
-          if (!found) {
-            f1Elems.push(y1);
-            f2Elems.push(y2);
-          }
-        } else if (mathJS.lt(y1, y2)) {
-          found = false;
-          for (i = _j = 0, _len1 = f2Elems.length; _j < _len1; i = ++_j) {
-            f2Elem = f2Elems[i];
-            if (!(mathJS.equals(y1, f2Elem))) {
-              continue;
-            }
-            m++;
-            found = true;
-            commonElements.push(y1);
-            f2Elems = f2Elems.slice(i + 1);
-            f1Elems = [];
-            break;
-          }
-          if (!found) {
-            f1Elems.push(y1);
-            f2Elems.push(y2);
-          }
-        } else {
-          m++;
-          commonElements.push(y1);
-          f1Elems = [];
-          f2Elems = [];
-        }
-        x++;
-      }
-      console.log("x=" + x, "m=" + m, commonElements);
-      ops = [];
-      for (_k = 0, _len2 = commonElements.length; _k < _len2; _k++) {
-        elem = commonElements[_k];
-        true;
-      }
+    R.prototype.intersection = function(set) {
+      return set;
     };
 
     R.prototype.intersects = function(set) {
@@ -4117,7 +4071,7 @@
 
     return R;
 
-  })(mathJS.Set);
+  })(_mathJS.AbstractSet);
 
   (function() {
     return Object.defineProperties(mathJS.Domains, {
@@ -4214,7 +4168,7 @@
       to = vars.to;
       stepSize = vars.stepSize;
       if ((steps = (to - from) / stepSize) > settings.maxSteps || mathJS.settings.integral.maxSteps) {
-        throw new mathJS.Errors.CalculationExceedanceError("Too many calculations (" + (steps.toExponential()) + ") ahead! Either adjust mathJS.Integral.settings.maxSteps, set the Integral's instance's settings or pass settings to mathJS.Integral.solve() if you really need that many calculations.");
+        throw new mathJS.Errors.CalculationExceedanceError("Too many calculations (" + (steps.toExponential()) + ") ahead! Either adjust mathJS.Integral.settings.maxSteps, set the Integral\"s instance\"s settings or pass settings to mathJS.Integral.solve() if you really need that many calculations.");
       }
       res = 0;
       halfStepSize = 0.5 * stepSize;
@@ -4396,7 +4350,7 @@
 
     /**
      * This method calculates the distance between 2 points.
-     * It's a shortcut for substracting 2 vectors and getting that vector's magnitude (because no new object is created).
+     * It"s a shortcut for substracting 2 vectors and getting that vector"s magnitude (because no new object is created).
      * For that reason this method should be used for pure distance calculations.
      *
      * @method distanceTo
@@ -4457,7 +4411,7 @@
 
     /**
      * Returns the angle of a vector. Beware that the angle is measured in counter clockwise direction beginning at 0˚ which equals the x axis in positive direction.
-     * So on a computer grid the angle won't be what you expect! Use anglePC() in that case!
+     * So on a computer grid the angle won"t be what you expect! Use anglePC() in that case!
      *
      * @method angle
      * @return {Number} Angle of the vector in degrees. 0 degrees means pointing to the right.

@@ -18,7 +18,8 @@ class mathJS.Variable extends mathJS.Expression
             @elementOf = elementOf
 
 
-    getSet: () ->
+
+    _getSet: () ->
         return @elementOf
 
     equals: (variable) ->
@@ -36,9 +37,9 @@ class mathJS.Variable extends mathJS.Expression
     divide: (n) ->
         return new mathJS.Expression("/", @, n)
 
-    eval: (values) ->
+    'eval': (values) ->
         if values? and (val = values[@name])?
             if @elementOf.contains val
                 return val
-            console.warn "Given value '#{val}' is not in the set '#{@elementOf.name}'."
+            console.warn "Given value \"#{val}\" is not in the set \"#{@elementOf.name}\"."
         return @

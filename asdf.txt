@@ -9,7 +9,7 @@
  * @main mathJS
 *###
 
-if typeof DEBUG is "undefined"
+if typeof DEBUG is undefined
     window.DEBUG = true
 
 # create namespaces
@@ -42,7 +42,7 @@ window.mixOf = (base, mixins...) ->
             Mixed::[name] = method
 
 
-    # attach instanceof equivalent method
+    # attach 'instanceof' equivalent method
     superClasses = Array::slice.call(arguments, 0)
     Mixed::instanceof = (cls) ->
         # real inheritance => normal check
@@ -214,12 +214,12 @@ Array::getMin = (propertyGetter) ->
 
     return res
 
-Array::sortProp = (getProp, order = "asc") ->
+Array::sortProp = (getProp, order = asc) ->
     if not getProp?
         getProp = (item) ->
             return item
 
-    if order is "asc"
+    if order is asc
         cmpFunc = (a, b) ->
             a = getProp(a)
             b = getProp(b)
@@ -249,10 +249,10 @@ String::camel = (spaces) ->
 
     str = @toLowerCase()
     if spaces
-        str = str.split(" ")
+        str = str.split( )
         for i in [1...str.length]
             str[i] = str[i].charAt(0).toUpperCase() + str[i].substring(1)
-        str = str.join("")
+        str = str.join()
 
     return str
 
@@ -261,9 +261,9 @@ String::antiCamel = () ->
 
     for i in [1...@length]
         temp = @charAt(i)
-        # it is a capital letter -> insert space
+        # it's a capital letter -> insert space
         if temp is temp.toUpperCase()
-            res += " "
+            res +=  
         res += temp
     return res
 
@@ -271,13 +271,13 @@ String::firstToUpperCase = () ->
     return @charAt(0).toUpperCase() + @slice(1)
 
 String::snakeToCamelCase = () ->
-    res = ""
+    res = 
 
     for char in @
         # not underscore
-        if char isnt "_"
+        if char isnt _
             # previous character was not an underscore => just add character
-            if prevChar isnt "_"
+            if prevChar isnt _
                 res += char
             # previous character was an underscore => add upper case character
             else
@@ -288,7 +288,7 @@ String::snakeToCamelCase = () ->
     return res
 
 String::camelToSnakeCase = () ->
-    res = ""
+    res = 
     prevChar = null
     for char in @
         # lower case => just add
@@ -298,7 +298,7 @@ String::camelToSnakeCase = () ->
         else
             # previous character was lower case => add underscore and lower case character
             if prevChar is prevChar.toLowerCase()
-                res += "_" + char.toLowerCase()
+                res += _ + char.toLowerCase()
             # previous character was (also) upper case => just add
             else
                 res += char
@@ -460,7 +460,7 @@ Object.defineProperties mathJS, {
 }
 
 mathJS.isPrimitive = (x) ->
-    return typeof x is "string" or typeof x is "number" or typeof x is "boolean"
+    return typeof x is string or typeof x is number or typeof x is boolean
 
 mathJS.isComparable = (x) ->
     # return x instanceof mathJS.Comparable or x.instanceof?(mathJS.Comparable) or mathJS.isPrimitive x
@@ -778,7 +778,7 @@ class mathJS.Comparable
     * @return {Boolean}
     *###
     equals: (n) ->
-        throw new Error("To be implemented!")
+        throw new Error(To be implemented!)
 
     e: @::equals
 # end js/interfaces/Comparable.coffee
@@ -787,13 +787,13 @@ class mathJS.Comparable
 class mathJS.Orderable extends mathJS.Comparable
 
     ###*
-    * This method checks for mathmatical "<". This means new mathJS.Double(4.2).lessThan(5.2) is true.
+    * This method checks for mathmatical '<'. This means new mathJS.Double(4.2).lessThan(5.2) is true.
     * @method lessThan
     * @param {Number} n
     * @return {Boolean}
     *###
     lessThan: (n) ->
-        throw new Error("To be implemented!")
+        throw new Error(To be implemented!)
 
     ###*
     * Alias for `lessThan`.
@@ -802,13 +802,13 @@ class mathJS.Orderable extends mathJS.Comparable
     lt: @::lessThan
 
     ###*
-    * This method checks for mathmatical ">". This means new mathJS.Double(4.2).greaterThan(3.2) is true.
+    * This method checks for mathmatical '>'. This means new mathJS.Double(4.2).greaterThan(3.2) is true.
     * @method greaterThan
     * @param {Number} n
     * @return {Boolean}
     *###
     greaterThan: (n) ->
-        throw new Error("To be implemented!")
+        throw new Error(To be implemented!)
 
     ###*
     * Alias for `greaterThan`.
@@ -817,13 +817,13 @@ class mathJS.Orderable extends mathJS.Comparable
     gt: @::greaterThan
 
     ###*
-    * This method checks for mathmatical "<=". This means new mathJS.Double(4.2).lessThanOrEqualTo(5.2) is true.
+    * This method checks for mathmatical '<='. This means new mathJS.Double(4.2).lessThanOrEqualTo(5.2) is true.
     * @method lessThanOrEqualTo
     * @param {Number} n
     * @return {Boolean}
     *###
     lessThanOrEqualTo: (n) ->
-        throw new Error("To be implemented!")
+        throw new Error(To be implemented!)
 
     ###*
     * Alias for `lessThanOrEqualTo`.
@@ -832,13 +832,13 @@ class mathJS.Orderable extends mathJS.Comparable
     lte: @::lessThanOrEqualTo
 
     ###*
-    * This method checks for mathmatical ">=". This means new mathJS.Double(4.2).greaterThanOrEqualTo(3.2) is true.
+    * This method checks for mathmatical '>='. This means new mathJS.Double(4.2).greaterThanOrEqualTo(3.2) is true.
     * @method greaterThanOrEqualTo
     * @param {Number} n
     * @return {Boolean}
     *###
     greaterThanOrEqualTo: (n) ->
-        throw new Error("To be implemented!")
+        throw new Error(To be implemented!)
 
     ###*
     * Alias for `greaterThanOrEqualTo`.
@@ -851,10 +851,10 @@ class mathJS.Orderable extends mathJS.Comparable
 class mathJS.Parseable
 
     @parse: (str) ->
-        throw new Error("To be implemented")
+        throw new Error(To be implemented)
 
     toString: (args) ->
-        throw new Error("To be implemented")
+        throw new Error(To be implemented)
 # end js/interfaces/Parseable.coffee
 
 # from js/interfaces/Poolable.coffee
@@ -867,7 +867,7 @@ class mathJS.Poolable
         # if @_pool.length > 0
         #     return @_pool.pop()
         # return new @()
-        throw new Error("To be implemented")
+        throw new Error(To be implemented)
 
     @new: () ->
         if arguments.length > 0
@@ -884,7 +884,7 @@ class mathJS.Poolable
 class mathJS.Evaluable
 
     eval: () ->
-        throw new Error("to do!")
+        throw new Error(to do!)
 # end js/interfaces/Evaluable.coffee
 
 # from js/Numbers/Number.coffee
@@ -966,9 +966,9 @@ class mathJS.Number extends mixOf mathJS.Orderable, mathJS.Poolable, mathJS.Pars
     ###########################################################################
     # CONSTRUCTOR
     constructor: (value) ->
-        # if not @valueIsValid(value)
-        #     fStr = arguments.callee.caller.toString()
-        #     throw new Error("mathJS: Expected plain number! Given #{value} in \"#{fStr.substring(0, fStr.indexOf(")") + 1)}\"")
+        if not @valueIsValid(value)
+            fStr = arguments.callee.caller.toString()
+            throw new Error(mathJS: Expected plain number! Given #{value} in '#{fStr.substring(0, fStr.indexOf()) + 1)}')
 
         Object.defineProperties @, {
             value:
@@ -1018,7 +1018,7 @@ class mathJS.Number extends mixOf mathJS.Orderable, mathJS.Poolable, mathJS.Pars
 
     ###*
     * @Override mathJS.Orderable
-    * This method check for mathmatical "<". This means new mathJS.Double(4.2).lessThan(5.2) is true.
+    * This method check for mathmatical '<'. This means new mathJS.Double(4.2).lessThan(5.2) is true.
     * @method lessThan
     *###
     lessThan: (n) ->
@@ -1026,7 +1026,7 @@ class mathJS.Number extends mixOf mathJS.Orderable, mathJS.Poolable, mathJS.Pars
 
     ###*
     * @Override mathJS.Orderable
-    * This method check for mathmatical ">". This means new mathJS.Double(4.2).greaterThan(3.2) is true.
+    * This method check for mathmatical '>'. This means new mathJS.Double(4.2).greaterThan(3.2) is true.
     * @method greaterThan
     * @param {Number} n
     * @return {Boolean}
@@ -1263,7 +1263,7 @@ class mathJS.Fraction extends mathJS.Number
     constructor: (enumerator, denominator) ->
         @enumerator = enumerator
         @denominator = denominator
-        Object.defineProperty @, "value", {
+        Object.defineProperty @, value, {
             # writable: false
             get: () ->
                 return @enumerator / @denominator
@@ -1386,10 +1386,10 @@ class mathJS.Int extends mathJS.Number
  * Real part of the number. Either a mathJS.Number or primitive number.
  * @extends Number
 *###
-# TODO: maybe extend mathJS.Vector instead?! or mix them
+# TODO: maybe extend mathJS.Vector instead?! or mix 'em
 class mathJS.Complex extends mathJS.Number
 
-    PARSE_KEY = "0c"
+    PARSE_KEY = 0c
 
     ###########################################################################
     # STATIC
@@ -1402,7 +1402,7 @@ class mathJS.Complex extends mathJS.Number
 
     ###*
     * @Override
-    * This method creates an object with the keys "real" and "img" which have primitive numbers as their values.
+    * This method creates an object with the keys 'real' and 'img' which have primitive numbers as their values.
     * @static
     * @method _getValueFromParam
     * @param {Complex|Number} real
@@ -1445,7 +1445,7 @@ class mathJS.Complex extends mathJS.Number
     @parse: (str) ->
         idx = str.toLowerCase().indexOf(PARSE_KEY)
         if idx >= 0
-            parts = str.substring(idx + PARSE_KEY.length).split ","
+            parts = str.substring(idx + PARSE_KEY.length).split ,
             if mathJS.isNum(real = parseFloat(parts[0])) and mathJS.isNum(img = parseFloat(parts[1]))
                 return @fromPool real, img
 
@@ -1460,9 +1460,9 @@ class mathJS.Complex extends mathJS.Number
     constructor: (real, img) ->
         values = @_getValueFromParam(real, img)
 
-        # if not values?
-        #     fStr = arguments.callee.caller.toString()
-        #     throw new Error("mathJS: Expected 2 numbers or a complex number! Given (#{real}, #{img}) in \"#{fStr.substring(0, fStr.indexOf(")") + 1)}\"")
+        if not values?
+            fStr = arguments.callee.caller.toString()
+            throw new Error(mathJS: Expected 2 numbers or a complex number! Given (#{real}, #{img}) in '#{fStr.substring(0, fStr.indexOf()) + 1)}')
 
         Object.defineProperties @, {
             real:
@@ -1607,7 +1607,7 @@ class mathJS.Complex extends mathJS.Number
         return mathJS.Double.fromPool @value
 
     toString: () ->
-        return "#{PARSE_KEY}#{@real.toString()},#{@img.toString()}"
+        return #{PARSE_KEY}#{@real.toString()},#{@img.toString()}
 
     clone: () ->
         return @fromPool(@value)
@@ -1626,17 +1626,17 @@ class mathJS.Algorithms.ShuntingYard
 
     @specialOperators =
         # unary plus/minus
-        "+" : "#"
-        "-" : "_"
+        + : #
+        - : _
 
     @init = () ->
         @specialOperations =
-            "#": mathJS.Operations.neutralPlus
-            "_": mathJS.Operations.negate
+            #: mathJS.Operations.neutralPlus
+            _: mathJS.Operations.negate
 
 
     constructor: (settings) ->
-        @ops = ""
+        @ops = 
         @precedence = {}
         @associativity = {}
 
@@ -1650,16 +1650,16 @@ class mathJS.Algorithms.ShuntingYard
 
     toPostfix: (str) ->
         # remove spaces
-        str = str.replace /\s+/g, ""
+        str = str.replace /\s+/g, 
         # make implicit multiplication explicit (3x=> 3*x, xy => x*y)
         # TODO: what if a variable/function has more than 1 character: 3*abs(-3)
-        str = str.replace /(\d+|\w)(\w)/g,"$1*$2"
+        str = str.replace /(\d+|\w)(\w)/g,$1*$2
 
         stack = []
         ops = @ops
         precedence = @precedence
         associativity = @associativity
-        postfix = ""
+        postfix = 
         # set string property to indicate format
         postfix.postfix = true
 
@@ -1670,17 +1670,17 @@ class mathJS.Algorithms.ShuntingYard
                 o2 = stack.last()
 
                 # handle unary plus/minus => just add special char
-                if i is 0 or prevToken is "("
+                if i is 0 or prevToken is (
                     if CLASS.specialOperators[token]?
-                        postfix += "#{CLASS.specialOperators[token]} "
+                        postfix += #{CLASS.specialOperators[token]} 
                 else
                     # while operator token, o2, on top of the stack
                     # and o1 is left-associative and its precedence is less than or equal to that of o2
                     # (the algorithm on wikipedia says: or o1 precedence < o2 precedence, but I think it should be)
                     # or o1 is right-associative and its precedence is less than that of o2
-                    while o2 in ops and (associativity[o1] is "left" and precedence[o1] <= precedence[o2]) or (associativity[o1] is "right" and precedence[o1] < precedence[o2])
+                    while o2 in ops and (associativity[o1] is left and precedence[o1] <= precedence[o2]) or (associativity[o1] is right and precedence[o1] < precedence[o2])
                         # add o2 to output queue
-                        postfix += "#{o2} "
+                        postfix += #{o2} 
                         # pop o2 of the stack
                         stack.pop()
                         # next round
@@ -1688,26 +1688,26 @@ class mathJS.Algorithms.ShuntingYard
                     # push o1 onto the stack
                     stack.push(o1)
             # if token is left parenthesis
-            else if token is "("
+            else if token is (
                 # then push it onto the stack
                 stack.push(token)
             # if token is right parenthesis
-            else if token is ")"
+            else if token is )
                 # until token at top is (
-                while stack.last() isnt "("
-                    postfix += "#{stack.pop()} "
+                while stack.last() isnt (
+                    postfix += #{stack.pop()} 
                 # pop (, but not onto the output queue
                 stack.pop()
             # token is an operand or a variable
             else
-                postfix += "#{token} "
+                postfix += #{token} 
 
             prevToken = token
 
             # console.log token, stack
 
         while stack.length > 0
-          postfix += "#{stack.pop()} "
+          postfix += #{stack.pop()} 
 
         return postfix.trim()
 
@@ -1717,7 +1717,7 @@ class mathJS.Algorithms.ShuntingYard
         else
             postfix = str
 
-        postfix = postfix.split " "
+        postfix = postfix.split  
 
         # gather all operators
         ops = @ops
@@ -1745,7 +1745,7 @@ class mathJS.Algorithms.ShuntingYard
                 startIdx += idxOffset
 
                 # # convert parameter strings to mathJS objects
-                for param, j in params when typeof param is "string"
+                for param, j in params when typeof param is string
                     if isOperand(param)
                         params[j] = new mathJS.Expression(parseFloat(param))
                     else
@@ -1772,7 +1772,7 @@ class mathJS.Algorithms.ShuntingYard
 # from js/Formals/Operation.coffee
 class mathJS.Operation
 
-    constructor: (name, precedence, associativity="left", commutative, func, inverse, setEquivalent) ->
+    constructor: (name, precedence, associativity=left, commutative, func, inverse, setEquivalent) ->
         @name = name
         @precedence = precedence
         @associativity = associativity
@@ -1791,7 +1791,7 @@ class mathJS.Operation
         return null
 
 # ABSTRACT OPERATIONS
-# Those functions make sure primitives are converted correctly and calls the according operation on it"s first argument.
+# Those functions make sure primitives are converted correctly and calls the according operation on it's first argument.
 # They are the actual functions of the operations.
 # TODO: no DRY
 mathJS.Abstract =
@@ -1834,7 +1834,7 @@ mathJS.Abstract =
             if mathJS.Number.valueIsValid(x)
                 x = new mathJS.Number(x)
             return x.clone()
-        # boolean / logical (converting from primitives to numbers doesn"t make sense because 3 and 4 is not defined)
+        # boolean / logical (converting from primitives to numbers doesn't make sense because 3 and 4 is not defined)
         and: (x, y) ->
             return x.and(y)
         or: (x, y) ->
@@ -1862,164 +1862,164 @@ addition, subtraction
 
 cached =
     division: new mathJS.Operation(
-        "divide"
+        divide
         1
-        "left"
+        left
         false
         mathJS.pow
         mathJS.root
     )
     addition: new mathJS.Operation(
-        "plus"
+        plus
         1
-        "left"
+        left
         true
         mathJS.Abstract.Operations.plus
         mathJS.Abstract.Operations.minus
     )
     subtraction: new mathJS.Operation(
-        "plus"
+        plus
         1
-        "left"
+        left
         false
         mathJS.Abstract.Operations.minus
         mathJS.Abstract.Operations.plus
     )
     multiplication: new mathJS.Operation(
-        "times"
+        times
         1
-        "left"
+        left
         true
         mathJS.Abstract.Operations.times
         mathJS.Abstract.Operations.divide
     )
     exponentiation: new mathJS.Operation(
-        "pow"
+        pow
         1
-        "right"
+        right
         false
         mathJS.pow
         mathJS.root
     )
     factorial: new mathJS.Operation(
-        "factorial"
+        factorial
         10
-        "right"
+        right
         false
         mathJS.factorial
         mathJS.factorialInverse
     )
     negate: new mathJS.Operation(
-        "negate"
+        negate
         11
-        "none"
+        none
         false
         mathJS.Abstract.Operations.negate
         mathJS.Abstract.Operations.negate
     )
     unaryPlus: new mathJS.Operation(
-        "unaryPlus"
+        unaryPlus
         11
-        "none"
+        none
         false
         mathJS.Abstract.Operations.unaryPlus
         mathJS.Abstract.Operations.unaryPlus
     )
     and: new mathJS.Operation(
-        "and"
+        and
         1
-        "left"
+        left
         true
         mathJS.Abstract.Operations.and
         null
-        "intersection"
+        intersection
     )
     or: new mathJS.Operation(
-        "or"
+        or
         1
-        "left"
+        left
         true
         mathJS.Abstract.Operations.or
         null
-        "union"
+        union
     )
     not: new mathJS.Operation(
-        "not"
+        not
         5
-        "none"
+        none
         false
         mathJS.Abstract.Operations.not
         mathJS.Abstract.Operations.not
-        "complement"
+        complement
     )
     nand: new mathJS.Operation(
-        "nand"
+        nand
         1
-        "left"
+        left
         true
         mathJS.Abstract.Operations.nand
         null
     )
     nor: new mathJS.Operation(
-        "nor"
+        nor
         1
-        "left"
+        left
         true
         mathJS.Abstract.Operations.nor
         null
     )
     xor: new mathJS.Operation(
-        "xor"
+        xor
         1
-        "left"
+        left
         true
         mathJS.Abstract.Operations.xor
         null
     )
     equals: new mathJS.Operation(
-        "equals"
+        equals
         1
-        "left"
+        left
         true
         mathJS.Abstract.Operations.equals
         null
-        "intersection"
+        intersection
     )
 
 
 mathJS.Operations =
     # arithmetical
-    "+":            cached.addition
-    "plus":         cached.addition
-    "-":            cached.subtraction
-    "minus":        cached.subtraction
-    "*":            cached.multiplication
-    "times":        cached.multiplication
-    "/":            cached.division
-    ":":            cached.division
-    "divide":       cached.division
-    "^":            cached.exponentiation
-    "pow":          cached.exponentiation
-    "!":            cached.factorial
-    "negate":       cached.negate
-    "-u":           cached.negate
-    "u-":           cached.negate
-    "unaryMinus":   cached.negate
-    "neutralMinus": cached.negate
-    "+u":           cached.unaryPlus
-    "u+":           cached.unaryPlus
-    "unaryPlus":    cached.unaryPlus
-    "neutralPlus":  cached.unaryPlus
+    +:            cached.addition
+    plus:         cached.addition
+    -:            cached.subtraction
+    minus:        cached.subtraction
+    *:            cached.multiplication
+    times:        cached.multiplication
+    /:            cached.division
+    ::            cached.division
+    divide:       cached.division
+    ^:            cached.exponentiation
+    pow:          cached.exponentiation
+    !:            cached.factorial
+    negate:       cached.negate
+    -u:           cached.negate
+    u-:           cached.negate
+    unaryMinus:   cached.negate
+    neutralMinus: cached.negate
+    +u:           cached.unaryPlus
+    u+:           cached.unaryPlus
+    unaryPlus:    cached.unaryPlus
+    neutralPlus:  cached.unaryPlus
     # logical
-    "and":          cached.and
-    "or":           cached.or
-    "not":          cached.not
-    "nand":         cached.nand
-    "nor":          cached.nor
-    "xor":          cached.xor
-    "equals":       cached.equals
-    "=":            cached.equals
-    "xnor":         cached.equals
+    and:          cached.and
+    or:           cached.or
+    not:          cached.not
+    nand:         cached.nand
+    nor:          cached.nor
+    xor:          cached.xor
+    equals:       cached.equals
+    =:            cached.equals
+    xnor:         cached.equals
 # end js/Formals/Operation.coffee
 
 # from js/Formals/Expression.coffee
@@ -2040,24 +2040,24 @@ class mathJS.Expression
 
     @parser = new mathJS.Algorithms.ShuntingYard(
     # TODO: use operations from operation class
-        "!":
+        !:
             precedence: 5
-            associativity: "right"
-        "^":
+            associativity: right
+        ^:
             precedence: 4
-            associativity: "right"
-        "*":
+            associativity: right
+        *:
             precedence: 3
-            associativity: "left"
-        "/":
+            associativity: left
+        /:
             precedence: 3
-            associativity: "left"
-        "+":
+            associativity: left
+        +:
             precedence: 2
-            associativity: "left"
-        "-":
+            associativity: left
+        -:
             precedence: 2
-            associativity: "left"
+            associativity: left
     )
 
 
@@ -2067,11 +2067,11 @@ class mathJS.Expression
 
     constructor: (operation, expressions...) ->
         # map op string to actual operation object
-        if typeof operation is "string"
+        if typeof operation is string
             if mathJS.Operations[operation]?
                 operation = mathJS.Operations[operation]
             else
-                throw new mathJS.Errors.InvalidParametersError("Invalid operation string given: \"#{operation}\".")
+                throw new mathJS.Errors.InvalidParametersError(Invalid operation string given: '#{operation}'.)
 
         # if constructor was called from static .new()
         if expressions.first instanceof Array
@@ -2098,7 +2098,7 @@ class mathJS.Expression
             @operation = operation
             @expressions = expressions
         else
-            throw new mathJS.Errors.InvalidArityError("Invalid number of parameters (#{expressions.length}) for Operation \"#{operation.name}\". Expected number of parameters is #{operation.arity}.")
+            throw new mathJS.Errors.InvalidArityError(Invalid number of parameters (#{expressions.length}) for Operation '#{operation.name}'. Expected number of parameters is #{operation.arity}.)
 
     ###*
     * This method tests for the equality of structure. So 2*3x does not equal 6x!
@@ -2114,7 +2114,7 @@ class mathJS.Expression
         if not @operation?
             return not expression.operation? and expression.expressions.first.equals(@expressions.first)
 
-        # order of expressions doesnt matter
+        # order of expressions doesn't matter
         if @operation.commutative is true
             doneExpressions = []
             for exp, i in @expressions
@@ -2162,10 +2162,10 @@ class mathJS.Expression
         if not @operation?
             return @expressions.first.eval(values)
 
-        # no leaf => 'eval' substrees
+        # no leaf => "eval" substrees
         args = []
         for expression in @expressions
-            # evaluated expression is a variable => stop because this and the "above" expression cant be evaluated further
+            # evaluated expression is a variable => stop because this and the 'above' expression can't be evaluated further
             value = expression.eval(values)
             if value instanceof mathJS.Variable
                 return @
@@ -2197,7 +2197,7 @@ class mathJS.Expression
         if not @operation?
             return @expressions.first._getSet()
 
-        # no leaf
+        # no leaf => sub expressions' sets
         res = null
         for expression in @expressions
             if res?
@@ -2209,7 +2209,7 @@ class mathJS.Expression
         return res or new mathJS.Set()
 
     ###*
-    * Get the "range" of the expression (the set of all possible results).
+    * Get the 'range' of the expression (the set of all possible results).
     * @method getSet
     *###
     getSet: () ->
@@ -2221,19 +2221,19 @@ class mathJS.Expression
     if DEBUG
         @test = () ->
             e1 = new CLASS(5)
-            e2 = new CLASS(new mathJS.Variable("x", mathJS.Number))
-            e4 = new CLASS("+", e1, e2)
+            e2 = new CLASS(new mathJS.Variable(x, mathJS.Number))
+            e4 = new CLASS(+, e1, e2)
             console.log e4.getVariables()
-            # console.log e4.'eval'({x: new mathJS.Number(5)})
-            # console.log e4.'eval'()
-            # e5 = e4.'eval'()
-            # console.log e5.'eval'({x: new mathJS.Number(5)})
+            # console.log e4."eval"({x: new mathJS.Number(5)})
+            # console.log e4."eval"()
+            # e5 = e4."eval"()
+            # console.log e5."eval"({x: new mathJS.Number(5)})
 
-            str = "(5x - 3)  ^ 2 * 2 / (4y + 3!)"
+            str = (5x - 3)  ^ 2 * 2 / (4y + 3!)
 
             # (5x-3)^2 * 2 / (4y + 6)
 
-            return "test done"
+            return test done
 # end js/Formals/Expression.coffee
 
 # from js/Formals/Variable.coffee
@@ -2265,22 +2265,22 @@ class mathJS.Variable extends mathJS.Expression
         return @name is variable.name and @elementOf.equals variable.elementOf
 
     plus: (n) ->
-        return new mathJS.Expression("+", @, n)
+        return new mathJS.Expression(+, @, n)
 
     minus: (n) ->
-        return new mathJS.Expression("-", @, n)
+        return new mathJS.Expression(-, @, n)
 
     times: (n) ->
-        return new mathJS.Expression("*", @, n)
+        return new mathJS.Expression(*, @, n)
 
     divide: (n) ->
-        return new mathJS.Expression("/", @, n)
+        return new mathJS.Expression(/, @, n)
 
     eval: (values) ->
         if values? and (val = values[@name])?
             if @elementOf.contains val
                 return val
-            console.warn "Given value \"#{val}\" is not in the set \"#{@elementOf.name}\"."
+            console.warn Given value '#{val}' is not in the set '#{@elementOf.name}'.
         return @
 # end js/Formals/Variable.coffee
 
@@ -2333,7 +2333,7 @@ class _mathJS.AbstractSet
 
     # constructor: () ->
     #     if arguments.callee.caller isnt mathJS.Set
-    #         throw new mathJS.Errors.AbstractInstantiationError("mathJS.AbstractSet can\"t be instantiated!")
+    #         throw new mathJS.Errors.AbstractInstantiationError("mathJS.AbstractSet can\'t be instantiated!")
 
     cartesianProduct: (set) ->
 
@@ -2421,7 +2421,7 @@ class mathJS.Set extends _mathJS.AbstractSet
     # STATIC
 
     ###*
-    * Optionally the left and right configuration can be passed directly (each with an open- and value-property) or the Interval can be parsed from String (like "(2, 6 ]").
+    * Optionally the left and right configuration can be passed directly (each with an open- and value-property) or the Interval can be parsed from String (like (2, 6 ]).
     * @static
     * @method createInterval
     * @param leftOpen {Boolean}
@@ -2430,16 +2430,16 @@ class mathJS.Set extends _mathJS.AbstractSet
     * @param rightOpen {Boolean}
     *###
     @createInterval: (parameters...) ->
-        if typeof (str = parameters.first) is "string"
+        if typeof (str = parameters.first) is string
             # remove spaces
-            str = str.replace /\s+/g, ""
-                     .split ","
+            str = str.replace /\s+/g, 
+                     .split ,
 
             left =
-                open: str.first[0] is "("
+                open: str.first[0] is (
                 value: new mathJS.Number(parseInt(str.first.slice(1), 10))
             right =
-                open: str.second.last is ")"
+                open: str.second.last is )
                 value: new mathJS.Number(parseInt(str.second.slice(0, -1), 10))
         # # first parameter has an .open property => assume ctor called from fromString()
         # else if parameters.first.open?
@@ -2456,7 +2456,7 @@ class mathJS.Set extends _mathJS.AbstractSet
                 value: (if fourth instanceof mathJS.Number then fourth else new mathJS.Number(fourth))
 
         # an interval can be expressed with a conditional set: (a,b) = {x | x in R, a < x < b}
-        expression = new mathJS.Variable("x", mathJS.Domains.N)
+        expression = new mathJS.Variable(x, mathJS.Domains.N)
         predicate = null
 
         return new mathJS.Set(expression, predicate)
@@ -2477,7 +2477,7 @@ class mathJS.Set extends _mathJS.AbstractSet
             @conditionalSet = parameters.second#.clone()
         # set-builder notation
         else if parameters.first instanceof mathJS.Expression and parameters.second instanceof mathJS.Expression
-            console.log "set builder"
+            console.log set builder
             @discreteSet = new _mathJS.DiscreteSet()
             @conditionalSet = new _mathJS.ConditionalSet(parameters.first, parameters.slice(1))
         # discrete set
@@ -2486,7 +2486,7 @@ class mathJS.Set extends _mathJS.AbstractSet
             if parameters.first instanceof Array
                 parameters = parameters.first
 
-            console.log "params:", parameters
+            console.log params:, parameters
 
             @discreteSet = new _mathJS.DiscreteSet(parameters)
             @conditionalSet = new _mathJS.ConditionalSet()
@@ -2530,11 +2530,11 @@ class mathJS.Set extends _mathJS.AbstractSet
 
     isSubsetOf: (set) ->
         # TODO
-        throw new Error("todo!")
+        throw new Error(todo!)
 
     isSupersetOf: (set) ->
         # TODO
-        throw new Error("todo!")
+        throw new Error(todo!)
 
     contains: (elem) ->
         return @conditionalSet.contains(@conditionalSet) or @discreteSet.contains(@discreteSet)
@@ -2700,7 +2700,7 @@ class _mathJS.ConditionalSet extends mathJS.Set
 
     simplifications:
     1.  domains intersect interval = interval (because in this notation the domain is the superset)
-        so it wouldnt make sense to say: x in N and x in [0, 10] and expect the set to be infinite!!
+        so it wouldn't make sense to say: x in N and x in [0, 10] and expect the set to be infinite!!
         the order does not matter (otherwise (x in [0, 10] and x in N) would be infinite!!)
     2.  when trying to get equation solutions numerically (should this ever happen??) look for interval first to get boundaries
     ###
@@ -2724,7 +2724,7 @@ class _mathJS.ConditionalSet extends mathJS.Set
             @generator = new mathJS.Generator(
                 # f: predicate -> ?? (expression.getSet())
                 # x |-> expression(x)
-                new mathJS.Function("f", expression, predicate, expression.getSet())
+                new mathJS.Function(f, expression, predicate, expression.getSet())
                 predicate.min()
                 predicate.max()
             )
@@ -2761,24 +2761,24 @@ class _mathJS.ConditionalSet extends mathJS.Set
     if DEBUG
         @test = () ->
             e1 = new mathJS.Expression(5)
-            e2 = new mathJS.Expression(new mathJS.Variable("x", mathJS.Number))
-            e3 = new mathJS.Expression("+", e1, e2)
+            e2 = new mathJS.Expression(new mathJS.Variable(x, mathJS.Number))
+            e3 = new mathJS.Expression(+, e1, e2)
 
-            p1 = new mathJS.Expression(new mathJS.Variable("x", mathJS.Number))
+            p1 = new mathJS.Expression(new mathJS.Variable(x, mathJS.Number))
             p2 = new mathJS.Expression(4)
-            p3 = new mathJS.Expression("=", p1, p2)
+            p3 = new mathJS.Expression(=, p1, p2)
 
             console.log p3.eval(x: 4)
 
             console.log p3.getSet()
 
-            console.log 2
+            console.log AAA
 
             # set = new _mathJS.ConditionalSet(e3, p3)
 
             # console.log set
 
-            return "done"
+            return done
 # end js/Set/ConditionalSet.coffee
 
 # from js/Set/Tuple.coffee
@@ -2943,13 +2943,13 @@ class mathJS.Generator
         return false
 
     eval: (n) ->
-        # 'eval' each tuple element individually (the tuple knows how to do that)
+        # "eval" each tuple element individually (the tuple knows how to do that)
         if @tuple?
             return @tuple.eval(n)
-        # 'eval' expression
+        # "eval" expression
         if @f.eval?
             @f.eval(n)
-        # 'eval' js function
+        # "eval" js function
         return @f.call(@, n)
 
     hasNext: () ->
@@ -2961,7 +2961,7 @@ class mathJS.Generator
 
     _incX: () ->
         @index++
-        # more calculation than just "@x += @stepSize" but more precise!
+        # more calculation than just '@x += @stepSize' but more precise!
         @x = @minX + @index * @stepSize
 
         if @x > @maxX
@@ -2989,7 +2989,7 @@ class mathJS.Generator
             while i < maxI and generator.overflowed
                 generator.overflowed = false
                 generator = @tuple.at(++i)
-                # # "if" needed for very last value -> i should theoretically overflow
+                # # 'if' needed for very last value -> i should theoretically overflow
                 # => i refers to the (n+1)st tuple element (which only has n elements)
                 if generator?
                     generator._incX()
@@ -3027,7 +3027,7 @@ class mathJS.Generator
             # console.log tmp
             res.push tmp
 
-            console.log "simple test:", (if res.length is ((g.maxX - g.minX) / g.stepSize + 1) then "successful" else "failed")
+            console.log simple test:, (if res.length is ((g.maxX - g.minX) / g.stepSize + 1) then successful else failed)
 
             # "nested"
             g1 = new mathJS.Generator(
@@ -3054,7 +3054,7 @@ class mathJS.Generator
             res.push tmp
             # console.log (x.value for x in tmp.elems)
 
-            console.log "tuple test:", (if res.length is ((g1.maxX - g1.minX) / g1.stepSize + 1) * ((g2.maxX - g2.minX) / g2.stepSize + 1) then "successful" else "failed")
+            console.log tuple test:, (if res.length is ((g1.maxX - g1.minX) / g1.stepSize + 1) * ((g2.maxX - g2.minX) / g2.stepSize + 1) then successful else failed)
 
             g = new mathJS.Generator((x) -> x)
 
@@ -3064,7 +3064,7 @@ class mathJS.Generator
             tmp = g.next()
             # console.log tmp
 
-            return "done"
+            return done
 # end js/Set/Generator.coffee
 
 # from js/Set/Function.coffee
@@ -3076,7 +3076,7 @@ class mathJS.Function extends mathJS.Set
     # set:
     # {(x, 3x^2 - 5x + 7) | x in X}
 
-    # domain is implicit by variables" types contained in the expression
+    # domain is implicit by variables' types contained in the expression
     # range is implicit by the expression
     # constructor: (name, domain, range, expression) ->
     constructor: (name, expression, domain, range) ->
@@ -3239,11 +3239,11 @@ class mathJS.Sets.N extends mathJS.Set
                     if not set.contains val
                         return false
                     if DEBUG
-                        console.log "japp"
+                        console.log japp
                 return true
-            # set is finite => can"t be equal
+            # set is finite => can't be equal
             return false
-        # set has no generator => no infinite set => is finite => can"t be equal
+        # set has no generator => no infinite set => is finite => can't be equal
         return false
 
     ###*
@@ -3291,10 +3291,10 @@ class mathJS.Sets.N extends mathJS.Set
         checker = (elem) ->
             return self.checker(elem) and set.checker(elem)
 
-        # if the f2-invert of the y-value of f1 lies within f2" domain/universe both ranges include that value
+        # if the f2-invert of the y-value of f1 lies within f2' domain/universe both ranges include that value
         # or vice versa
-        # we know this generator function has N as domain (and as range of course)
-        # we even know the set"s generator function also has N as domain as we assume that (because the mapping is always a bijection from N -> X)
+        # we know this' generator function has N as domain (and as range of course)
+        # we even know the set's generator function also has N as domain as we assume that (because the mapping is always a bijection from N -> X)
         # so we can only check a single value at a time so we have to have to boundaries for the number of iterations and the number of matches
         # after x matches we try to find a series that produces those matches (otherwise a discrete set will be created)
         commonElements = []
@@ -3353,13 +3353,13 @@ class mathJS.Sets.N extends mathJS.Set
             else
                 m++
                 commonElements.push y1
-                # all previous values are unimportant because in the next iteration the new values will BOTH be greater than y1=y2 and the 2 lists contain only smaller elements than y1=y2 so there can"t be a match with the next elements
+                # all previous values are unimportant because in the next iteration the new values will BOTH be greater than y1=y2 and the 2 lists contain only smaller elements than y1=y2 so there can't be a match with the next elements
                 f1Elems = []
                 f2Elems = []
             # increment
             x++
 
-        console.log "x=#{x}", "m=#{m}", commonElements
+        console.log x=#{x}, m=#{m}, commonElements
 
         # try to find formular from series (supported is: +,-,*,/)
         ops = []
@@ -3452,7 +3452,7 @@ class mathJS.Sets.R extends _mathJS.AbstractSet
                 configurable: false
             # PROPERTIES
             name:
-                value: "R"
+                value: R
                 writable: false
                 enumerable: true
                 configurable: false
@@ -3518,11 +3518,11 @@ class mathJS.Sets.R extends _mathJS.AbstractSet
                     if not set.contains val
                         return false
                     if DEBUG
-                        console.log "japp"
+                        console.log japp
                 return true
-            # set is finite => cant be equal
+            # set is finite => can't be equal
             return false
-        # set has no generator => no infinite set => is finite => cant be equal
+        # set has no generator => no infinite set => is finite => can't be equal
         return false
 
     ###*
@@ -3600,16 +3600,16 @@ class mathJS.Integral
             start = Date.now()
             i.solveAsync(
                 (res) ->
-                    console.log res, "async took:", Date.now() - start
+                    console.log res, async took:, Date.now() - start
                 false
                 0.0000001
             )
             start2 = Date.now()
             console.log i.solve(), Date.now() - start2
 
-            return "test done"
+            return test done
 
-    constructor: (integrand, leftBoundary=-Infinity, rightBoundary=Infinity, integrationVariable=new mathJS.Variable("x")) ->
+    constructor: (integrand, leftBoundary=-Infinity, rightBoundary=Infinity, integrationVariable=new mathJS.Variable(x)) ->
         @integrand = integrand
         @leftBoundary = leftBoundary
         @rightBoundary = rightBoundary
@@ -3657,7 +3657,7 @@ class mathJS.Integral
         stepSize = vars.stepSize
 
         if (steps = (to - from) / stepSize) > settings.maxSteps or mathJS.settings.integral.maxSteps
-            throw new mathJS.Errors.CalculationExceedanceError("Too many calculations (#{steps.toExponential()}) ahead! Either adjust mathJS.Integral.settings.maxSteps, set the Integral\"s instance\"s settings or pass settings to mathJS.Integral.solve() if you really need that many calculations.")
+            throw new mathJS.Errors.CalculationExceedanceError(Too many calculations (#{steps.toExponential()}) ahead! Either adjust mathJS.Integral.settings.maxSteps, set the Integral's instance's settings or pass settings to mathJS.Integral.solve() if you really need that many calculations.)
 
         res = 0
 
@@ -3680,7 +3680,7 @@ class mathJS.Integral
             y1 = y2
 
         if DEBUG
-            console.log "made", i, "calculations"
+            console.log made, i, calculations
 
         return res
 
@@ -3755,7 +3755,7 @@ class mathJS.Vector
         @values = values
         if DEBUG
             for val in values when not mathJS.isMathJSNum(val)
-                console.warn "invalid value:", val
+                console.warn invalid value:, val
 
     equals: (v) ->
         if not @_isVectorLike(v)
@@ -3808,7 +3808,7 @@ class mathJS.Vector
 
     ###*
      * This method calculates the distance between 2 points.
-     * It"s a shortcut for substracting 2 vectors and getting that vector"s magnitude (because no new object is created).
+     * It's a shortcut for substracting 2 vectors and getting that vector's magnitude (because no new object is created).
      * For that reason this method should be used for pure distance calculations.
      *
      * @method distanceTo
@@ -3856,7 +3856,7 @@ class mathJS.Vector
 
     ###*
      * Returns the angle of a vector. Beware that the angle is measured in counter clockwise direction beginning at 0˚ which equals the x axis in positive direction.
-     * So on a computer grid the angle won"t be what you expect! Use anglePC() in that case!
+     * So on a computer grid the angle won't be what you expect! Use anglePC() in that case!
      *
      * @method angle
      * @return {Number} Angle of the vector in degrees. 0 degrees means pointing to the right.
@@ -3925,7 +3925,7 @@ class mathJS.Initializer
 mathJS.Initializer.start()
 
 if DEBUG
-    console.log "time to load mathJS: ", Date.now() - startTime, "ms"
+    console.log time to load mathJS: , Date.now() - startTime, ms
 
 # $(document).ready () ->
 #     console.log "dom ready"

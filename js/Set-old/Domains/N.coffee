@@ -100,9 +100,9 @@ class mathJS.Sets.N extends mathJS.Set
                     if DEBUG
                         console.log "japp"
                 return true
-            # set is finite => can't be equal
+            # set is finite => cant be equal
             return false
-        # set has no generator => no infinite set => is finite => can't be equal
+        # set has no generator => no infinite set => is finite => cant be equal
         return false
 
     ###*
@@ -150,10 +150,10 @@ class mathJS.Sets.N extends mathJS.Set
         checker = (elem) ->
             return self.checker(elem) and set.checker(elem)
 
-        # if the f2-invert of the y-value of f1 lies within f2' domain/universe both ranges include that value
+        # if the f2-invert of the y-value of f1 lies within f2" domain/universe both ranges include that value
         # or vice versa
-        # we know this' generator function has N as domain (and as range of course)
-        # we even know the set's generator function also has N as domain as we assume that (because the mapping is always a bijection from N -> X)
+        # we know this generator function has N as domain (and as range of course)
+        # we even know the set s generator function also has N as domain as we assume that (because the mapping is always a bijection from N -> X)
         # so we can only check a single value at a time so we have to have to boundaries for the number of iterations and the number of matches
         # after x matches we try to find a series that produces those matches (otherwise a discrete set will be created)
         commonElements = []
@@ -212,7 +212,7 @@ class mathJS.Sets.N extends mathJS.Set
             else
                 m++
                 commonElements.push y1
-                # all previous values are unimportant because in the next iteration the new values will BOTH be greater than y1=y2 and the 2 lists contain only smaller elements than y1=y2 so there can't be a match with the next elements
+                # all previous values are unimportant because in the next iteration the new values will BOTH be greater than y1=y2 and the 2 lists contain only smaller elements than y1=y2 so there cant be a match with the next elements
                 f1Elems = []
                 f2Elems = []
             # increment

@@ -8,7 +8,7 @@
  * Real part of the number. Either a mathJS.Number or primitive number.
  * @extends Number
 *###
-# TODO: maybe extend mathJS.Vector instead?! or mix 'em
+# TODO: maybe extend mathJS.Vector instead?! or mix them
 class mathJS.Complex extends mathJS.Number
 
     PARSE_KEY = "0c"
@@ -24,7 +24,7 @@ class mathJS.Complex extends mathJS.Number
 
     ###*
     * @Override
-    * This method creates an object with the keys 'real' and 'img' which have primitive numbers as their values.
+    * This method creates an object with the keys "real" and "img" which have primitive numbers as their values.
     * @static
     * @method _getValueFromParam
     * @param {Complex|Number} real
@@ -82,9 +82,9 @@ class mathJS.Complex extends mathJS.Number
     constructor: (real, img) ->
         values = @_getValueFromParam(real, img)
 
-        if not values?
-            fStr = arguments.callee.caller.toString()
-            throw new Error("mathJS: Expected 2 numbers or a complex number! Given (#{real}, #{img}) in '#{fStr.substring(0, fStr.indexOf(")") + 1)}'")
+        # if not values?
+        #     fStr = arguments.callee.caller.toString()
+        #     throw new Error("mathJS: Expected 2 numbers or a complex number! Given (#{real}, #{img}) in \"#{fStr.substring(0, fStr.indexOf(")") + 1)}\"")
 
         Object.defineProperties @, {
             real:

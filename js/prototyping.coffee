@@ -191,7 +191,7 @@ String::camel = (spaces) ->
     if spaces
         str = str.split(" ")
         for i in [1...str.length]
-            str[i] = str[i].charAt(0).toUpperCase() + str[i].substr(1)
+            str[i] = str[i].charAt(0).toUpperCase() + str[i].substring(1)
         str = str.join("")
 
     return str
@@ -201,7 +201,7 @@ String::antiCamel = () ->
 
     for i in [1...@length]
         temp = @charAt(i)
-        # it's a capital letter -> insert space
+        # it is a capital letter -> insert space
         if temp is temp.toUpperCase()
             res += " "
         res += temp

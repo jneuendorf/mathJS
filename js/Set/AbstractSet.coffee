@@ -2,7 +2,7 @@ class _mathJS.AbstractSet
 
     # constructor: () ->
     #     if arguments.callee.caller isnt mathJS.Set
-    #         throw new mathJS.Errors.AbstractInstantiationError("mathJS.AbstractSet can\'t be instantiated!")
+    #         throw new mathJS.Errors.AbstractInstantiationError("mathJS.AbstractSet can\"t be instantiated!")
 
     cartesianProduct: (set) ->
 
@@ -18,9 +18,13 @@ class _mathJS.AbstractSet
 
     isSubsetOf: (set) ->
 
+    # PRE-IMPLEMENTED (may be inherited)
     size: () ->
+        return Infinity
 
     union: (set) ->
+
+    intersection: (set) ->
 
     without: (set) ->
 
@@ -33,7 +37,7 @@ class _mathJS.AbstractSet
     supremum: () ->
 
     ###########################################################################
-    # PRE-IMPLEMENTED
+    # PRE-IMPLEMENTED (to be inherited)
     complement: (universe) ->
         return universe.minus(@)
 

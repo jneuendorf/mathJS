@@ -6,6 +6,7 @@
  * @param {Number} value
  * @extends Object
 *###
+# TODO: make number extend expression
 class mathJS.Number extends mixOf mathJS.Orderable, mathJS.Poolable, mathJS.Parseable
     ###########################################################################################
     # STATIC
@@ -75,9 +76,9 @@ class mathJS.Number extends mixOf mathJS.Orderable, mathJS.Poolable, mathJS.Pars
     ###########################################################################
     # CONSTRUCTOR
     constructor: (value) ->
-        if not @valueIsValid(value)
-            fStr = arguments.callee.caller.toString()
-            throw new Error("mathJS: Expected plain number! Given #{value} in '#{fStr.substring(0, fStr.indexOf(")") + 1)}'")
+        # if not @valueIsValid(value)
+        #     fStr = arguments.callee.caller.toString()
+        #     throw new Error("mathJS: Expected plain number! Given #{value} in \"#{fStr.substring(0, fStr.indexOf(")") + 1)}\"")
 
         Object.defineProperties @, {
             value:
@@ -127,7 +128,7 @@ class mathJS.Number extends mixOf mathJS.Orderable, mathJS.Poolable, mathJS.Pars
 
     ###*
     * @Override mathJS.Orderable
-    * This method check for mathmatical '<'. This means new mathJS.Double(4.2).lessThan(5.2) is true.
+    * This method check for mathmatical "<". This means new mathJS.Double(4.2).lessThan(5.2) is true.
     * @method lessThan
     *###
     lessThan: (n) ->
@@ -135,7 +136,7 @@ class mathJS.Number extends mixOf mathJS.Orderable, mathJS.Poolable, mathJS.Pars
 
     ###*
     * @Override mathJS.Orderable
-    * This method check for mathmatical '>'. This means new mathJS.Double(4.2).greaterThan(3.2) is true.
+    * This method check for mathmatical ">". This means new mathJS.Double(4.2).greaterThan(3.2) is true.
     * @method greaterThan
     * @param {Number} n
     * @return {Boolean}
@@ -340,13 +341,16 @@ class mathJS.Number extends mixOf mathJS.Orderable, mathJS.Poolable, mathJS.Pars
         return @constructor
 
     # EVALUABLE INTERFACE
-    eval: (values) ->
+    'eval': (values) ->
         return @
 
     # TODO: intercept destructor
     # .....
 
-    getSet: () ->
-        return mathJS.Domains.R
+    _getSet: () ->
+        return new mathJS.Set(@)
+
+    in: (set) ->
+        return set.contains(@)
 
     valueOf: @::_getValue

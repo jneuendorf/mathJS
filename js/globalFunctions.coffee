@@ -11,7 +11,7 @@ window.mixOf = (base, mixins...) ->
             Mixed::[name] = method
 
 
-    # attach 'instanceof' equivalent method
+    # attach instanceof equivalent method
     superClasses = Array::slice.call(arguments, 0)
     Mixed::instanceof = (cls) ->
         # real inheritance => normal check

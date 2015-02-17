@@ -16,7 +16,7 @@ class _mathJS.ConditionalSet extends mathJS.Set
 
     simplifications:
     1.  domains intersect interval = interval (because in this notation the domain is the superset)
-        so it wouldn't make sense to say: x in N and x in [0, 10] and expect the set to be infinite!!
+        so it wouldnt make sense to say: x in N and x in [0, 10] and expect the set to be infinite!!
         the order does not matter (otherwise (x in [0, 10] and x in N) would be infinite!!)
     2.  when trying to get equation solutions numerically (should this ever happen??) look for interval first to get boundaries
     ###
@@ -24,8 +24,10 @@ class _mathJS.ConditionalSet extends mathJS.Set
     # predicate is an boolean expression
     # TODO: try to find out if the set is actually discrete!
     constructor: (expression, predicate) ->
+        # empty set
         if arguments.length is 0
             @generator = null
+        # non-empty set
         else if expression instanceof mathJS.Generator
             @expression = expression
             @predicate = predicate
@@ -82,9 +84,11 @@ class _mathJS.ConditionalSet extends mathJS.Set
             p2 = new mathJS.Expression(4)
             p3 = new mathJS.Expression("=", p1, p2)
 
-            console.log p3.eval(x: 4)
+            console.log p3.'eval'(x: 4)
 
             console.log p3.getSet()
+
+            console.log AAA
 
             # set = new _mathJS.ConditionalSet(e3, p3)
 

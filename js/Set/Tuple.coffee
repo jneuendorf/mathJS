@@ -63,8 +63,8 @@ class mathJS.Tuple
     * # TODO: also enables hash of vars
     * A value for each tuple element.
     *###
-    eval: (values) ->
-        elems = (elem.eval(values[i]) for elem, i in @elems)
+    'eval': (values) ->
+        elems = (elem.'eval'(values[i]) for elem, i in @elems)
         return new mathJS.Tuple(elems)
 
     ###*
