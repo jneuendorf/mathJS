@@ -18,29 +18,6 @@ class mathJS.Sets.N extends _mathJS.Sets.Domain
     contains: (x) ->
         return mathJS.isInt(x) or new mathJS.Int(x).equals(x)
 
-    clone: @new
-
-    equals: (set, n = mathJS.settings.set.maxIterations * 10) ->
-        # TODO
-        # what about {x | x in R and x >= 0 and floor(x) = x} ?? should become true but how?!
-        # try n steps and see if values equal. if so assume the sets equal as well
-        if @_isSet set
-            if set.size is Infinity
-                generator = @generator
-                i = 0
-                while i++ < n
-                    # TODO: write intervall class that extends conditionalSet and sets implicit generators
-                    val = generator(i)
-                    if not set.contains val
-                        return false
-                    if DEBUG
-                        console.log "japp"
-                return true
-            # set is finite => can"t be equal
-            return false
-        # set has no generator => no infinite set => is finite => can"t be equal
-        return false
-
     ###*
     * This method checks if `this` is a subset of the given set `set`. Since equality must be checked by checking an arbitrary number of values this method actually does the same as `this.equals()`. For `this.equals()` the number of compared elements is 10x bigger.
     *###

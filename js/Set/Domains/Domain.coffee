@@ -6,7 +6,8 @@
 * I -> 2
 * R -> 3
 * C -> 4
-*
+* ==> union: take greater rank (if equal (and unequal names) take next greater rank)
+* ==> intersection: take smaller rank (if equal (and unequal names) take empty set)
 *###
 class _mathJS.Sets.Domain extends _mathJS.AbstractSet
 
@@ -26,7 +27,8 @@ class _mathJS.Sets.Domain extends _mathJS.AbstractSet
         @rank = rank
         @isCountable = isCountable
 
-    clone: @new
+    clone: () ->
+        return @constructor.new()
 
     equals: (set) ->
         return set instanceof @constructor

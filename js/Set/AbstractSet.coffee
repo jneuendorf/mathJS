@@ -38,6 +38,9 @@ class _mathJS.AbstractSet
     complement: (universe) ->
         return universe.minus(@)
 
+    disjoint: (set) ->
+        return @intersection(set).size() is 0
+
     intersects: (set) ->
         return not @disjoint(set)
 
@@ -47,8 +50,11 @@ class _mathJS.AbstractSet
     isSupersetOf: (set) ->
         return set.isSubsetOf @
 
-    disjoint: (set) ->
-        return @intersection(set).size() is 0
+    pow: (exponent) ->
+        sets = []
+        for i in [0...exponent]
+            sets.push @
+        return @cartesianProduct.apply(@, sets)
 
     ###########################################################################
     # ALIASES

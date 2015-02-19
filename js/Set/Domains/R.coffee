@@ -17,11 +17,6 @@ class mathJS.Sets.R extends _mathJS.Sets.Domain
     contains: (x) ->
         return new mathJS.Number(x).equals(x)
 
-    clone: @new
-
-    # equals: (set, n = mathJS.settings.set.maxIterations * 10) ->
-    #     return set instanceof mathJS.Sets.R
-
     ###*
     * This method checks if `this` is a subset of the given set `set`. Since equality must be checked by checking an arbitrary number of values this method actually does the same as `this.equals()`. For `this.equals()` the number of compared elements is 10x bigger.
     *###
@@ -32,22 +27,6 @@ class mathJS.Sets.R extends _mathJS.Sets.Domain
         if @_isSet set
             return set.isSubsetOf @
         return false
-
-    # union: (set) ->
-    #     if set.isDomain
-    #         if @rank >= set.rank
-    #             return @
-    #         return set
-    #     # TODO !!
-    #     return @
-    #
-    # intersection: (set) ->
-    #     if set.isDomain
-    #         if @rank <= set.rank
-    #             return @
-    #         return set
-    #     # TODO !!
-    #     return set
 
     complement: () ->
         if @universe?
