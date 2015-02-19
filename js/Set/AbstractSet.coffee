@@ -1,9 +1,5 @@
 class _mathJS.AbstractSet
 
-    # constructor: () ->
-    #     if arguments.callee.caller isnt mathJS.Set
-    #         throw new mathJS.Errors.AbstractInstantiationError("mathJS.AbstractSet can\"t be instantiated!")
-
     cartesianProduct: (set) ->
 
     clone: () ->
@@ -14,13 +10,21 @@ class _mathJS.AbstractSet
 
     getElements: () ->
 
+    infimum: () ->
+
     intersection: (set) ->
 
     isSubsetOf: (set) ->
 
+    min: () ->
+
+    max: () ->
+
     # PRE-IMPLEMENTED (may be inherited)
     size: () ->
         return Infinity
+
+    supremum: () ->
 
     union: (set) ->
 
@@ -28,13 +32,6 @@ class _mathJS.AbstractSet
 
     without: (set) ->
 
-    min: () ->
-
-    max: () ->
-
-    infimum: () ->
-
-    supremum: () ->
 
     ###########################################################################
     # PRE-IMPLEMENTED (to be inherited)
@@ -55,18 +52,20 @@ class _mathJS.AbstractSet
 
     ###########################################################################
     # ALIASES
-    cardinality: @::size
+    @_makeAliases: () ->
+        aliasesData =
+            size:               ["cardinality"]
+            without:            ["difference", "except", "minus"]
+            contains:           ["has"]
+            intersection:       ["intersect"]
+            isSubsetOf:         ["subsetOf"]
+            isSupersetOf:       ["supersetOf"]
+            cartesianProduct:   ["times"]
 
-    difference: @::without
-    except: @::without
-    minus: @::without
+        for orig, aliases of aliasesData
+            for alias in aliases
+                @::[alias] = @::[orig]
 
-    has: @::contains
+        return @
 
-    intersect: @::intersection
-
-    subsetOf: @::isSubsetOf
-
-    supersetOf: @::isSupersetOf
-
-    times: @::cartesianProduct
+    @_makeAliases()

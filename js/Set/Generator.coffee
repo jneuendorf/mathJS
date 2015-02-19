@@ -16,6 +16,16 @@ class mathJS.Generator
         @overflowed = false
         @index = 0
 
+    Object.defineProperties @::, {
+        function:
+            get: () ->
+                return @f
+            set: (f) ->
+                @f = f
+                @inverseF = f.getInverse()
+                return @
+    }
+
     ###*
     * Indicates whether the set the generator creates contains the given value or not.
     * @method generates

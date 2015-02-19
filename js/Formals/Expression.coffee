@@ -118,6 +118,7 @@ class mathJS.Expression
     ###*
     * This method tests for the logical/mathematical equality of 2 expressions.
     *###
+    # TODO: change naming here! equals should always be mathematical!!!
     mathEquals: (expression) ->
         return @simplify().equals expression.simplify()
 

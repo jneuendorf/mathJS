@@ -20,8 +20,9 @@ js/interfaces/Evaluable
 js/Numbers/Number
 js/Numbers/Double
 js/Numbers/Float
-js/Numbers/Fraction
 js/Numbers/Int
+js/Numbers/Fraction
+js/Numbers/Power
 js/Numbers/Complex
 
 js/Algorithms/ShuntingYard
@@ -42,6 +43,7 @@ js/Set/Tuple
 js/Set/Generator
 js/Set/Function
 
+js/Set/Domains/Domain
 js/Set/Domains/N
 js/Set/Domains/R
 

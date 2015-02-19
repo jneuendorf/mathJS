@@ -1,4 +1,4 @@
-class mathJS.Sets.N extends mathJS.Set
+class mathJS.Sets.N extends _mathJS.Sets.Domain
 
     CLASS = @
 
@@ -6,71 +6,7 @@ class mathJS.Sets.N extends mathJS.Set
         return new CLASS()
 
     constructor: () ->
-
-        # define everything (and make things non-overwritable)
-        Object.defineProperties @, {
-            # PRIVATE
-            # generator function.
-            # generally it is a mapper from N -> X that has to be continuous and increasing
-            generator:
-                value: (n) ->
-                    return n
-                writable: false
-                enumerable: false
-                configurable: false
-            expression:
-                value: (x) ->
-                    return x
-                writable: false
-                enumerable: false
-                configurable: false
-            # PROPERTIES
-            # id:
-            #     value: "N"
-            #     enumerable: false
-            #     writable: false
-            #     configurable: false
-            isCountable:
-                value: true
-                enumerable: true
-                writable: false
-                configurable: false
-            size:
-                value: Infinity
-                enumerable: true
-                writable: false
-                configurable: false
-            isMutable:
-                value: false
-                writable: false
-                enumerable: false
-                configurable: false
-            leftBoundary:
-                value:
-                    value: -Infinity
-                    open: true # implicit but listed here for clarity
-                writable: false
-                enumerable: false
-                configurable: false
-            rightBoundary:
-                value:
-                    value: +Infinity
-                    open: true # implicit but listed here for clarity
-                writable: false
-                enumerable: false
-                configurable: false
-            # FUNCTIONS (overriding prototype)
-            # contains:
-            #     value: contains
-            #     writable: false
-            #     enumerable: true
-            #     configurable: false
-            # has:
-            #     value: contains
-            #     writable: false
-            #     enumerable: true
-            #     configurable: false
-        }
+        super("N", 0, true)
 
 
     #################################################################################

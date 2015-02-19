@@ -123,12 +123,10 @@ class mathJS.Set extends _mathJS.AbstractSet
         return @
 
     isSubsetOf: (set) ->
-        # TODO
-        throw new Error("todo!")
+        return @conditionalSet.isSubsetOf(set) or @discreteSet.isSubsetOf(set)
 
     isSupersetOf: (set) ->
-        # TODO
-        throw new Error("todo!")
+        return @conditionalSet.isSupersetOf(set) or @discreteSet.isSupersetOf(set)
 
     contains: (elem) ->
         return @conditionalSet.contains(@conditionalSet) or @discreteSet.contains(@discreteSet)

@@ -5,6 +5,8 @@
 # *###
 class _mathJS.ConditionalSet extends mathJS.Set
 
+    CLASS = @
+
     ###
     {2x^2 | x in R and 0 <= x < 20 and x = x^2} ==> {0, 1}
     x in R and 0 <= x < 20 and x = x^2 <=> R intersect [0, 20) intersect {0,1} (where 0 and 1 have to be part of the previous set)
@@ -23,14 +25,14 @@ class _mathJS.ConditionalSet extends mathJS.Set
 
     # predicate is an boolean expression
     # TODO: try to find out if the set is actually discrete!
+    # TODO: maybe a 3rd parameter "baseSet" should be passed to indicate where the generator comes from
     constructor: (expression, predicate) ->
         # empty set
         if arguments.length is 0
             @generator = null
         # non-empty set
         else if expression instanceof mathJS.Generator
-            @expression = expression
-            @predicate = predicate
+            @generator = expression
         # no generator passed => standard parameters
         else
             if predicate instanceof mathJS.Expression
@@ -50,6 +52,7 @@ class _mathJS.ConditionalSet extends mathJS.Set
         return new _mathJS.ConditionalSet(mathJS.Generator.newFromMany(generators...))
 
     clone: () ->
+        return new CLASS()
 
     contains: (elem) ->
         if mathJS.isComparable elem
@@ -58,21 +61,33 @@ class _mathJS.ConditionalSet extends mathJS.Set
         return false
 
     equals: (set) ->
+        if set instanceof CLASS
+            return @generator.f.equals set.generator.f
+        # normal set
+        return set.discreteSet.isEmpty() and @generator.f.equals set.conditionSet.generator.f
 
     getElements: (n, sorted) ->
         res = []
         # TODO
         return res
 
+    # TODO: "and" generators
     intersection: (set) ->
 
     isSubsetOf: (set) ->
 
-    size: () ->
+    isSupersetOf: (set) ->
 
+    size: () ->
+        return @generator.f.range.size()
+
+    # TODO: "or" generators
     union: (set) ->
 
     without: (set) ->
+
+
+    @_makeAliases()
 
     if DEBUG
         @test = () ->

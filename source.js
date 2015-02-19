@@ -1599,23 +1599,6 @@
 
   })(mathJS.Double);
 
-  mathJS.Fraction = (function(_super) {
-    __extends(Fraction, _super);
-
-    function Fraction(enumerator, denominator) {
-      this.enumerator = enumerator;
-      this.denominator = denominator;
-      Object.defineProperty(this, "value", {
-        get: function() {
-          return this.enumerator / this.denominator;
-        }
-      });
-    }
-
-    return Fraction;
-
-  })(mathJS.Number);
-
 
   /**
    * @class Int
@@ -1731,6 +1714,34 @@
     };
 
     return Int;
+
+  })(mathJS.Number);
+
+  mathJS.Fraction = (function(_super) {
+    __extends(Fraction, _super);
+
+    function Fraction(enumerator, denominator) {
+      this.enumerator = enumerator;
+      this.denominator = denominator;
+      Object.defineProperty(this, "value", {
+        get: function() {
+          return this.enumerator / this.denominator;
+        }
+      });
+    }
+
+    return Fraction;
+
+  })(mathJS.Number);
+
+  mathJS.Power = (function(_super) {
+    __extends(Power, _super);
+
+    function Power() {
+      return Power.__super__.constructor.apply(this, arguments);
+    }
+
+    return Power;
 
   })(mathJS.Number);
 
@@ -2685,27 +2696,27 @@
 
     AbstractSet.prototype.getElements = function() {};
 
+    AbstractSet.prototype.infimum = function() {};
+
     AbstractSet.prototype.intersection = function(set) {};
 
     AbstractSet.prototype.isSubsetOf = function(set) {};
 
+    AbstractSet.prototype.min = function() {};
+
+    AbstractSet.prototype.max = function() {};
+
     AbstractSet.prototype.size = function() {
       return Infinity;
     };
+
+    AbstractSet.prototype.supremum = function() {};
 
     AbstractSet.prototype.union = function(set) {};
 
     AbstractSet.prototype.intersection = function(set) {};
 
     AbstractSet.prototype.without = function(set) {};
-
-    AbstractSet.prototype.min = function() {};
-
-    AbstractSet.prototype.max = function() {};
-
-    AbstractSet.prototype.infimum = function() {};
-
-    AbstractSet.prototype.supremum = function() {};
 
     AbstractSet.prototype.complement = function(universe) {
       return universe.minus(this);
@@ -2727,23 +2738,28 @@
       return this.intersection(set).size() === 0;
     };
 
-    AbstractSet.prototype.cardinality = AbstractSet.prototype.size;
+    AbstractSet._makeAliases = function() {
+      var alias, aliases, aliasesData, orig, _i, _len;
+      aliasesData = {
+        size: ["cardinality"],
+        without: ["difference", "except", "minus"],
+        contains: ["has"],
+        intersection: ["intersect"],
+        isSubsetOf: ["subsetOf"],
+        isSupersetOf: ["supersetOf"],
+        cartesianProduct: ["times"]
+      };
+      for (orig in aliasesData) {
+        aliases = aliasesData[orig];
+        for (_i = 0, _len = aliases.length; _i < _len; _i++) {
+          alias = aliases[_i];
+          this.prototype[alias] = this.prototype[orig];
+        }
+      }
+      return this;
+    };
 
-    AbstractSet.prototype.difference = AbstractSet.prototype.without;
-
-    AbstractSet.prototype.except = AbstractSet.prototype.without;
-
-    AbstractSet.prototype.minus = AbstractSet.prototype.without;
-
-    AbstractSet.prototype.has = AbstractSet.prototype.contains;
-
-    AbstractSet.prototype.intersect = AbstractSet.prototype.intersection;
-
-    AbstractSet.prototype.subsetOf = AbstractSet.prototype.isSubsetOf;
-
-    AbstractSet.prototype.supersetOf = AbstractSet.prototype.isSupersetOf;
-
-    AbstractSet.prototype.times = AbstractSet.prototype.cartesianProduct;
+    AbstractSet._makeAliases();
 
     return AbstractSet;
 
@@ -2875,11 +2891,11 @@
     };
 
     Set.prototype.isSubsetOf = function(set) {
-      throw new Error("todo!");
+      return this.conditionalSet.isSubsetOf(set) || this.discreteSet.isSubsetOf(set);
     };
 
     Set.prototype.isSupersetOf = function(set) {
-      throw new Error("todo!");
+      return this.conditionalSet.isSupersetOf(set) || this.discreteSet.isSupersetOf(set);
     };
 
     Set.prototype.contains = function(elem) {
@@ -3094,12 +3110,18 @@
 
     DiscreteSet.prototype.supremum = function() {};
 
+    DiscreteSet._makeAliases();
+
     return DiscreteSet;
 
   })(mathJS.Set);
 
   _mathJS.ConditionalSet = (function(_super) {
+    var CLASS;
+
     __extends(ConditionalSet, _super);
+
+    CLASS = ConditionalSet;
 
 
     /*
@@ -3122,8 +3144,7 @@
       if (arguments.length === 0) {
         this.generator = null;
       } else if (expression instanceof mathJS.Generator) {
-        this.expression = expression;
-        this.predicate = predicate;
+        this.generator = expression;
       } else {
         if (predicate instanceof mathJS.Expression) {
           predicate = predicate.getSet();
@@ -3147,7 +3168,9 @@
       return new _mathJS.ConditionalSet((_ref = mathJS.Generator).newFromMany.apply(_ref, generators));
     };
 
-    ConditionalSet.prototype.clone = function() {};
+    ConditionalSet.prototype.clone = function() {
+      return new CLASS();
+    };
 
     ConditionalSet.prototype.contains = function(elem) {
       var _ref;
@@ -3159,7 +3182,9 @@
       return false;
     };
 
-    ConditionalSet.prototype.equals = function(set) {};
+    ConditionalSet.prototype.equals = function(set) {
+      return this.generator["function"].equals;
+    };
 
     ConditionalSet.prototype.getElements = function(n, sorted) {
       var res;
@@ -3176,6 +3201,8 @@
     ConditionalSet.prototype.union = function(set) {};
 
     ConditionalSet.prototype.without = function(set) {};
+
+    ConditionalSet._makeAliases();
 
     if (DEBUG) {
       ConditionalSet.test = function() {
@@ -3434,6 +3461,19 @@
       this.overflowed = false;
       this.index = 0;
     }
+
+    Object.defineProperties(Generator.prototype, {
+      "function": {
+        get: function() {
+          return this.f;
+        },
+        set: function(f) {
+          this.f = f;
+          this.inverseF = f.getInverse();
+          return this;
+        }
+      }
+    });
 
 
     /**
@@ -4042,14 +4082,6 @@
       return set;
     };
 
-    R.prototype.intersects = function(set) {
-      return this.intersection(set).size > 0;
-    };
-
-    R.prototype.disjoint = function(set) {
-      return this.intersection(set).size === 0;
-    };
-
     R.prototype.complement = function() {
       if (this.universe != null) {
         return this.universe.without(this);
@@ -4067,7 +4099,7 @@
 
     R.prototype.cartesianProduct = function(set) {};
 
-    R.prototype.times = R.prototype.cartesianProduct;
+    R._makeAliases();
 
     return R;
 

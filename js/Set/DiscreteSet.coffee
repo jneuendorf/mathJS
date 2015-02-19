@@ -105,3 +105,5 @@ class _mathJS.DiscreteSet extends mathJS.Set
     infimum: () ->
 
     supremum: () ->
+
+    @_makeAliases()

@@ -1257,19 +1257,6 @@ class mathJS.Double extends mathJS.Number
 class mathJS.Float extends mathJS.Double
 # end js/Numbers/Float.coffee
 
-# from js/Numbers/Fraction.coffee
-class mathJS.Fraction extends mathJS.Number
-
-    constructor: (enumerator, denominator) ->
-        @enumerator = enumerator
-        @denominator = denominator
-        Object.defineProperty @, "value", {
-            # writable: false
-            get: () ->
-                return @enumerator / @denominator
-        }
-# end js/Numbers/Fraction.coffee
-
 # from js/Numbers/Int.coffee
 ###*
  * @class Int
@@ -1374,6 +1361,23 @@ class mathJS.Int extends mathJS.Number
     getSet: () ->
         return mathJS.Domains.N
 # end js/Numbers/Int.coffee
+
+# from js/Numbers/Fraction.coffee
+class mathJS.Fraction extends mathJS.Number
+
+    constructor: (enumerator, denominator) ->
+        @enumerator = enumerator
+        @denominator = denominator
+        Object.defineProperty @, "value", {
+            # writable: false
+            get: () ->
+                return @enumerator / @denominator
+        }
+# end js/Numbers/Fraction.coffee
+
+# from js/Numbers/Power.coffee
+class mathJS.Power extends mathJS.Number
+# end js/Numbers/Power.coffee
 
 # from js/Numbers/Complex.coffee
 ###*
@@ -2331,10 +2335,6 @@ class mathJS.Predicate
 # from js/Set/AbstractSet.coffee
 class _mathJS.AbstractSet
 
-    # constructor: () ->
-    #     if arguments.callee.caller isnt mathJS.Set
-    #         throw new mathJS.Errors.AbstractInstantiationError("mathJS.AbstractSet can\"t be instantiated!")
-
     cartesianProduct: (set) ->
 
     clone: () ->
@@ -2345,13 +2345,21 @@ class _mathJS.AbstractSet
 
     getElements: () ->
 
+    infimum: () ->
+
     intersection: (set) ->
 
     isSubsetOf: (set) ->
 
+    min: () ->
+
+    max: () ->
+
     # PRE-IMPLEMENTED (may be inherited)
     size: () ->
         return Infinity
+
+    supremum: () ->
 
     union: (set) ->
 
@@ -2359,13 +2367,6 @@ class _mathJS.AbstractSet
 
     without: (set) ->
 
-    min: () ->
-
-    max: () ->
-
-    infimum: () ->
-
-    supremum: () ->
 
     ###########################################################################
     # PRE-IMPLEMENTED (to be inherited)
@@ -2386,21 +2387,23 @@ class _mathJS.AbstractSet
 
     ###########################################################################
     # ALIASES
-    cardinality: @::size
+    @_makeAliases: () ->
+        aliasesData =
+            size:               ["cardinality"]
+            without:            ["difference", "except", "minus"]
+            contains:           ["has"]
+            intersection:       ["intersect"]
+            isSubsetOf:         ["subsetOf"]
+            isSupersetOf:       ["supersetOf"]
+            cartesianProduct:   ["times"]
 
-    difference: @::without
-    except: @::without
-    minus: @::without
+        for orig, aliases of aliasesData
+            for alias in aliases
+                @::[alias] = @::[orig]
 
-    has: @::contains
+        return @
 
-    intersect: @::intersection
-
-    subsetOf: @::isSubsetOf
-
-    supersetOf: @::isSupersetOf
-
-    times: @::cartesianProduct
+    @_makeAliases()
 # end js/Set/AbstractSet.coffee
 
 # from js/Set/Set.coffee
@@ -2529,12 +2532,10 @@ class mathJS.Set extends _mathJS.AbstractSet
         return @
 
     isSubsetOf: (set) ->
-        # TODO
-        throw new Error("todo!")
+        return @conditionalSet.isSubsetOf(set) or @discreteSet.isSubsetOf(set)
 
     isSupersetOf: (set) ->
-        # TODO
-        throw new Error("todo!")
+        return @conditionalSet.isSupersetOf(set) or @discreteSet.isSupersetOf(set)
 
     contains: (elem) ->
         return @conditionalSet.contains(@conditionalSet) or @discreteSet.contains(@discreteSet)
@@ -2679,6 +2680,8 @@ class _mathJS.DiscreteSet extends mathJS.Set
     infimum: () ->
 
     supremum: () ->
+
+    @_makeAliases()
 # end js/Set/DiscreteSet.coffee
 
 # from js/Set/ConditionalSet.coffee
@@ -2688,6 +2691,8 @@ class _mathJS.DiscreteSet extends mathJS.Set
 # * @param {mathJS.Expression}
 # *###
 class _mathJS.ConditionalSet extends mathJS.Set
+
+    CLASS = @
 
     ###
     {2x^2 | x in R and 0 <= x < 20 and x = x^2} ==> {0, 1}
@@ -2713,8 +2718,7 @@ class _mathJS.ConditionalSet extends mathJS.Set
             @generator = null
         # non-empty set
         else if expression instanceof mathJS.Generator
-            @expression = expression
-            @predicate = predicate
+            @generator = expression
         # no generator passed => standard parameters
         else
             if predicate instanceof mathJS.Expression
@@ -2734,6 +2738,7 @@ class _mathJS.ConditionalSet extends mathJS.Set
         return new _mathJS.ConditionalSet(mathJS.Generator.newFromMany(generators...))
 
     clone: () ->
+        return new CLASS()
 
     contains: (elem) ->
         if mathJS.isComparable elem
@@ -2742,6 +2747,7 @@ class _mathJS.ConditionalSet extends mathJS.Set
         return false
 
     equals: (set) ->
+        return @generator.function.equals
 
     getElements: (n, sorted) ->
         res = []
@@ -2757,6 +2763,8 @@ class _mathJS.ConditionalSet extends mathJS.Set
     union: (set) ->
 
     without: (set) ->
+
+    @_makeAliases()
 
     if DEBUG
         @test = () ->
@@ -2929,6 +2937,16 @@ class mathJS.Generator
         @x = minX
         @overflowed = false
         @index = 0
+
+    Object.defineProperties @::, {
+        function:
+            get: () ->
+                return @f
+            set: (f) ->
+                @f = f
+                @inverseF = f.getInverse()
+                return @
+    }
 
     ###*
     * Indicates whether the set the generator creates contains the given value or not.
@@ -3544,12 +3562,6 @@ class mathJS.Sets.R extends _mathJS.AbstractSet
         # TODO !!
         return set
 
-    intersects: (set) ->
-        return @intersection(set).size > 0
-
-    disjoint: (set) ->
-        return @intersection(set).size is 0
-
     complement: () ->
         if @universe?
             return @universe.without @
@@ -3562,11 +3574,7 @@ class mathJS.Sets.R extends _mathJS.AbstractSet
     cartesianProduct: (set) ->
         # size becomes the bigger one
 
-    times: @::cartesianProduct
-
-    # inherited
-    # isEmpty: () ->
-    #     return @size is 0
+    @_makeAliases()
 
 
 
