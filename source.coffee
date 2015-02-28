@@ -1,4 +1,5 @@
 # from macros.coffee
+# TODO: change quotes to _____!?!
 
 
 # end macros.coffee
@@ -21,7 +22,8 @@ window.mathJS =
     Operations: {}
     Sets: {}
 
-_mathJS = {}
+# Take namespaces from mathJS
+_mathJS = $.extend {}, mathJS
 
 if DEBUG
     window._mathJS = _mathJS
@@ -30,29 +32,30 @@ if DEBUG
 
 # from js/globalFunctions.coffee
 window.mixOf = (base, mixins...) ->
+
     class Mixed extends base
 
     # earlier mixins override later ones
     for mixin in mixins by -1
         # static
-        for name, method of mixin
+        for name, method of mixin when name not in Object.keys(mixin::)
             Mixed[name] = method
         # non-static
-        for name, method of mixin.prototype
+        for name, method of mixin::
             Mixed::[name] = method
-
+        Mixed.implements.push mixin
 
     # attach instanceof equivalent method
-    superClasses = Array::slice.call(arguments, 0)
-    Mixed::instanceof = (cls) ->
-        # real inheritance => normal check
-        if @ instanceof cls
-            return true
-        # check mixed in classes
-        for c in superClasses when c is cls
-                return true
-
-        return false
+    # superClasses = Array::slice.call(arguments, 0)
+    # Mixed::instanceof = (cls) ->
+    #     # real inheritance => normal check
+    #     if @ instanceof cls
+    #         return true
+    #     # check mixed in classes
+    #     for c in superClasses when c is cls
+    #             return true
+    #
+    #     return false
 
     return Mixed
 # end js/globalFunctions.coffee
@@ -466,8 +469,10 @@ mathJS.isComparable = (x) ->
     # return x instanceof mathJS.Comparable or x.instanceof?(mathJS.Comparable) or mathJS.isPrimitive x
     return x.equals instanceof Function or mathJS.isPrimitive x
 
-mathJS.instanceof = (instance, clss) ->
-    return instance instanceof clss or instance.instanceof?(clss)
+# mathJS.instanceof = (instance, clss) ->
+#     return instance instanceof clss or instance.instanceof?(clss)
+
+# mathJS.isA = () ->
 
 mathJS.equals = (x, y) ->
     return x.equals?(y) or y.equals?(x) or x is y
@@ -756,6 +761,55 @@ mathJS.settings =
 mathJS.config = mathJS.settings
 # end js/settings.coffee
 
+# from js/mathJSObject.coffee
+###*
+* This is the super class of all mathJS classes.
+* Therefore all cross-class things are defined here.
+* @class Object
+*###
+class _mathJS.Object
+
+    @implements = []
+
+    @implement = (classes...) ->
+        if classes.first instanceof Array
+            classes = classes.first
+
+        for clss in classes
+            clssPrototype = clss::
+            prototypeKeys = window.Object.keys(clssPrototype)
+            # static
+            for name, method of clss when name not in prototypeKeys
+                @[name] = method
+            # non-static (from prototype)
+            for name, method of clssPrototype
+                @::[name] = method
+            @implements.push clss
+        return @
+
+    isA: (clss) ->
+        if not clss? or clss not instanceof Function
+            return false
+
+        if @ instanceof clss
+            return true
+
+        for c in @constructor.implements
+            # direct hit
+            if c is clss
+                return true
+
+            # check super classes
+            while (c = c.__superClass__)?
+                if c is clss
+                    return true
+
+        return false
+
+    instanceof: () ->
+        return @isA.apply(@, arguments)
+# end js/mathJSObject.coffee
+
 # from js/Errors/SimpleErrors.coffee
 class mathJS.Errors.CalculationExceedanceError extends Error
 
@@ -768,7 +822,7 @@ class mathJS.Errors.InvalidArityError extends Error
 class mathJS.Errors.AbstractInstantiationError extends Error
 # end js/Errors/SimpleErrors.coffee
 
-# from js/interfaces/Comparable.coffee
+# from js/Interfaces/Comparable.coffee
 class mathJS.Comparable
 
     ###*
@@ -781,9 +835,9 @@ class mathJS.Comparable
         throw new Error("To be implemented!")
 
     e: @::equals
-# end js/interfaces/Comparable.coffee
+# end js/Interfaces/Comparable.coffee
 
-# from js/interfaces/Orderable.coffee
+# from js/Interfaces/Orderable.coffee
 class mathJS.Orderable extends mathJS.Comparable
 
     ###*
@@ -845,9 +899,9 @@ class mathJS.Orderable extends mathJS.Comparable
     * @method lt
     *###
     gte: @::greaterThanOrEqualTo
-# end js/interfaces/Orderable.coffee
+# end js/Interfaces/Orderable.coffee
 
-# from js/interfaces/Parseable.coffee
+# from js/Interfaces/Parseable.coffee
 class mathJS.Parseable
 
     @parse: (str) ->
@@ -855,9 +909,9 @@ class mathJS.Parseable
 
     toString: (args) ->
         throw new Error("To be implemented")
-# end js/interfaces/Parseable.coffee
+# end js/Interfaces/Parseable.coffee
 
-# from js/interfaces/Poolable.coffee
+# from js/Interfaces/Poolable.coffee
 class mathJS.Poolable
 
     @_pool = []
@@ -878,14 +932,231 @@ class mathJS.Poolable
     release: () ->
         @constructor._pool.push @
         return @constructor
-# end js/interfaces/Poolable.coffee
+# end js/Interfaces/Poolable.coffee
 
-# from js/interfaces/Evaluable.coffee
+# from js/Interfaces/Evaluable.coffee
 class mathJS.Evaluable
 
     eval: () ->
         throw new Error("to do!")
-# end js/interfaces/Evaluable.coffee
+# end js/Interfaces/Evaluable.coffee
+
+# from js/Numbers/AbstractNumber.coffee
+# This file defines the Number interface.
+# class _mathJS.AbstractNumber extends mixOf mathJS.Orderable, mathJS.Poolable, mathJS.Parseable
+class _mathJS.AbstractNumber extends _mathJS.Object
+
+    @implement mathJS.Orderable, mathJS.Poolable, mathJS.Parseable
+
+    ###*
+    * @Override mathJS.Poolable
+    * @static
+    * @method fromPool
+    *###
+    @fromPool: (val) ->
+
+    ###*
+    * @Override mathJS.Parseable
+    * @static
+    * @method parse
+    *###
+    @parse: (str) ->
+
+    @getSet: () ->
+
+    @new: (value) ->
+
+    ############################################################################################
+    # PROTECTED METHODS
+    _setValue: (value) ->
+        if @valueIsValid(value)
+            @_value = @_getValueFromParam(value, true)
+        return @
+
+    _getValue: () ->
+        return @_value
+
+    # link to static methods
+    valueIsValid: @valueIsValid
+
+    _getValueFromParam: @_getValueFromParam
+
+    ############################################################################################
+    # PUBLIC METHODS
+
+    ############################################################################################
+    # COMPARABLE INTERFACE
+    ###*
+    * @Override mathJS.Comparable
+    * This method checks for mathmatical equality. This means new mathJS.Double(4.2).equals(4.2) is true.
+    * @method equals
+    * @param {Number} n
+    * @return {Boolean}
+    *###
+    equals: (n) ->
+        return @value is @_getValueFromParam(n)
+
+    ###*
+    * @Override mathJS.Orderable
+    * This method checks for mathmatical "<". This means new mathJS.Double(4.2).lessThan(5.2) is true.
+    * @method lessThan
+    *###
+    lessThan: (n) ->
+        return @value < @_getValueFromParam(n)
+
+    ###*
+    * @Override mathJS.Orderable
+    * This method checks for mathmatical ">". This means new mathJS.Double(4.2).greaterThan(3.2) is true.
+    * @method greaterThan
+    * @param {Number} n
+    * @return {Boolean}
+    *###
+    greaterThan: (n) ->
+        return @value > @_getValueFromParam(n)
+
+    ###*
+    * @Override mathJS.Orderable
+    * This method checks for mathmatical "<=".
+    * @method lessThanOrEqualTo
+    * @param {Number} n
+    * @return {Boolean}
+    *###
+    lessThanOrEqualTo: (n) ->
+        return @value <= @_getValueFromParam(n)
+
+    ###*
+    * This method checks for mathmatical ">=".
+    * @method greaterThanOrEqualTo
+    * @param {Number} n
+    * @return {Boolean}
+    *###
+    greaterThanOrEqualTo: (n) ->
+        return @value >= @_getValueFromParam(n)
+    # END - IMPLEMENTING COMPARABLE
+    ############################################################################################
+
+    ###*
+    * This method adds 2 numbers and returns a new one.
+    * @method plus
+    * @param {Number} n
+    * @return {Number} Calculated Number.
+    *###
+    plus: (n) ->
+        return @fromPool(@value + @_getValueFromParam(n))
+
+    ###*
+    * This method substracts 2 numbers and returns a new one.
+    * @method minus
+    * @param {Number} n
+    * @return {Number} Calculated Number.
+    *###
+    minus: (n) ->
+        return @fromPool(@value - n)
+
+    ###*
+    * This method multiplies 2 numbers and returns a new one.
+    * @method times
+    * @param {Number} n
+    * @return {Number} Calculated Number.
+    *###
+    times: (n) ->
+        return @fromPool(@value * @_getValueFromParam(n))
+
+    ###*
+    * This method divides 2 numbers and returns a new one.
+    * @method divide
+    * @param {Number} n
+    * @return {Number} Calculated Number.
+    *###
+    divide: (n) ->
+        return @fromPool(@value / @_getValueFromParam(n))
+
+    ###*
+    * This method squares this instance and returns a new one.
+    * @method square
+    * @return {Number} Calculated Number.
+    *###
+    square: () ->
+        return @fromPool(@value * @value)
+
+    ###*
+    * This method cubes this instance and returns a new one.
+    * @method cube
+    * @return {Number} Calculated Number.
+    *###
+    cube: () ->
+        return @fromPool(@value * @value * @value)
+
+    ###*
+    * This method calculates the square root of this instance and returns a new one.
+    * @method sqrt
+    * @return {Number} Calculated Number.
+    *###
+    sqrt: () ->
+        return @fromPool mathJS.sqrt(@value)
+
+    ###*
+    * This method calculates the cubic root of this instance and returns a new one.
+    * @method curt
+    * @return {Number} Calculated Number.
+    *###
+    curt: () ->
+        return @pow(1 / 3)
+
+    ###*
+    * This method calculates any root of this instance and returns a new one.
+    * @method plus
+    * @param {Number} exponent
+    * @return {Number} Calculated Number.
+    *###
+    root: (exp) ->
+
+    ###*
+    * This method adds 2 numbers and returns a new one.
+    * @method plus
+    * @param {Number} n
+    * @return {Number} Calculated Number.
+    *###
+    reciprocal: () ->
+
+    ###*
+    * This method adds 2 numbers and returns a new one.
+    * @method plus
+    * @param {Number} n
+    * @return {Number} Calculated Number.
+    *###
+    pow: (n) ->
+        return @fromPool mathJS.pow @value, @_getValueFromParam(n)
+
+    sign: () ->
+
+    negate: () ->
+
+    toInt: () ->
+
+    toDouble: () ->
+
+    toString: () ->
+
+    clone: () ->
+
+    # add instance to pool
+    release: () ->
+        @constructor._pool.push @
+        return @constructor
+
+    # EVALUABLE INTERFACE
+    eval: (values) ->
+        return @
+
+    _getSet: () ->
+        return new mathJS.Set(@)
+
+    ############################################################################################
+    # PRE-IMPLEMENTED
+    in: (set) ->
+        return set.contains(@)
+# end js/Numbers/AbstractNumber.coffee
 
 # from js/Numbers/Number.coffee
 # TODO: mathJS.Number should also somehow be a mathJS.Expression!!!
@@ -897,7 +1168,8 @@ class mathJS.Evaluable
  * @extends Object
 *###
 # TODO: make number extend expression
-class mathJS.Number extends mixOf mathJS.Orderable, mathJS.Poolable, mathJS.Parseable
+# class mathJS.Number extends mixOf mathJS.Orderable, mathJS.Poolable, mathJS.Parseable
+class mathJS.Number extends _mathJS.AbstractNumber
     ###########################################################################################
     # STATIC
     @valueIsValid: (value) ->
@@ -936,11 +1208,12 @@ class mathJS.Number extends mixOf mathJS.Orderable, mathJS.Poolable, mathJS.Pars
         if @_pool.length > 0
             if @valueIsValid val
                 number = @_pool.pop()
-                number.value = val
+                number.value = val.value or val
                 return number
             return null
         else
-            return new @(val) # param check is done in constructor
+            # param check is done in constructor
+            return new @(val)
 
     ###*
     * @Override mathJS.Parseable
@@ -962,6 +1235,9 @@ class mathJS.Number extends mixOf mathJS.Orderable, mathJS.Poolable, mathJS.Pars
 
     @getSet: () ->
         return mathJS.Domains.R
+
+    @new: (value) ->
+        return @fromPool value
 
     ###########################################################################
     # CONSTRUCTOR
@@ -1365,19 +1641,64 @@ class mathJS.Int extends mathJS.Number
 # from js/Numbers/Fraction.coffee
 class mathJS.Fraction extends mathJS.Number
 
-    constructor: (enumerator, denominator) ->
-        @enumerator = enumerator
-        @denominator = denominator
-        Object.defineProperty @, "value", {
-            # writable: false
-            get: () ->
-                return @enumerator / @denominator
-        }
-# end js/Numbers/Fraction.coffee
+    ###*
+    * @Override mathJS.Number
+    * @static
+    * @method fromPool
+    *###
+    @fromPool: (e, d) ->
+        if @_pool.length > 0
+            if @valueIsValid val
+                frac = @_pool.pop()
+                frac.enumerator = e.value or e
+                frac.denominator = d.value or d
+                return frac
+            return null
+        else
+            # param check is done in constructor
+            return new @(e, d)
 
-# from js/Numbers/Power.coffee
-class mathJS.Power extends mathJS.Number
-# end js/Numbers/Power.coffee
+    ###*
+    * @Override mathJS.Number
+    * @static
+    * @method parse
+    *###
+    # x / y
+    @parse: (str) ->
+        if "/" in str
+            parts = str.split "/"
+        else if ":" in str
+            parts = str.slit ":"
+        return @new parts.first, parts.second
+
+    ###*
+    * @Override mathJS.Number
+    * @static
+    * @method getSet
+    *###
+    @getSet: () ->
+        return mathJS.Domains.Q
+
+    ###*
+    * @Override mathJS.Number
+    * @static
+    * @method new
+    *###
+    @new: (e, d) ->
+        return @fromPool e, d
+
+    ###########################################################################
+    # CONSTRUCTOR
+    constructor: (enumerator, denominator) ->
+        # number objects
+        if enumerator instanceof mathJS.Number and denominator instanceof mathJS.Number
+            @enumerator = enumerator.toInt()
+            @denominator = denominator.toInt()
+        # assume primitives
+        else
+            @enumerator = ~~enumerator
+            @denominator = ~~denominator
+# end js/Numbers/Fraction.coffee
 
 # from js/Numbers/Complex.coffee
 ###*
@@ -2147,6 +2468,7 @@ class mathJS.Expression
     ###*
     * This method tests for the logical/mathematical equality of 2 expressions.
     *###
+    # TODO: change naming here! equals should always be mathematical!!!
     mathEquals: (expression) ->
         return @simplify().equals expression.simplify()
 
@@ -2373,6 +2695,9 @@ class _mathJS.AbstractSet
     complement: (universe) ->
         return universe.minus(@)
 
+    disjoint: (set) ->
+        return @intersection(set).size() is 0
+
     intersects: (set) ->
         return not @disjoint(set)
 
@@ -2382,8 +2707,11 @@ class _mathJS.AbstractSet
     isSupersetOf: (set) ->
         return set.isSubsetOf @
 
-    disjoint: (set) ->
-        return @intersection(set).size() is 0
+    pow: (exponent) ->
+        sets = []
+        for i in [0...exponent]
+            sets.push @
+        return @cartesianProduct.apply(@, sets)
 
     ###########################################################################
     # ALIASES
@@ -2712,6 +3040,7 @@ class _mathJS.ConditionalSet extends mathJS.Set
 
     # predicate is an boolean expression
     # TODO: try to find out if the set is actually discrete!
+    # TODO: maybe a 3rd parameter "baseSet" should be passed to indicate where the generator comes from
     constructor: (expression, predicate) ->
         # empty set
         if arguments.length is 0
@@ -2747,22 +3076,31 @@ class _mathJS.ConditionalSet extends mathJS.Set
         return false
 
     equals: (set) ->
-        return @generator.function.equals
+        if set instanceof CLASS
+            return @generator.f.equals set.generator.f
+        # normal set
+        return set.discreteSet.isEmpty() and @generator.f.equals set.conditionSet.generator.f
 
     getElements: (n, sorted) ->
         res = []
         # TODO
         return res
 
+    # TODO: "and" generators
     intersection: (set) ->
 
     isSubsetOf: (set) ->
 
-    size: () ->
+    isSupersetOf: (set) ->
 
+    size: () ->
+        return @generator.f.range.size()
+
+    # TODO: "or" generators
     union: (set) ->
 
     without: (set) ->
+
 
     @_makeAliases()
 
@@ -3156,8 +3494,71 @@ class mathJS.Function extends mathJS.Set
     get: @eval
 # end js/Set/Function.coffee
 
+# from js/Set/Domains/Domain.coffee
+###*
+* Domain ranks are like so:
+* N -> 0
+* Z -> 1
+* Q -> 2
+* I -> 2
+* R -> 3
+* C -> 4
+* ==> union: take greater rank (if equal (and unequal names) take next greater rank)
+* ==> intersection: take smaller rank (if equal (and unequal names) take empty set)
+*###
+class _mathJS.Sets.Domain extends _mathJS.AbstractSet
+
+    CLASS = @
+
+    @new: () ->
+        return new CLASS()
+
+    @_byRank: (rank) ->
+        for name, domain of mathJS.Domains when domain.rank is rank
+            return domain
+        return null
+
+    constructor: (name, rank, isCountable) ->
+        @isDomain = true
+        @name = name
+        @rank = rank
+        @isCountable = isCountable
+
+    clone: () ->
+        return @constructor.new()
+
+    equals: (set) ->
+        return set instanceof @constructor
+
+    intersection: (set) ->
+        if set.isDomain
+            if @name is set.name
+                return @
+            if @rank < set.rank
+                return @
+            if @rank > set.rank
+                return set
+            return new mathJS.Set()
+        # TODO !!
+        return false
+
+    union: (set) ->
+        if set.isDomain
+            if @name is set.name
+                return @
+            if @rank > set.rank
+                return @
+            if @rank < set.rank
+                return set
+            return CLASS._byRank(@rank + 1)
+        # TODO !!
+        return false
+
+    @_makeAliases()
+# end js/Set/Domains/Domain.coffee
+
 # from js/Set/Domains/N.coffee
-class mathJS.Sets.N extends mathJS.Set
+class mathJS.Sets.N extends _mathJS.Sets.Domain
 
     CLASS = @
 
@@ -3165,71 +3566,7 @@ class mathJS.Sets.N extends mathJS.Set
         return new CLASS()
 
     constructor: () ->
-
-        # define everything (and make things non-overwritable)
-        Object.defineProperties @, {
-            # PRIVATE
-            # generator function.
-            # generally it is a mapper from N -> X that has to be continuous and increasing
-            generator:
-                value: (n) ->
-                    return n
-                writable: false
-                enumerable: false
-                configurable: false
-            expression:
-                value: (x) ->
-                    return x
-                writable: false
-                enumerable: false
-                configurable: false
-            # PROPERTIES
-            # id:
-            #     value: "N"
-            #     enumerable: false
-            #     writable: false
-            #     configurable: false
-            isCountable:
-                value: true
-                enumerable: true
-                writable: false
-                configurable: false
-            size:
-                value: Infinity
-                enumerable: true
-                writable: false
-                configurable: false
-            isMutable:
-                value: false
-                writable: false
-                enumerable: false
-                configurable: false
-            leftBoundary:
-                value:
-                    value: -Infinity
-                    open: true # implicit but listed here for clarity
-                writable: false
-                enumerable: false
-                configurable: false
-            rightBoundary:
-                value:
-                    value: +Infinity
-                    open: true # implicit but listed here for clarity
-                writable: false
-                enumerable: false
-                configurable: false
-            # FUNCTIONS (overriding prototype)
-            # contains:
-            #     value: contains
-            #     writable: false
-            #     enumerable: true
-            #     configurable: false
-            # has:
-            #     value: contains
-            #     writable: false
-            #     enumerable: true
-            #     configurable: false
-        }
+        super("N", 0, true)
 
 
     #################################################################################
@@ -3240,29 +3577,6 @@ class mathJS.Sets.N extends mathJS.Set
     # PUBLIC
     contains: (x) ->
         return mathJS.isInt(x) or new mathJS.Int(x).equals(x)
-
-    clone: @new
-
-    equals: (set, n = mathJS.settings.set.maxIterations * 10) ->
-        # TODO
-        # what about {x | x in R and x >= 0 and floor(x) = x} ?? should become true but how?!
-        # try n steps and see if values equal. if so assume the sets equal as well
-        if @_isSet set
-            if set.size is Infinity
-                generator = @generator
-                i = 0
-                while i++ < n
-                    # TODO: write intervall class that extends conditionalSet and sets implicit generators
-                    val = generator(i)
-                    if not set.contains val
-                        return false
-                    if DEBUG
-                        console.log "japp"
-                return true
-            # set is finite => can"t be equal
-            return false
-        # set has no generator => no infinite set => is finite => can"t be equal
-        return false
 
     ###*
     * This method checks if `this` is a subset of the given set `set`. Since equality must be checked by checking an arbitrary number of values this method actually does the same as `this.equals()`. For `this.equals()` the number of compared elements is 10x bigger.
@@ -3441,8 +3755,8 @@ do () ->
     }
 # end js/Set/Domains/N.coffee
 
-# from js/Set/Domains/R.coffee
-class mathJS.Sets.R extends _mathJS.AbstractSet
+# from js/Set/Domains/Z.coffee
+class mathJS.Sets.Z extends _mathJS.Sets.Domain
 
     CLASS = @
 
@@ -3450,66 +3764,7 @@ class mathJS.Sets.R extends _mathJS.AbstractSet
         return new CLASS()
 
     constructor: () ->
-
-        # define everything (and make things non-overwritable)
-        Object.defineProperties @, {
-            # PRIVATE
-            # generator function.
-            # generally it is a mapper from N -> X that has to be continuous and increasing
-            generator:
-                value: (n) ->
-                    return n
-                writable: false
-                enumerable: false
-                configurable: false
-            expression:
-                value: (x) ->
-                    return x
-                writable: false
-                enumerable: false
-                configurable: false
-            # PROPERTIES
-            name:
-                value: "R"
-                writable: false
-                enumerable: true
-                configurable: false
-            isDomain:
-                value: true
-                enumerable: true
-                writable: false
-                configurable: false
-            isCountable:
-                value: true
-                enumerable: true
-                writable: false
-                configurable: false
-            # size:
-            #     value: Infinity
-            #     enumerable: true
-            #     writable: false
-                configurable: false
-            isMutable:
-                value: false
-                writable: false
-                enumerable: false
-                configurable: false
-            leftBoundary:
-                value:
-                    value: -Infinity
-                    open: true # implicit but listed here for clarity
-                writable: false
-                enumerable: false
-                configurable: false
-            rightBoundary:
-                value:
-                    value: +Infinity
-                    open: true # implicit but listed here for clarity
-                writable: false
-                enumerable: false
-                configurable: false
-        }
-
+        super("Z", 1, true)
 
     #################################################################################
     # STATIC
@@ -3519,29 +3774,6 @@ class mathJS.Sets.R extends _mathJS.AbstractSet
     # PUBLIC
     contains: (x) ->
         return new mathJS.Number(x).equals(x)
-
-    clone: @new
-
-    equals: (set, n = mathJS.settings.set.maxIterations * 10) ->
-        # TODO
-        # what about {x | x in R and x >= 0 and floor(x) = x} ?? should become true but how?!
-        # try n steps and see if values equal. if so assume the sets equal as well
-        if @_isSet set
-            if set.size is Infinity
-                generator = @generator
-                i = 0
-                while i++ < n
-                    # TODO: write intervall class that extends conditionalSet and sets implicit generators
-                    val = generator(i)
-                    if not set.contains val
-                        return false
-                    if DEBUG
-                        console.log "japp"
-                return true
-            # set is finite => cant be equal
-            return false
-        # set has no generator => no infinite set => is finite => cant be equal
-        return false
 
     ###*
     * This method checks if `this` is a subset of the given set `set`. Since equality must be checked by checking an arbitrary number of values this method actually does the same as `this.equals()`. For `this.equals()` the number of compared elements is 10x bigger.
@@ -3553,14 +3785,6 @@ class mathJS.Sets.R extends _mathJS.AbstractSet
         if @_isSet set
             return set.isSubsetOf @
         return false
-
-    union: (set) ->
-        # TODO !!
-        return @
-
-    intersection: (set) ->
-        # TODO !!
-        return set
 
     complement: () ->
         if @universe?
@@ -3577,8 +3801,177 @@ class mathJS.Sets.R extends _mathJS.AbstractSet
     @_makeAliases()
 
 
+do () ->
+    # mathJS.Domains.N = new mathJS.Sets.N()
+    Object.defineProperties mathJS.Domains, {
+        Z:
+            value: new mathJS.Sets.Z()
+            writable: false
+            enumerable: true
+            configurable: false
+    }
+# end js/Set/Domains/Z.coffee
 
-# MAKE MATHJS.DOMAINS.N AN INSTANCE
+# from js/Set/Domains/Q.coffee
+class mathJS.Sets.Q extends _mathJS.Sets.Domain
+
+    CLASS = @
+
+    @new: () ->
+        return new CLASS()
+
+    constructor: () ->
+        super("Q", 2, true)
+
+    #################################################################################
+    # STATIC
+
+
+    #################################################################################
+    # PUBLIC
+    contains: (x) ->
+        return new mathJS.Number(x).equals(x)
+
+    ###*
+    * This method checks if `this` is a subset of the given set `set`. Since equality must be checked by checking an arbitrary number of values this method actually does the same as `this.equals()`. For `this.equals()` the number of compared elements is 10x bigger.
+    *###
+    isSubsetOf: (set, n = mathJS.settings.set.maxIterations) ->
+        return @equals(set, n * 10)
+
+    isSupersetOf: (set) ->
+        if @_isSet set
+            return set.isSubsetOf @
+        return false
+
+    complement: () ->
+        if @universe?
+            return @universe.without @
+        return new mathJS.EmptySet()
+    ###*
+    * a.without b => returns: removed all common elements from a
+    *###
+    without: (set) ->
+
+    cartesianProduct: (set) ->
+        # size becomes the bigger one
+
+    @_makeAliases()
+
+
+do () ->
+    # mathJS.Domains.N = new mathJS.Sets.N()
+    Object.defineProperties mathJS.Domains, {
+        Q:
+            value: new mathJS.Sets.Q()
+            writable: false
+            enumerable: true
+            configurable: false
+    }
+# end js/Set/Domains/Q.coffee
+
+# from js/Set/Domains/I.coffee
+class mathJS.Sets.I extends _mathJS.Sets.Domain
+
+    CLASS = @
+
+    @new: () ->
+        return new CLASS()
+
+    constructor: () ->
+        super("I", 2, false)
+
+    #################################################################################
+    # STATIC
+
+
+    #################################################################################
+    # PUBLIC
+    contains: (x) ->
+        return new mathJS.Number(x).equals(x)
+
+    ###*
+    * This method checks if `this` is a subset of the given set `set`. Since equality must be checked by checking an arbitrary number of values this method actually does the same as `this.equals()`. For `this.equals()` the number of compared elements is 10x bigger.
+    *###
+    isSubsetOf: (set, n = mathJS.settings.set.maxIterations) ->
+        return @equals(set, n * 10)
+
+    isSupersetOf: (set) ->
+        if @_isSet set
+            return set.isSubsetOf @
+        return false
+
+    complement: () ->
+        if @universe?
+            return @universe.without @
+        return new mathJS.EmptySet()
+    ###*
+    * a.without b => returns: removed all common elements from a
+    *###
+    without: (set) ->
+
+    cartesianProduct: (set) ->
+        # size becomes the bigger one
+
+    @_makeAliases()
+
+
+do () ->
+    # mathJS.Domains.N = new mathJS.Sets.N()
+    Object.defineProperties mathJS.Domains, {
+        I:
+            value: new mathJS.Sets.I()
+            writable: false
+            enumerable: true
+            configurable: false
+    }
+# end js/Set/Domains/I.coffee
+
+# from js/Set/Domains/R.coffee
+class mathJS.Sets.R extends _mathJS.Sets.Domain
+
+    CLASS = @
+
+    @new: () ->
+        return new CLASS()
+
+    constructor: () ->
+        super("R", 3, false)
+
+    #################################################################################
+    # STATIC
+
+
+    #################################################################################
+    # PUBLIC
+    contains: (x) ->
+        return new mathJS.Number(x).equals(x)
+
+    ###*
+    * This method checks if `this` is a subset of the given set `set`. Since equality must be checked by checking an arbitrary number of values this method actually does the same as `this.equals()`. For `this.equals()` the number of compared elements is 10x bigger.
+    *###
+    isSubsetOf: (set, n = mathJS.settings.set.maxIterations) ->
+        return @equals(set, n * 10)
+
+    isSupersetOf: (set) ->
+        if @_isSet set
+            return set.isSubsetOf @
+        return false
+
+    complement: () ->
+        if @universe?
+            return @universe.without @
+        return new mathJS.EmptySet()
+    ###*
+    * a.without b => returns: removed all common elements from a
+    *###
+    without: (set) ->
+
+    cartesianProduct: (set) ->
+        # size becomes the bigger one
+
+    @_makeAliases()
+
+
 do () ->
     # mathJS.Domains.N = new mathJS.Sets.N()
     Object.defineProperties mathJS.Domains, {
@@ -3589,6 +3982,63 @@ do () ->
             configurable: false
     }
 # end js/Set/Domains/R.coffee
+
+# from js/Set/Domains/C.coffee
+class mathJS.Sets.C extends _mathJS.Sets.Domain
+
+    CLASS = @
+
+    @new: () ->
+        return new CLASS()
+
+    constructor: () ->
+        super("C", 4, false)
+
+    #################################################################################
+    # STATIC
+
+
+    #################################################################################
+    # PUBLIC
+    contains: (x) ->
+        return new mathJS.Number(x).equals(x)
+
+    ###*
+    * This method checks if `this` is a subset of the given set `set`. Since equality must be checked by checking an arbitrary number of values this method actually does the same as `this.equals()`. For `this.equals()` the number of compared elements is 10x bigger.
+    *###
+    isSubsetOf: (set, n = mathJS.settings.set.maxIterations) ->
+        return @equals(set, n * 10)
+
+    isSupersetOf: (set) ->
+        if @_isSet set
+            return set.isSubsetOf @
+        return false
+
+    complement: () ->
+        if @universe?
+            return @universe.without @
+        return new mathJS.EmptySet()
+    ###*
+    * a.without b => returns: removed all common elements from a
+    *###
+    without: (set) ->
+
+    cartesianProduct: (set) ->
+        # size becomes the bigger one
+
+    @_makeAliases()
+
+
+do () ->
+    # mathJS.Domains.N = new mathJS.Sets.N()
+    Object.defineProperties mathJS.Domains, {
+        C:
+            value: new mathJS.Sets.C()
+            writable: false
+            enumerable: true
+            configurable: false
+    }
+# end js/Set/Domains/C.coffee
 
 # from js/Calculus/Integral.coffee
 class mathJS.Integral

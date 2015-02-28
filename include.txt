@@ -8,15 +8,17 @@ js/prototyping
 js/mathJS
 js/settings
 
+js/mathJSObject
 
 js/Errors/SimpleErrors
 
-js/interfaces/Comparable
-js/interfaces/Orderable
-js/interfaces/Parseable
-js/interfaces/Poolable
-js/interfaces/Evaluable
+js/Interfaces/Comparable
+js/Interfaces/Orderable
+js/Interfaces/Parseable
+js/Interfaces/Poolable
+js/Interfaces/Evaluable
 
+js/Numbers/AbstractNumber
 js/Numbers/Number
 js/Numbers/Double
 js/Numbers/Float
@@ -45,7 +47,11 @@ js/Set/Function
 
 js/Set/Domains/Domain
 js/Set/Domains/N
+js/Set/Domains/Z
+js/Set/Domains/Q
+js/Set/Domains/I
 js/Set/Domains/R
+js/Set/Domains/C
 
 js/Calculus/Integral
 

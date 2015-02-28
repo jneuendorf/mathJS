@@ -10,9 +10,9 @@
   var cached, startTime, _mathJS,
     __slice = [].slice,
     __hasProp = {}.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
-    __modulo = function(a, b) { return (+a % (b = +b) + b) % b; },
-    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; child.__superClass__ = parent; return child; },
+    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
+    __modulo = function(a, b) { return (+a % (b = +b) + b) % b; };
 
   if (typeof DEBUG === "undefined") {
     window.DEBUG = true;
@@ -27,7 +27,7 @@
     Sets: {}
   };
 
-  _mathJS = {};
+  _mathJS = $.extend({}, mathJS);
 
   if (DEBUG) {
     window._mathJS = _mathJS;
@@ -35,7 +35,7 @@
   }
 
   window.mixOf = function() {
-    var Mixed, base, method, mixin, mixins, name, superClasses, _i, _ref;
+    var Mixed, base, method, mixin, mixins, name, _i, _ref;
     base = arguments[0], mixins = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
     Mixed = (function(_super) {
       __extends(Mixed, _super);
@@ -51,28 +51,17 @@
       mixin = mixins[_i];
       for (name in mixin) {
         method = mixin[name];
-        Mixed[name] = method;
+        if (__indexOf.call(Object.keys(mixin.prototype), name) < 0) {
+          Mixed[name] = method;
+        }
       }
       _ref = mixin.prototype;
       for (name in _ref) {
         method = _ref[name];
         Mixed.prototype[name] = method;
       }
+      Mixed["implements"].push(mixin);
     }
-    superClasses = Array.prototype.slice.call(arguments, 0);
-    Mixed.prototype["instanceof"] = function(cls) {
-      var c, _j, _len;
-      if (this instanceof cls) {
-        return true;
-      }
-      for (_j = 0, _len = superClasses.length; _j < _len; _j++) {
-        c = superClasses[_j];
-        if (c === cls) {
-          return true;
-        }
-      }
-      return false;
-    };
     return Mixed;
   };
 
@@ -556,10 +545,6 @@
     return x.equals instanceof Function || mathJS.isPrimitive(x);
   };
 
-  mathJS["instanceof"] = function(instance, clss) {
-    return instance instanceof clss || (typeof instance["instanceof"] === "function" ? instance["instanceof"](clss) : void 0);
-  };
-
   mathJS.equals = function(x, y) {
     return (typeof x.equals === "function" ? x.equals(y) : void 0) || (typeof y.equals === "function" ? y.equals(x) : void 0) || x === y;
   };
@@ -895,6 +880,75 @@
 
   mathJS.config = mathJS.settings;
 
+
+  /**
+  * This is the super class of all mathJS classes.
+  * Therefore all cross-class things are defined here.
+  * @class Object
+  *
+   */
+
+  _mathJS.Object = (function() {
+    function Object() {}
+
+    Object["implements"] = [];
+
+    Object.implement = function() {
+      var classes, clss, clssPrototype, method, name, prototypeKeys, _i, _len;
+      classes = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      if (classes.first instanceof Array) {
+        classes = classes.first;
+      }
+      for (_i = 0, _len = classes.length; _i < _len; _i++) {
+        clss = classes[_i];
+        clssPrototype = clss.prototype;
+        prototypeKeys = window.Object.keys(clssPrototype);
+        for (name in clss) {
+          method = clss[name];
+          if (__indexOf.call(prototypeKeys, name) < 0) {
+            this[name] = method;
+          }
+        }
+        for (name in clssPrototype) {
+          method = clssPrototype[name];
+          this.prototype[name] = method;
+        }
+        this["implements"].push(clss);
+      }
+      return this;
+    };
+
+    Object.prototype.isA = function(clss) {
+      var c, _i, _len, _ref;
+      if ((clss == null) || !(clss instanceof Function)) {
+        return false;
+      }
+      if (this instanceof clss) {
+        return true;
+      }
+      _ref = this.constructor["implements"];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        c = _ref[_i];
+        if (c === clss) {
+          return true;
+        }
+        while ((c = c.__superClass__) != null) {
+          if (c === clss) {
+            return true;
+          }
+        }
+      }
+      return false;
+    };
+
+    Object.prototype["instanceof"] = function() {
+      return this.isA.apply(this, arguments);
+    };
+
+    return Object;
+
+  })();
+
   mathJS.Errors.CalculationExceedanceError = (function(_super) {
     __extends(CalculationExceedanceError, _super);
 
@@ -1122,6 +1176,289 @@
 
   })();
 
+  _mathJS.AbstractNumber = (function(_super) {
+    __extends(AbstractNumber, _super);
+
+    function AbstractNumber() {
+      return AbstractNumber.__super__.constructor.apply(this, arguments);
+    }
+
+    AbstractNumber.implement(mathJS.Orderable, mathJS.Poolable, mathJS.Parseable);
+
+
+    /**
+    * @Override mathJS.Poolable
+    * @static
+    * @method fromPool
+    *
+     */
+
+    AbstractNumber.fromPool = function(val) {};
+
+
+    /**
+    * @Override mathJS.Parseable
+    * @static
+    * @method parse
+    *
+     */
+
+    AbstractNumber.parse = function(str) {};
+
+    AbstractNumber.getSet = function() {};
+
+    AbstractNumber["new"] = function(value) {};
+
+    AbstractNumber.prototype._setValue = function(value) {
+      if (this.valueIsValid(value)) {
+        this._value = this._getValueFromParam(value, true);
+      }
+      return this;
+    };
+
+    AbstractNumber.prototype._getValue = function() {
+      return this._value;
+    };
+
+    AbstractNumber.prototype.valueIsValid = AbstractNumber.valueIsValid;
+
+    AbstractNumber.prototype._getValueFromParam = AbstractNumber._getValueFromParam;
+
+
+    /**
+    * @Override mathJS.Comparable
+    * This method checks for mathmatical equality. This means new mathJS.Double(4.2).equals(4.2) is true.
+    * @method equals
+    * @param {Number} n
+    * @return {Boolean}
+    *
+     */
+
+    AbstractNumber.prototype.equals = function(n) {
+      return this.value === this._getValueFromParam(n);
+    };
+
+
+    /**
+    * @Override mathJS.Orderable
+    * This method checks for mathmatical "<". This means new mathJS.Double(4.2).lessThan(5.2) is true.
+    * @method lessThan
+    *
+     */
+
+    AbstractNumber.prototype.lessThan = function(n) {
+      return this.value < this._getValueFromParam(n);
+    };
+
+
+    /**
+    * @Override mathJS.Orderable
+    * This method checks for mathmatical ">". This means new mathJS.Double(4.2).greaterThan(3.2) is true.
+    * @method greaterThan
+    * @param {Number} n
+    * @return {Boolean}
+    *
+     */
+
+    AbstractNumber.prototype.greaterThan = function(n) {
+      return this.value > this._getValueFromParam(n);
+    };
+
+
+    /**
+    * @Override mathJS.Orderable
+    * This method checks for mathmatical "<=".
+    * @method lessThanOrEqualTo
+    * @param {Number} n
+    * @return {Boolean}
+    *
+     */
+
+    AbstractNumber.prototype.lessThanOrEqualTo = function(n) {
+      return this.value <= this._getValueFromParam(n);
+    };
+
+
+    /**
+    * This method checks for mathmatical ">=".
+    * @method greaterThanOrEqualTo
+    * @param {Number} n
+    * @return {Boolean}
+    *
+     */
+
+    AbstractNumber.prototype.greaterThanOrEqualTo = function(n) {
+      return this.value >= this._getValueFromParam(n);
+    };
+
+
+    /**
+    * This method adds 2 numbers and returns a new one.
+    * @method plus
+    * @param {Number} n
+    * @return {Number} Calculated Number.
+    *
+     */
+
+    AbstractNumber.prototype.plus = function(n) {
+      return this.fromPool(this.value + this._getValueFromParam(n));
+    };
+
+
+    /**
+    * This method substracts 2 numbers and returns a new one.
+    * @method minus
+    * @param {Number} n
+    * @return {Number} Calculated Number.
+    *
+     */
+
+    AbstractNumber.prototype.minus = function(n) {
+      return this.fromPool(this.value - n);
+    };
+
+
+    /**
+    * This method multiplies 2 numbers and returns a new one.
+    * @method times
+    * @param {Number} n
+    * @return {Number} Calculated Number.
+    *
+     */
+
+    AbstractNumber.prototype.times = function(n) {
+      return this.fromPool(this.value * this._getValueFromParam(n));
+    };
+
+
+    /**
+    * This method divides 2 numbers and returns a new one.
+    * @method divide
+    * @param {Number} n
+    * @return {Number} Calculated Number.
+    *
+     */
+
+    AbstractNumber.prototype.divide = function(n) {
+      return this.fromPool(this.value / this._getValueFromParam(n));
+    };
+
+
+    /**
+    * This method squares this instance and returns a new one.
+    * @method square
+    * @return {Number} Calculated Number.
+    *
+     */
+
+    AbstractNumber.prototype.square = function() {
+      return this.fromPool(this.value * this.value);
+    };
+
+
+    /**
+    * This method cubes this instance and returns a new one.
+    * @method cube
+    * @return {Number} Calculated Number.
+    *
+     */
+
+    AbstractNumber.prototype.cube = function() {
+      return this.fromPool(this.value * this.value * this.value);
+    };
+
+
+    /**
+    * This method calculates the square root of this instance and returns a new one.
+    * @method sqrt
+    * @return {Number} Calculated Number.
+    *
+     */
+
+    AbstractNumber.prototype.sqrt = function() {
+      return this.fromPool(mathJS.sqrt(this.value));
+    };
+
+
+    /**
+    * This method calculates the cubic root of this instance and returns a new one.
+    * @method curt
+    * @return {Number} Calculated Number.
+    *
+     */
+
+    AbstractNumber.prototype.curt = function() {
+      return this.pow(1 / 3);
+    };
+
+
+    /**
+    * This method calculates any root of this instance and returns a new one.
+    * @method plus
+    * @param {Number} exponent
+    * @return {Number} Calculated Number.
+    *
+     */
+
+    AbstractNumber.prototype.root = function(exp) {};
+
+
+    /**
+    * This method adds 2 numbers and returns a new one.
+    * @method plus
+    * @param {Number} n
+    * @return {Number} Calculated Number.
+    *
+     */
+
+    AbstractNumber.prototype.reciprocal = function() {};
+
+
+    /**
+    * This method adds 2 numbers and returns a new one.
+    * @method plus
+    * @param {Number} n
+    * @return {Number} Calculated Number.
+    *
+     */
+
+    AbstractNumber.prototype.pow = function(n) {
+      return this.fromPool(mathJS.pow(this.value, this._getValueFromParam(n)));
+    };
+
+    AbstractNumber.prototype.sign = function() {};
+
+    AbstractNumber.prototype.negate = function() {};
+
+    AbstractNumber.prototype.toInt = function() {};
+
+    AbstractNumber.prototype.toDouble = function() {};
+
+    AbstractNumber.prototype.toString = function() {};
+
+    AbstractNumber.prototype.clone = function() {};
+
+    AbstractNumber.prototype.release = function() {
+      this.constructor._pool.push(this);
+      return this.constructor;
+    };
+
+    AbstractNumber.prototype["eval"] = function(values) {
+      return this;
+    };
+
+    AbstractNumber.prototype._getSet = function() {
+      return new mathJS.Set(this);
+    };
+
+    AbstractNumber.prototype["in"] = function(set) {
+      return set.contains(this);
+    };
+
+    return AbstractNumber;
+
+  })(_mathJS.Object);
+
 
   /**
    * @abstract
@@ -1180,7 +1517,7 @@
       if (this._pool.length > 0) {
         if (this.valueIsValid(val)) {
           number = this._pool.pop();
-          number.value = val;
+          number.value = val.value || val;
           return number;
         }
         return null;
@@ -1218,6 +1555,10 @@
 
     Number.getSet = function() {
       return mathJS.Domains.R;
+    };
+
+    Number["new"] = function(value) {
+      return this.fromPool(value);
     };
 
     function Number(value) {
@@ -1575,7 +1916,7 @@
 
     return Number;
 
-  })(mixOf(mathJS.Orderable, mathJS.Poolable, mathJS.Parseable));
+  })(_mathJS.AbstractNumber);
 
   mathJS.Double = (function(_super) {
     __extends(Double, _super);
@@ -1720,28 +2061,82 @@
   mathJS.Fraction = (function(_super) {
     __extends(Fraction, _super);
 
-    function Fraction(enumerator, denominator) {
-      this.enumerator = enumerator;
-      this.denominator = denominator;
-      Object.defineProperty(this, "value", {
-        get: function() {
-          return this.enumerator / this.denominator;
+
+    /**
+    * @Override mathJS.Number
+    * @static
+    * @method fromPool
+    *
+     */
+
+    Fraction.fromPool = function(e, d) {
+      var frac;
+      if (this._pool.length > 0) {
+        if (this.valueIsValid(val)) {
+          frac = this._pool.pop();
+          frac.enumerator = e.value || e;
+          frac.denominator = d.value || d;
+          return frac;
         }
-      });
+        return null;
+      } else {
+        return new this(e, d);
+      }
+    };
+
+
+    /**
+    * @Override mathJS.Number
+    * @static
+    * @method parse
+    *
+     */
+
+    Fraction.parse = function(str) {
+      var parts;
+      if (__indexOf.call(str, "/") >= 0) {
+        parts = str.split("/");
+      } else if (__indexOf.call(str, ":") >= 0) {
+        parts = str.slit(":");
+      }
+      return this["new"](parts.first, parts.second);
+    };
+
+
+    /**
+    * @Override mathJS.Number
+    * @static
+    * @method getSet
+    *
+     */
+
+    Fraction.getSet = function() {
+      return mathJS.Domains.Q;
+    };
+
+
+    /**
+    * @Override mathJS.Number
+    * @static
+    * @method new
+    *
+     */
+
+    Fraction["new"] = function(e, d) {
+      return this.fromPool(e, d);
+    };
+
+    function Fraction(enumerator, denominator) {
+      if (enumerator instanceof mathJS.Number && denominator instanceof mathJS.Number) {
+        this.enumerator = enumerator.toInt();
+        this.denominator = denominator.toInt();
+      } else {
+        this.enumerator = ~~enumerator;
+        this.denominator = ~~denominator;
+      }
     }
 
     return Fraction;
-
-  })(mathJS.Number);
-
-  mathJS.Power = (function(_super) {
-    __extends(Power, _super);
-
-    function Power() {
-      return Power.__super__.constructor.apply(this, arguments);
-    }
-
-    return Power;
 
   })(mathJS.Number);
 
@@ -2722,6 +3117,10 @@
       return universe.minus(this);
     };
 
+    AbstractSet.prototype.disjoint = function(set) {
+      return this.intersection(set).size() === 0;
+    };
+
     AbstractSet.prototype.intersects = function(set) {
       return !this.disjoint(set);
     };
@@ -2734,8 +3133,13 @@
       return set.isSubsetOf(this);
     };
 
-    AbstractSet.prototype.disjoint = function(set) {
-      return this.intersection(set).size() === 0;
+    AbstractSet.prototype.pow = function(exponent) {
+      var i, sets, _i;
+      sets = [];
+      for (i = _i = 0; 0 <= exponent ? _i < exponent : _i > exponent; i = 0 <= exponent ? ++_i : --_i) {
+        sets.push(this);
+      }
+      return this.cartesianProduct.apply(this, sets);
     };
 
     AbstractSet._makeAliases = function() {
@@ -3183,7 +3587,10 @@
     };
 
     ConditionalSet.prototype.equals = function(set) {
-      return this.generator["function"].equals;
+      if (set instanceof CLASS) {
+        return this.generator.f.equals(set.generator.f);
+      }
+      return set.discreteSet.isEmpty() && this.generator.f.equals(set.conditionSet.generator.f);
     };
 
     ConditionalSet.prototype.getElements = function(n, sorted) {
@@ -3196,7 +3603,11 @@
 
     ConditionalSet.prototype.isSubsetOf = function(set) {};
 
-    ConditionalSet.prototype.size = function() {};
+    ConditionalSet.prototype.isSupersetOf = function(set) {};
+
+    ConditionalSet.prototype.size = function() {
+      return this.generator.f.range.size();
+    };
 
     ConditionalSet.prototype.union = function(set) {};
 
@@ -3694,6 +4105,96 @@
 
   })(mathJS.Set);
 
+
+  /**
+  * Domain ranks are like so:
+  * N -> 0
+  * Z -> 1
+  * Q -> 2
+  * I -> 2
+  * R -> 3
+  * C -> 4
+  * ==> union: take greater rank (if equal (and unequal names) take next greater rank)
+  * ==> intersection: take smaller rank (if equal (and unequal names) take empty set)
+  *
+   */
+
+  _mathJS.Sets.Domain = (function(_super) {
+    var CLASS;
+
+    __extends(Domain, _super);
+
+    CLASS = Domain;
+
+    Domain["new"] = function() {
+      return new CLASS();
+    };
+
+    Domain._byRank = function(rank) {
+      var domain, name, _ref;
+      _ref = mathJS.Domains;
+      for (name in _ref) {
+        domain = _ref[name];
+        if (domain.rank === rank) {
+          return domain;
+        }
+      }
+      return null;
+    };
+
+    function Domain(name, rank, isCountable) {
+      this.isDomain = true;
+      this.name = name;
+      this.rank = rank;
+      this.isCountable = isCountable;
+    }
+
+    Domain.prototype.clone = function() {
+      return this.constructor["new"]();
+    };
+
+    Domain.prototype.equals = function(set) {
+      return set instanceof this.constructor;
+    };
+
+    Domain.prototype.intersection = function(set) {
+      if (set.isDomain) {
+        if (this.name === set.name) {
+          return this;
+        }
+        if (this.rank < set.rank) {
+          return this;
+        }
+        if (this.rank > set.rank) {
+          return set;
+        }
+        return new mathJS.Set();
+      }
+      return false;
+    };
+
+    Domain.prototype.union = function(set) {
+      if (set.isDomain) {
+        if (this.name === set.name) {
+          return this;
+        }
+        if (this.rank > set.rank) {
+          return this;
+        }
+        if (this.rank < set.rank) {
+          return set;
+        }
+        return CLASS._byRank(this.rank + 1);
+      }
+      return false;
+    };
+
+    Domain._makeAliases();
+
+    return Domain;
+
+  })(_mathJS.AbstractSet);
+
   mathJS.Sets.N = (function(_super) {
     var CLASS;
 
@@ -3706,91 +4207,11 @@
     };
 
     function N() {
-      Object.defineProperties(this, {
-        generator: {
-          value: function(n) {
-            return n;
-          },
-          writable: false,
-          enumerable: false,
-          configurable: false
-        },
-        expression: {
-          value: function(x) {
-            return x;
-          },
-          writable: false,
-          enumerable: false,
-          configurable: false
-        },
-        isCountable: {
-          value: true,
-          enumerable: true,
-          writable: false,
-          configurable: false
-        },
-        size: {
-          value: Infinity,
-          enumerable: true,
-          writable: false,
-          configurable: false
-        },
-        isMutable: {
-          value: false,
-          writable: false,
-          enumerable: false,
-          configurable: false
-        },
-        leftBoundary: {
-          value: {
-            value: -Infinity,
-            open: true
-          },
-          writable: false,
-          enumerable: false,
-          configurable: false
-        },
-        rightBoundary: {
-          value: {
-            value: +Infinity,
-            open: true
-          },
-          writable: false,
-          enumerable: false,
-          configurable: false
-        }
-      });
+      N.__super__.constructor.call(this, "N", 0, true);
     }
 
     N.prototype.contains = function(x) {
       return mathJS.isInt(x) || new mathJS.Int(x).equals(x);
-    };
-
-    N.prototype.clone = N["new"];
-
-    N.prototype.equals = function(set, n) {
-      var generator, i, val;
-      if (n == null) {
-        n = mathJS.settings.set.maxIterations * 10;
-      }
-      if (this._isSet(set)) {
-        if (set.size === Infinity) {
-          generator = this.generator;
-          i = 0;
-          while (i++ < n) {
-            val = generator(i);
-            if (!set.contains(val)) {
-              return false;
-            }
-            if (DEBUG) {
-              console.log("japp");
-            }
-          }
-          return true;
-        }
-        return false;
-      }
-      return false;
     };
 
 
@@ -3935,12 +4356,231 @@
 
     return N;
 
-  })(mathJS.Set);
+  })(_mathJS.Sets.Domain);
 
   (function() {
     return Object.defineProperties(mathJS.Domains, {
       N: {
         value: new mathJS.Sets.N(),
+        writable: false,
+        enumerable: true,
+        configurable: false
+      }
+    });
+  })();
+
+  mathJS.Sets.Z = (function(_super) {
+    var CLASS;
+
+    __extends(Z, _super);
+
+    CLASS = Z;
+
+    Z["new"] = function() {
+      return new CLASS();
+    };
+
+    function Z() {
+      Z.__super__.constructor.call(this, "Z", 1, true);
+    }
+
+    Z.prototype.contains = function(x) {
+      return new mathJS.Number(x).equals(x);
+    };
+
+
+    /**
+    * This method checks if `this` is a subset of the given set `set`. Since equality must be checked by checking an arbitrary number of values this method actually does the same as `this.equals()`. For `this.equals()` the number of compared elements is 10x bigger.
+    *
+     */
+
+    Z.prototype.isSubsetOf = function(set, n) {
+      if (n == null) {
+        n = mathJS.settings.set.maxIterations;
+      }
+      return this.equals(set, n * 10);
+    };
+
+    Z.prototype.isSupersetOf = function(set) {
+      if (this._isSet(set)) {
+        return set.isSubsetOf(this);
+      }
+      return false;
+    };
+
+    Z.prototype.complement = function() {
+      if (this.universe != null) {
+        return this.universe.without(this);
+      }
+      return new mathJS.EmptySet();
+    };
+
+
+    /**
+    * a.without b => returns: removed all common elements from a
+    *
+     */
+
+    Z.prototype.without = function(set) {};
+
+    Z.prototype.cartesianProduct = function(set) {};
+
+    Z._makeAliases();
+
+    return Z;
+
+  })(_mathJS.Sets.Domain);
+
+  (function() {
+    return Object.defineProperties(mathJS.Domains, {
+      Z: {
+        value: new mathJS.Sets.Z(),
+        writable: false,
+        enumerable: true,
+        configurable: false
+      }
+    });
+  })();
+
+  mathJS.Sets.Q = (function(_super) {
+    var CLASS;
+
+    __extends(Q, _super);
+
+    CLASS = Q;
+
+    Q["new"] = function() {
+      return new CLASS();
+    };
+
+    function Q() {
+      Q.__super__.constructor.call(this, "Q", 2, true);
+    }
+
+    Q.prototype.contains = function(x) {
+      return new mathJS.Number(x).equals(x);
+    };
+
+
+    /**
+    * This method checks if `this` is a subset of the given set `set`. Since equality must be checked by checking an arbitrary number of values this method actually does the same as `this.equals()`. For `this.equals()` the number of compared elements is 10x bigger.
+    *
+     */
+
+    Q.prototype.isSubsetOf = function(set, n) {
+      if (n == null) {
+        n = mathJS.settings.set.maxIterations;
+      }
+      return this.equals(set, n * 10);
+    };
+
+    Q.prototype.isSupersetOf = function(set) {
+      if (this._isSet(set)) {
+        return set.isSubsetOf(this);
+      }
+      return false;
+    };
+
+    Q.prototype.complement = function() {
+      if (this.universe != null) {
+        return this.universe.without(this);
+      }
+      return new mathJS.EmptySet();
+    };
+
+
+    /**
+    * a.without b => returns: removed all common elements from a
+    *
+     */
+
+    Q.prototype.without = function(set) {};
+
+    Q.prototype.cartesianProduct = function(set) {};
+
+    Q._makeAliases();
+
+    return Q;
+
+  })(_mathJS.Sets.Domain);
+
+  (function() {
+    return Object.defineProperties(mathJS.Domains, {
+      Q: {
+        value: new mathJS.Sets.Q(),
+        writable: false,
+        enumerable: true,
+        configurable: false
+      }
+    });
+  })();
+
+  mathJS.Sets.I = (function(_super) {
+    var CLASS;
+
+    __extends(I, _super);
+
+    CLASS = I;
+
+    I["new"] = function() {
+      return new CLASS();
+    };
+
+    function I() {
+      I.__super__.constructor.call(this, "I", 2, false);
+    }
+
+    I.prototype.contains = function(x) {
+      return new mathJS.Number(x).equals(x);
+    };
+
+
+    /**
+    * This method checks if `this` is a subset of the given set `set`. Since equality must be checked by checking an arbitrary number of values this method actually does the same as `this.equals()`. For `this.equals()` the number of compared elements is 10x bigger.
+    *
+     */
+
+    I.prototype.isSubsetOf = function(set, n) {
+      if (n == null) {
+        n = mathJS.settings.set.maxIterations;
+      }
+      return this.equals(set, n * 10);
+    };
+
+    I.prototype.isSupersetOf = function(set) {
+      if (this._isSet(set)) {
+        return set.isSubsetOf(this);
+      }
+      return false;
+    };
+
+    I.prototype.complement = function() {
+      if (this.universe != null) {
+        return this.universe.without(this);
+      }
+      return new mathJS.EmptySet();
+    };
+
+
+    /**
+    * a.without b => returns: removed all common elements from a
+    *
+     */
+
+    I.prototype.without = function(set) {};
+
+    I.prototype.cartesianProduct = function(set) {};
+
+    I._makeAliases();
+
+    return I;
+
+  })(_mathJS.Sets.Domain);
+
+  (function() {
+    return Object.defineProperties(mathJS.Domains, {
+      I: {
+        value: new mathJS.Sets.I(),
         writable: false,
         enumerable: true,
         configurable: false
@@ -3960,98 +4600,11 @@
     };
 
     function R() {
-      Object.defineProperties(this, {
-        generator: {
-          value: function(n) {
-            return n;
-          },
-          writable: false,
-          enumerable: false,
-          configurable: false
-        },
-        expression: {
-          value: function(x) {
-            return x;
-          },
-          writable: false,
-          enumerable: false,
-          configurable: false
-        },
-        name: {
-          value: "R",
-          writable: false,
-          enumerable: true,
-          configurable: false
-        },
-        isDomain: {
-          value: true,
-          enumerable: true,
-          writable: false,
-          configurable: false
-        },
-        isCountable: {
-          value: true,
-          enumerable: true,
-          writable: false,
-          configurable: false,
-          configurable: false
-        },
-        isMutable: {
-          value: false,
-          writable: false,
-          enumerable: false,
-          configurable: false
-        },
-        leftBoundary: {
-          value: {
-            value: -Infinity,
-            open: true
-          },
-          writable: false,
-          enumerable: false,
-          configurable: false
-        },
-        rightBoundary: {
-          value: {
-            value: +Infinity,
-            open: true
-          },
-          writable: false,
-          enumerable: false,
-          configurable: false
-        }
-      });
+      R.__super__.constructor.call(this, "R", 3, false);
     }
 
     R.prototype.contains = function(x) {
       return new mathJS.Number(x).equals(x);
-    };
-
-    R.prototype.clone = R["new"];
-
-    R.prototype.equals = function(set, n) {
-      var generator, i, val;
-      if (n == null) {
-        n = mathJS.settings.set.maxIterations * 10;
-      }
-      if (this._isSet(set)) {
-        if (set.size === Infinity) {
-          generator = this.generator;
-          i = 0;
-          while (i++ < n) {
-            val = generator(i);
-            if (!set.contains(val)) {
-              return false;
-            }
-            if (DEBUG) {
-              console.log("japp");
-            }
-          }
-          return true;
-        }
-        return false;
-      }
-      return false;
     };
 
 
@@ -4072,14 +4625,6 @@
         return set.isSubsetOf(this);
       }
       return false;
-    };
-
-    R.prototype.union = function(set) {
-      return this;
-    };
-
-    R.prototype.intersection = function(set) {
-      return set;
     };
 
     R.prototype.complement = function() {
@@ -4103,12 +4648,85 @@
 
     return R;
 
-  })(_mathJS.AbstractSet);
+  })(_mathJS.Sets.Domain);
 
   (function() {
     return Object.defineProperties(mathJS.Domains, {
       R: {
         value: new mathJS.Sets.R(),
+        writable: false,
+        enumerable: true,
+        configurable: false
+      }
+    });
+  })();
+
+  mathJS.Sets.C = (function(_super) {
+    var CLASS;
+
+    __extends(C, _super);
+
+    CLASS = C;
+
+    C["new"] = function() {
+      return new CLASS();
+    };
+
+    function C() {
+      C.__super__.constructor.call(this, "C", 4, false);
+    }
+
+    C.prototype.contains = function(x) {
+      return new mathJS.Number(x).equals(x);
+    };
+
+
+    /**
+    * This method checks if `this` is a subset of the given set `set`. Since equality must be checked by checking an arbitrary number of values this method actually does the same as `this.equals()`. For `this.equals()` the number of compared elements is 10x bigger.
+    *
+     */
+
+    C.prototype.isSubsetOf = function(set, n) {
+      if (n == null) {
+        n = mathJS.settings.set.maxIterations;
+      }
+      return this.equals(set, n * 10);
+    };
+
+    C.prototype.isSupersetOf = function(set) {
+      if (this._isSet(set)) {
+        return set.isSubsetOf(this);
+      }
+      return false;
+    };
+
+    C.prototype.complement = function() {
+      if (this.universe != null) {
+        return this.universe.without(this);
+      }
+      return new mathJS.EmptySet();
+    };
+
+
+    /**
+    * a.without b => returns: removed all common elements from a
+    *
+     */
+
+    C.prototype.without = function(set) {};
+
+    C.prototype.cartesianProduct = function(set) {};
+
+    C._makeAliases();
+
+    return C;
+
+  })(_mathJS.Sets.Domain);
+
+  (function() {
+    return Object.defineProperties(mathJS.Domains, {
+      C: {
+        value: new mathJS.Sets.C(),
         writable: false,
         enumerable: true,
         configurable: false

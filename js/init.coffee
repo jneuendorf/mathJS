@@ -15,7 +15,8 @@ window.mathJS =
     Operations: {}
     Sets: {}
 
-_mathJS = {}
+# Take namespaces from mathJS
+_mathJS = $.extend {}, mathJS
 
 if DEBUG
     window._mathJS = _mathJS

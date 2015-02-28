@@ -1,10 +1,12 @@
 make:
+	whoami
 	./js/build
-	# -I is search path
-	# m4 -I js js/jSVG-main.m4 > $(TARGET)
 	m4 source.coffee > source_temp.coffee
 	mv source_temp.coffee source.coffee
 	coffee -c source.coffee
+	# chmod 777 source.js
+	# echo adf
+	replace "child.__super__ = parent.prototype;" "child.__super__ = parent.prototype; child.__superClass__ = parent;" -- source.js
 
 doc: make
 	coffee --output doc_base --compile js

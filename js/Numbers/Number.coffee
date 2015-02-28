@@ -7,7 +7,8 @@
  * @extends Object
 *###
 # TODO: make number extend expression
-class mathJS.Number extends mixOf mathJS.Orderable, mathJS.Poolable, mathJS.Parseable
+# class mathJS.Number extends mixOf mathJS.Orderable, mathJS.Poolable, mathJS.Parseable
+class mathJS.Number extends _mathJS.AbstractNumber
     ###########################################################################################
     # STATIC
     @valueIsValid: (value) ->
@@ -46,11 +47,12 @@ class mathJS.Number extends mixOf mathJS.Orderable, mathJS.Poolable, mathJS.Pars
         if @_pool.length > 0
             if @valueIsValid val
                 number = @_pool.pop()
-                number.value = val
+                number.value = val.value or val
                 return number
             return null
         else
-            return new @(val) # param check is done in constructor
+            # param check is done in constructor
+            return new @(val)
 
     ###*
     * @Override mathJS.Parseable
@@ -72,6 +74,9 @@ class mathJS.Number extends mixOf mathJS.Orderable, mathJS.Poolable, mathJS.Pars
 
     @getSet: () ->
         return mathJS.Domains.R
+
+    @new: (value) ->
+        return @fromPool value
 
     ###########################################################################
     # CONSTRUCTOR

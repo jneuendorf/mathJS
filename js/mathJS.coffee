@@ -64,8 +64,10 @@ mathJS.isComparable = (x) ->
     # return x instanceof mathJS.Comparable or x.instanceof?(mathJS.Comparable) or mathJS.isPrimitive x
     return x.equals instanceof Function or mathJS.isPrimitive x
 
-mathJS.instanceof = (instance, clss) ->
-    return instance instanceof clss or instance.instanceof?(clss)
+# mathJS.instanceof = (instance, clss) ->
+#     return instance instanceof clss or instance.instanceof?(clss)
+
+# mathJS.isA = () ->
 
 mathJS.equals = (x, y) ->
     return x.equals?(y) or y.equals?(x) or x is y
