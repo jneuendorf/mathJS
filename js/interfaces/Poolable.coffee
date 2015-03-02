@@ -7,8 +7,9 @@ class _mathJS.Poolable extends _mathJS.Interface
         # if @_pool.length > 0
         #     return @_pool.pop()
         # return new @()
-        throw new Error("To be implemented")
+        throw new mathJS.Errors.NotImplementedError("static fromPool in #{@name}")
 
+    # Alias for fromPool.
     @new: () ->
         return @fromPool.apply(@, arguments)
 

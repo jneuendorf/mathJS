@@ -8,11 +8,11 @@
 
 (function() {
   var cached, startTime, _mathJS,
+    __modulo = function(a, b) { return (+a % (b = +b) + b) % b; },
     __slice = [].slice,
-    __hasProp = {}.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; child.__superClass__ = parent; return child; },
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
-    __modulo = function(a, b) { return (+a % (b = +b) + b) % b; };
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; child.__superClass__ = parent; return child; };
 
   if (typeof DEBUG === "undefined") {
     window.DEBUG = true;
@@ -33,37 +33,6 @@
     window._mathJS = _mathJS;
     startTime = Date.now();
   }
-
-  window.mixOf = function() {
-    var Mixed, base, method, mixin, mixins, name, _i, _ref;
-    base = arguments[0], mixins = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
-    Mixed = (function(_super) {
-      __extends(Mixed, _super);
-
-      function Mixed() {
-        return Mixed.__super__.constructor.apply(this, arguments);
-      }
-
-      return Mixed;
-
-    })(base);
-    for (_i = mixins.length - 1; _i >= 0; _i += -1) {
-      mixin = mixins[_i];
-      for (name in mixin) {
-        method = mixin[name];
-        if (__indexOf.call(Object.keys(mixin.prototype), name) < 0) {
-          Mixed[name] = method;
-        }
-      }
-      _ref = mixin.prototype;
-      for (name in _ref) {
-        method = _ref[name];
-        Mixed.prototype[name] = method;
-      }
-      Mixed["implements"].push(mixin);
-    }
-    return Mixed;
-  };
 
   Array.prototype.reverseCopy = function() {
     var item, res, _i;
@@ -997,14 +966,14 @@
 
   })(Error);
 
-  mathJS.Errors.AbstractInstantiationError = (function(_super) {
-    __extends(AbstractInstantiationError, _super);
+  mathJS.Errors.NotImplementedError = (function(_super) {
+    __extends(NotImplementedError, _super);
 
-    function AbstractInstantiationError() {
-      return AbstractInstantiationError.__super__.constructor.apply(this, arguments);
+    function NotImplementedError() {
+      return NotImplementedError.__super__.constructor.apply(this, arguments);
     }
 
-    return AbstractInstantiationError;
+    return NotImplementedError;
 
   })(Error);
 
@@ -1042,10 +1011,12 @@
      */
 
     Comparable.prototype.equals = function(n) {
-      throw new Error("To be implemented!");
+      throw new mathJS.Errors.NotImplementedError("equals in " + this.contructor.name);
     };
 
-    Comparable.prototype.e = Comparable.prototype.equals;
+    Comparable.prototype.e = function() {
+      return this.equals.apply(this, arguments);
+    };
 
     return Comparable;
 
@@ -1068,7 +1039,7 @@
      */
 
     Orderable.prototype.lessThan = function(n) {
-      throw new Error("To be implemented!");
+      throw new mathJS.Errors.NotImplementedError("lessThan in " + this.contructor.name);
     };
 
 
@@ -1078,7 +1049,9 @@
     *
      */
 
-    Orderable.prototype.lt = Orderable.prototype.lessThan;
+    Orderable.prototype.lt = function() {
+      return this.lessThan.apply(this, arguments);
+    };
 
 
     /**
@@ -1090,17 +1063,19 @@
      */
 
     Orderable.prototype.greaterThan = function(n) {
-      throw new Error("To be implemented!");
+      throw new mathJS.Errors.NotImplementedError("greaterThan in " + this.contructor.name);
     };
 
 
     /**
     * Alias for `greaterThan`.
-    * @method lt
+    * @method gt
     *
      */
 
-    Orderable.prototype.gt = Orderable.prototype.greaterThan;
+    Orderable.prototype.gt = function() {
+      return this.greaterThan.apply(this, arguments);
+    };
 
 
     /**
@@ -1112,17 +1087,19 @@
      */
 
     Orderable.prototype.lessThanOrEqualTo = function(n) {
-      throw new Error("To be implemented!");
+      throw new mathJS.Errors.NotImplementedError("lessThanOrEqualTo in " + this.contructor.name);
     };
 
 
     /**
     * Alias for `lessThanOrEqualTo`.
-    * @method lt
+    * @method lte
     *
      */
 
-    Orderable.prototype.lte = Orderable.prototype.lessThanOrEqualTo;
+    Orderable.prototype.lte = function() {
+      return this.lessThanOrEqualTo.apply(this, arguments);
+    };
 
 
     /**
@@ -1134,17 +1111,19 @@
      */
 
     Orderable.prototype.greaterThanOrEqualTo = function(n) {
-      throw new Error("To be implemented!");
+      throw new mathJS.Errors.NotImplementedError("greaterThanOrEqualTo in " + this.contructor.name);
     };
 
 
     /**
     * Alias for `greaterThanOrEqualTo`.
-    * @method lt
+    * @method gte
     *
      */
 
-    Orderable.prototype.gte = Orderable.prototype.greaterThanOrEqualTo;
+    Orderable.prototype.gte = function() {
+      return this.greaterThanOrEqualTo.apply(this, arguments);
+    };
 
     return Orderable;
 
@@ -1158,11 +1137,11 @@
     }
 
     Parseable.parse = function(str) {
-      throw new Error("To be implemented");
+      throw new mathJS.Errors.NotImplementedError("static parse in " + this.name);
     };
 
     Parseable.prototype.toString = function(args) {
-      throw new Error("To be implemented");
+      throw new mathJS.Errors.NotImplementedError("toString in " + this.contructor.name);
     };
 
     return Parseable;
@@ -1179,7 +1158,7 @@
     Poolable._pool = [];
 
     Poolable.fromPool = function() {
-      throw new Error("To be implemented");
+      throw new mathJS.Errors.NotImplementedError("static fromPool in " + this.name);
     };
 
     Poolable["new"] = function() {
@@ -1219,7 +1198,7 @@
     }
 
     Evaluable.prototype["eval"] = function() {
-      throw new Error("to do!");
+      throw new mathJS.Errors.NotImplementedError("0 in " + this.contructor.name);
     };
 
     return Evaluable;
@@ -3116,8 +3095,14 @@
 
   })();
 
-  _mathJS.AbstractSet = (function() {
-    function AbstractSet() {}
+  _mathJS.AbstractSet = (function(_super) {
+    __extends(AbstractSet, _super);
+
+    function AbstractSet() {
+      return AbstractSet.__super__.constructor.apply(this, arguments);
+    }
+
+    AbstractSet.implement(_mathJS.Orderable, _mathJS.Poolable, _mathJS.Parseable);
 
     AbstractSet.prototype.cartesianProduct = function(set) {};
 
@@ -3205,7 +3190,7 @@
 
     return AbstractSet;
 
-  })();
+  })(_mathJS.Object);
 
 
   /**

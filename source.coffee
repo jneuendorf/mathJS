@@ -30,36 +30,6 @@ if DEBUG
     startTime = Date.now()
 # end js/init.coffee
 
-# from js/globalFunctions.coffee
-window.mixOf = (base, mixins...) ->
-
-    class Mixed extends base
-
-    # earlier mixins override later ones
-    for mixin in mixins by -1
-        # static
-        for name, method of mixin when name not in Object.keys(mixin::)
-            Mixed[name] = method
-        # non-static
-        for name, method of mixin::
-            Mixed::[name] = method
-        Mixed.implements.push mixin
-
-    # attach instanceof equivalent method
-    # superClasses = Array::slice.call(arguments, 0)
-    # Mixed::instanceof = (cls) ->
-    #     # real inheritance => normal check
-    #     if @ instanceof cls
-    #         return true
-    #     # check mixed in classes
-    #     for c in superClasses when c is cls
-    #             return true
-    #
-    #     return false
-
-    return Mixed
-# end js/globalFunctions.coffee
-
 # from js/prototyping.coffee
 # TODO: use object.defineProperties in order to hide methods from enumeration
 ####################################################################################
@@ -792,6 +762,7 @@ class _mathJS.Object
             for name, method of clssPrototype
                 @::[name] = method
             @implements.push clss
+            
         return @
 
     isA: (clss) ->
@@ -826,7 +797,7 @@ class mathJS.Errors.InvalidParametersError extends Error
 
 class mathJS.Errors.InvalidArityError extends Error
 
-class mathJS.Errors.AbstractInstantiationError extends Error
+class mathJS.Errors.NotImplementedError extends Error
 # end js/Errors/SimpleErrors.coffee
 
 # from js/Interfaces/Interface.coffee
@@ -847,9 +818,10 @@ class _mathJS.Comparable extends _mathJS.Interface
     * @return {Boolean}
     *###
     equals: (n) ->
-        throw new Error("To be implemented!")
+        throw new mathJS.Errors.NotImplementedError("equals in #{@contructor.name}")
 
-    e: @::equals
+    e: () ->
+        return @equals.apply(@, arguments)
 # end js/Interfaces/Comparable.coffee
 
 # from js/Interfaces/Orderable.coffee
@@ -862,13 +834,14 @@ class _mathJS.Orderable extends _mathJS.Comparable
     * @return {Boolean}
     *###
     lessThan: (n) ->
-        throw new Error("To be implemented!")
+        throw new mathJS.Errors.NotImplementedError("lessThan in #{@contructor.name}")
 
     ###*
     * Alias for `lessThan`.
     * @method lt
     *###
-    lt: @::lessThan
+    lt: () ->
+        return @lessThan.apply(@, arguments)
 
     ###*
     * This method checks for mathmatical ">". This means new mathJS.Double(4.2).greaterThan(3.2) is true.
@@ -877,13 +850,14 @@ class _mathJS.Orderable extends _mathJS.Comparable
     * @return {Boolean}
     *###
     greaterThan: (n) ->
-        throw new Error("To be implemented!")
+        throw new mathJS.Errors.NotImplementedError("greaterThan in #{@contructor.name}")
 
     ###*
     * Alias for `greaterThan`.
-    * @method lt
+    * @method gt
     *###
-    gt: @::greaterThan
+    gt: () ->
+        return @greaterThan.apply(@, arguments)
 
     ###*
     * This method checks for mathmatical "<=". This means new mathJS.Double(4.2).lessThanOrEqualTo(5.2) is true.
@@ -892,13 +866,14 @@ class _mathJS.Orderable extends _mathJS.Comparable
     * @return {Boolean}
     *###
     lessThanOrEqualTo: (n) ->
-        throw new Error("To be implemented!")
+        throw new mathJS.Errors.NotImplementedError("lessThanOrEqualTo in #{@contructor.name}")
 
     ###*
     * Alias for `lessThanOrEqualTo`.
-    * @method lt
+    * @method lte
     *###
-    lte: @::lessThanOrEqualTo
+    lte: () ->
+        return @lessThanOrEqualTo.apply(@, arguments)
 
     ###*
     * This method checks for mathmatical ">=". This means new mathJS.Double(4.2).greaterThanOrEqualTo(3.2) is true.
@@ -907,23 +882,24 @@ class _mathJS.Orderable extends _mathJS.Comparable
     * @return {Boolean}
     *###
     greaterThanOrEqualTo: (n) ->
-        throw new Error("To be implemented!")
+        throw new mathJS.Errors.NotImplementedError("greaterThanOrEqualTo in #{@contructor.name}")
 
     ###*
     * Alias for `greaterThanOrEqualTo`.
-    * @method lt
+    * @method gte
     *###
-    gte: @::greaterThanOrEqualTo
+    gte: () ->
+        return @greaterThanOrEqualTo.apply(@, arguments)
 # end js/Interfaces/Orderable.coffee
 
 # from js/Interfaces/Parseable.coffee
 class _mathJS.Parseable extends _mathJS.Interface
 
     @parse: (str) ->
-        throw new Error("To be implemented")
+        throw new mathJS.Errors.NotImplementedError("static parse in #{@name}")
 
     toString: (args) ->
-        throw new Error("To be implemented")
+        throw new mathJS.Errors.NotImplementedError("toString in #{@contructor.name}")
 # end js/Interfaces/Parseable.coffee
 
 # from js/Interfaces/Poolable.coffee
@@ -936,8 +912,9 @@ class _mathJS.Poolable extends _mathJS.Interface
         # if @_pool.length > 0
         #     return @_pool.pop()
         # return new @()
-        throw new Error("To be implemented")
+        throw new mathJS.Errors.NotImplementedError("static fromPool in #{@name}")
 
+    # Alias for fromPool.
     @new: () ->
         return @fromPool.apply(@, arguments)
 
@@ -960,12 +937,11 @@ class _mathJS.Poolable extends _mathJS.Interface
 class _mathJS.Evaluable extends _mathJS.Interface
 
     eval: () ->
-        throw new Error("to do!")
+        throw new mathJS.Errors.NotImplementedError("0 in #{@contructor.name}")
 # end js/Interfaces/Evaluable.coffee
 
 # from js/Numbers/AbstractNumber.coffee
 # This file defines the Number interface.
-# class _mathJS.AbstractNumber extends mixOf _mathJS.Orderable, _mathJS.Poolable, _mathJS.Parseable
 class _mathJS.AbstractNumber extends _mathJS.Object
 
     @implement _mathJS.Orderable, _mathJS.Poolable, _mathJS.Parseable
@@ -1162,11 +1138,6 @@ class _mathJS.AbstractNumber extends _mathJS.Object
     toString: () ->
 
     clone: () ->
-
-    # # add instance to pool
-    # release: () ->
-    #     @constructor._pool.push @
-    #     return @constructor
 
     # EVALUABLE INTERFACE
     eval: (values) ->
@@ -1523,11 +1494,6 @@ class mathJS.Number extends _mathJS.AbstractNumber
 
     clone: () ->
         return @fromPool @value
-
-    # # add instance to pool
-    # release: () ->
-    #     @constructor._pool.push @
-    #     return @constructor
 
     # EVALUABLE INTERFACE
     eval: (values) ->
@@ -2678,7 +2644,9 @@ class mathJS.Predicate
 # end js/Logic/Predicate.coffee
 
 # from js/Set/AbstractSet.coffee
-class _mathJS.AbstractSet
+class _mathJS.AbstractSet extends _mathJS.Object
+
+    @implement _mathJS.Orderable, _mathJS.Poolable, _mathJS.Parseable
 
     cartesianProduct: (set) ->
 
@@ -2769,7 +2737,6 @@ class _mathJS.AbstractSet
 # TODO: package all those types (expression-like) into 1 prototype (Variable already is)
 *###
 class mathJS.Set extends _mathJS.AbstractSet
-# class mathJS.Set extends mixOf mathJS.Poolable, mathJS.Comparable, mathJS.Parseable
 
     ###########################################################################
     # STATIC

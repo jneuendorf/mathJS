@@ -1,5 +1,4 @@
 # This file defines the Number interface.
-# class _mathJS.AbstractNumber extends mixOf _mathJS.Orderable, _mathJS.Poolable, _mathJS.Parseable
 class _mathJS.AbstractNumber extends _mathJS.Object
 
     @implement _mathJS.Orderable, _mathJS.Poolable, _mathJS.Parseable

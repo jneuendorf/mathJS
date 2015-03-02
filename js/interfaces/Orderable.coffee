@@ -7,13 +7,14 @@ class _mathJS.Orderable extends _mathJS.Comparable
     * @return {Boolean}
     *###
     lessThan: (n) ->
-        throw new Error("To be implemented!")
+        throw new mathJS.Errors.NotImplementedError("lessThan in #{@contructor.name}")
 
     ###*
     * Alias for `lessThan`.
     * @method lt
     *###
-    lt: @::lessThan
+    lt: () ->
+        return @lessThan.apply(@, arguments)
 
     ###*
     * This method checks for mathmatical ">". This means new mathJS.Double(4.2).greaterThan(3.2) is true.
@@ -22,13 +23,14 @@ class _mathJS.Orderable extends _mathJS.Comparable
     * @return {Boolean}
     *###
     greaterThan: (n) ->
-        throw new Error("To be implemented!")
+        throw new mathJS.Errors.NotImplementedError("greaterThan in #{@contructor.name}")
 
     ###*
     * Alias for `greaterThan`.
-    * @method lt
+    * @method gt
     *###
-    gt: @::greaterThan
+    gt: () ->
+        return @greaterThan.apply(@, arguments)
 
     ###*
     * This method checks for mathmatical "<=". This means new mathJS.Double(4.2).lessThanOrEqualTo(5.2) is true.
@@ -37,13 +39,14 @@ class _mathJS.Orderable extends _mathJS.Comparable
     * @return {Boolean}
     *###
     lessThanOrEqualTo: (n) ->
-        throw new Error("To be implemented!")
+        throw new mathJS.Errors.NotImplementedError("lessThanOrEqualTo in #{@contructor.name}")
 
     ###*
     * Alias for `lessThanOrEqualTo`.
-    * @method lt
+    * @method lte
     *###
-    lte: @::lessThanOrEqualTo
+    lte: () ->
+        return @lessThanOrEqualTo.apply(@, arguments)
 
     ###*
     * This method checks for mathmatical ">=". This means new mathJS.Double(4.2).greaterThanOrEqualTo(3.2) is true.
@@ -52,10 +55,11 @@ class _mathJS.Orderable extends _mathJS.Comparable
     * @return {Boolean}
     *###
     greaterThanOrEqualTo: (n) ->
-        throw new Error("To be implemented!")
+        throw new mathJS.Errors.NotImplementedError("greaterThanOrEqualTo in #{@contructor.name}")
 
     ###*
     * Alias for `greaterThanOrEqualTo`.
-    * @method lt
+    * @method gte
     *###
-    gte: @::greaterThanOrEqualTo
+    gte: () ->
+        return @greaterThanOrEqualTo.apply(@, arguments)

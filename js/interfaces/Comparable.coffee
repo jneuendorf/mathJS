@@ -7,6 +7,7 @@ class _mathJS.Comparable extends _mathJS.Interface
     * @return {Boolean}
     *###
     equals: (n) ->
-        throw new Error("To be implemented!")
+        throw new mathJS.Errors.NotImplementedError("equals in #{@contructor.name}")
 
-    e: @::equals
+    e: () ->
+        return @equals.apply(@, arguments)

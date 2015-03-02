@@ -1,7 +1,7 @@
 class _mathJS.Parseable extends _mathJS.Interface
 
     @parse: (str) ->
-        throw new Error("To be implemented")
+        throw new mathJS.Errors.NotImplementedError("static parse in #{@name}")
 
     toString: (args) ->
-        throw new Error("To be implemented")
+        throw new mathJS.Errors.NotImplementedError("toString in #{@contructor.name}")
