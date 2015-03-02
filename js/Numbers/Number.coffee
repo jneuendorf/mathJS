@@ -37,7 +37,6 @@ class mathJS.Number extends _mathJS.AbstractNumber
 
         return value
 
-
     ###*
     * @Override mathJS.Poolable
     * @static
@@ -75,8 +74,9 @@ class mathJS.Number extends _mathJS.AbstractNumber
     @getSet: () ->
         return mathJS.Domains.R
 
-    @new: (value) ->
-        return @fromPool value
+    # moved to AbstractNumber
+    # @new: (value) ->
+    #     return @fromPool value
 
     ###########################################################################
     # CONSTRUCTOR
@@ -339,11 +339,6 @@ class mathJS.Number extends _mathJS.AbstractNumber
 
     clone: () ->
         return @fromPool @value
-
-    # add instance to pool
-    release: () ->
-        @constructor._pool.push @
-        return @constructor
 
     # EVALUABLE INTERFACE
     'eval': (values) ->

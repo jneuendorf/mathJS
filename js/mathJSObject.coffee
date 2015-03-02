@@ -12,6 +12,11 @@ class _mathJS.Object
             classes = classes.first
 
         for clss in classes
+            # for statistical reasons make the class / interface know what classes implement it
+            if @ not in clss.implementedBy
+                clss.implementedBy.push @
+
+            # implement class / interface
             clssPrototype = clss::
             prototypeKeys = window.Object.keys(clssPrototype)
             # static
@@ -21,6 +26,7 @@ class _mathJS.Object
             for name, method of clssPrototype
                 @::[name] = method
             @implements.push clss
+            
         return @
 
     isA: (clss) ->

@@ -749,6 +749,8 @@ mathJS.settings =
         maxIndex: 1e4
     integral:
         maxSteps: 1e10
+    # maxPoolSize is for EACH pool
+    maxPoolSize: 100
     number:
         real:
             distance: 1e-6
@@ -776,6 +778,11 @@ class _mathJS.Object
             classes = classes.first
 
         for clss in classes
+            # for statistical reasons make the class / interface know what classes implement it
+            if @ not in clss.implementedBy
+                clss.implementedBy.push @
+
+            # implement class / interface
             clssPrototype = clss::
             prototypeKeys = window.Object.keys(clssPrototype)
             # static
@@ -822,8 +829,16 @@ class mathJS.Errors.InvalidArityError extends Error
 class mathJS.Errors.AbstractInstantiationError extends Error
 # end js/Errors/SimpleErrors.coffee
 
+# from js/Interfaces/Interface.coffee
+class _mathJS.Interface extends _mathJS.Object
+    @implementedBy = []
+
+    @isImplementedBy = () ->
+        return @implementedBy
+# end js/Interfaces/Interface.coffee
+
 # from js/Interfaces/Comparable.coffee
-class mathJS.Comparable
+class _mathJS.Comparable extends _mathJS.Interface
 
     ###*
     * This method checks for mathmatical equality. This means new mathJS.Double(4.2).equals(4.2) is true.
@@ -838,7 +853,7 @@ class mathJS.Comparable
 # end js/Interfaces/Comparable.coffee
 
 # from js/Interfaces/Orderable.coffee
-class mathJS.Orderable extends mathJS.Comparable
+class _mathJS.Orderable extends _mathJS.Comparable
 
     ###*
     * This method checks for mathmatical "<". This means new mathJS.Double(4.2).lessThan(5.2) is true.
@@ -902,7 +917,7 @@ class mathJS.Orderable extends mathJS.Comparable
 # end js/Interfaces/Orderable.coffee
 
 # from js/Interfaces/Parseable.coffee
-class mathJS.Parseable
+class _mathJS.Parseable extends _mathJS.Interface
 
     @parse: (str) ->
         throw new Error("To be implemented")
@@ -912,7 +927,7 @@ class mathJS.Parseable
 # end js/Interfaces/Parseable.coffee
 
 # from js/Interfaces/Poolable.coffee
-class mathJS.Poolable
+class _mathJS.Poolable extends _mathJS.Interface
 
     @_pool = []
 
@@ -924,18 +939,25 @@ class mathJS.Poolable
         throw new Error("To be implemented")
 
     @new: () ->
-        if arguments.length > 0
-            return @fromPool.apply(@, arguments)
-        return @fromPool()
+        return @fromPool.apply(@, arguments)
 
-    # release instance to pool
+    ###*
+    * Releases the instance to the pool of its class.
+    * @method release
+    * @return This intance
+    * @chainable
+    *###
     release: () ->
-        @constructor._pool.push @
-        return @constructor
+        if @constructor._pool.length < mathJS.settings.maxPoolSize
+            @constructor._pool.push @
+        if DEBUG
+            if @constructor._pool.length >= mathJS.settings.maxPoolSize
+                console.warn "#{@constructor.name}-pool is full:", @constructor._pool
+        return @
 # end js/Interfaces/Poolable.coffee
 
 # from js/Interfaces/Evaluable.coffee
-class mathJS.Evaluable
+class _mathJS.Evaluable extends _mathJS.Interface
 
     eval: () ->
         throw new Error("to do!")
@@ -943,10 +965,10 @@ class mathJS.Evaluable
 
 # from js/Numbers/AbstractNumber.coffee
 # This file defines the Number interface.
-# class _mathJS.AbstractNumber extends mixOf mathJS.Orderable, mathJS.Poolable, mathJS.Parseable
+# class _mathJS.AbstractNumber extends mixOf _mathJS.Orderable, _mathJS.Poolable, _mathJS.Parseable
 class _mathJS.AbstractNumber extends _mathJS.Object
 
-    @implement mathJS.Orderable, mathJS.Poolable, mathJS.Parseable
+    @implement _mathJS.Orderable, _mathJS.Poolable, _mathJS.Parseable
 
     ###*
     * @Override mathJS.Poolable
@@ -965,6 +987,7 @@ class _mathJS.AbstractNumber extends _mathJS.Object
     @getSet: () ->
 
     @new: (value) ->
+        return @fromPool value
 
     ############################################################################################
     # PROTECTED METHODS
@@ -1140,10 +1163,10 @@ class _mathJS.AbstractNumber extends _mathJS.Object
 
     clone: () ->
 
-    # add instance to pool
-    release: () ->
-        @constructor._pool.push @
-        return @constructor
+    # # add instance to pool
+    # release: () ->
+    #     @constructor._pool.push @
+    #     return @constructor
 
     # EVALUABLE INTERFACE
     eval: (values) ->
@@ -1198,7 +1221,6 @@ class mathJS.Number extends _mathJS.AbstractNumber
 
         return value
 
-
     ###*
     * @Override mathJS.Poolable
     * @static
@@ -1236,8 +1258,9 @@ class mathJS.Number extends _mathJS.AbstractNumber
     @getSet: () ->
         return mathJS.Domains.R
 
-    @new: (value) ->
-        return @fromPool value
+    # moved to AbstractNumber
+    # @new: (value) ->
+    #     return @fromPool value
 
     ###########################################################################
     # CONSTRUCTOR
@@ -1501,10 +1524,10 @@ class mathJS.Number extends _mathJS.AbstractNumber
     clone: () ->
         return @fromPool @value
 
-    # add instance to pool
-    release: () ->
-        @constructor._pool.push @
-        return @constructor
+    # # add instance to pool
+    # release: () ->
+    #     @constructor._pool.push @
+    #     return @constructor
 
     # EVALUABLE INTERFACE
     eval: (values) ->

@@ -2,7 +2,6 @@ macros
 
 js/init
 
-js/globalFunctions
 js/prototyping
 
 js/mathJS
@@ -12,6 +11,7 @@ js/mathJSObject
 
 js/Errors/SimpleErrors
 
+js/Interfaces/Interface
 js/Interfaces/Comparable
 js/Interfaces/Orderable
 js/Interfaces/Parseable

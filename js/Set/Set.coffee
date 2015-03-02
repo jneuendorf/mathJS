@@ -9,7 +9,6 @@
 # TODO: package all those types (expression-like) into 1 prototype (Variable already is)
 *###
 class mathJS.Set extends _mathJS.AbstractSet
-# class mathJS.Set extends mixOf mathJS.Poolable, mathJS.Comparable, mathJS.Parseable
 
     ###########################################################################
     # STATIC

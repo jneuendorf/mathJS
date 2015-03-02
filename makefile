@@ -1,11 +1,8 @@
 make:
-	whoami
 	./js/build
 	m4 source.coffee > source_temp.coffee
 	mv source_temp.coffee source.coffee
 	coffee -c source.coffee
-	# chmod 777 source.js
-	# echo adf
 	replace "child.__super__ = parent.prototype;" "child.__super__ = parent.prototype; child.__superClass__ = parent;" -- source.js
 
 doc: make

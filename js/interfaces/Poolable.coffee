@@ -1,4 +1,4 @@
-class mathJS.Poolable
+class _mathJS.Poolable extends _mathJS.Interface
 
     @_pool = []
 
@@ -10,11 +10,18 @@ class mathJS.Poolable
         throw new Error("To be implemented")
 
     @new: () ->
-        if arguments.length > 0
-            return @fromPool.apply(@, arguments)
-        return @fromPool()
+        return @fromPool.apply(@, arguments)
 
-    # release instance to pool
+    ###*
+    * Releases the instance to the pool of its class.
+    * @method release
+    * @return This intance
+    * @chainable
+    *###
     release: () ->
-        @constructor._pool.push @
-        return @constructor
+        if @constructor._pool.length < mathJS.settings.maxPoolSize
+            @constructor._pool.push @
+        if DEBUG
+            if @constructor._pool.length >= mathJS.settings.maxPoolSize
+                console.warn "#{@constructor.name}-pool is full:", @constructor._pool
+        return @

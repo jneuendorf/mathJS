@@ -1,4 +1,4 @@
-class mathJS.Parseable
+class _mathJS.Parseable extends _mathJS.Interface
 
     @parse: (str) ->
         throw new Error("To be implemented")

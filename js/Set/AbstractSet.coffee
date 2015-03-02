@@ -1,4 +1,6 @@
-class _mathJS.AbstractSet
+class _mathJS.AbstractSet extends _mathJS.Object
+
+    @implement _mathJS.Orderable, _mathJS.Poolable, _mathJS.Parseable
 
     cartesianProduct: (set) ->
 

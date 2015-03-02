@@ -1,4 +1,4 @@
-class mathJS.Orderable extends mathJS.Comparable
+class _mathJS.Orderable extends _mathJS.Comparable
 
     ###*
     * This method checks for mathmatical "<". This means new mathJS.Double(4.2).lessThan(5.2) is true.

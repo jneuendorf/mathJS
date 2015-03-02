@@ -866,6 +866,7 @@
     integral: {
       maxSteps: 1e10
     },
+    maxPoolSize: 100,
     number: {
       real: {
         distance: 1e-6
@@ -901,6 +902,9 @@
       }
       for (_i = 0, _len = classes.length; _i < _len; _i++) {
         clss = classes[_i];
+        if (__indexOf.call(clss.implementedBy, this) < 0) {
+          clss.implementedBy.push(this);
+        }
         clssPrototype = clss.prototype;
         prototypeKeys = window.Object.keys(clssPrototype);
         for (name in clss) {
@@ -1004,8 +1008,29 @@
 
   })(Error);
 
-  mathJS.Comparable = (function() {
-    function Comparable() {}
+  _mathJS.Interface = (function(_super) {
+    __extends(Interface, _super);
+
+    function Interface() {
+      return Interface.__super__.constructor.apply(this, arguments);
+    }
+
+    Interface.implementedBy = [];
+
+    Interface.isImplementedBy = function() {
+      return this.implementedBy;
+    };
+
+    return Interface;
+
+  })(_mathJS.Object);
+
+  _mathJS.Comparable = (function(_super) {
+    __extends(Comparable, _super);
+
+    function Comparable() {
+      return Comparable.__super__.constructor.apply(this, arguments);
+    }
 
 
     /**
@@ -1024,9 +1049,9 @@
 
     return Comparable;
 
-  })();
+  })(_mathJS.Interface);
 
-  mathJS.Orderable = (function(_super) {
+  _mathJS.Orderable = (function(_super) {
     __extends(Orderable, _super);
 
     function Orderable() {
@@ -1123,10 +1148,14 @@
 
     return Orderable;
 
-  })(mathJS.Comparable);
+  })(_mathJS.Comparable);
 
-  mathJS.Parseable = (function() {
-    function Parseable() {}
+  _mathJS.Parseable = (function(_super) {
+    __extends(Parseable, _super);
+
+    function Parseable() {
+      return Parseable.__super__.constructor.apply(this, arguments);
+    }
 
     Parseable.parse = function(str) {
       throw new Error("To be implemented");
@@ -1138,10 +1167,14 @@
 
     return Parseable;
 
-  })();
+  })(_mathJS.Interface);
 
-  mathJS.Poolable = (function() {
-    function Poolable() {}
+  _mathJS.Poolable = (function(_super) {
+    __extends(Poolable, _super);
+
+    function Poolable() {
+      return Poolable.__super__.constructor.apply(this, arguments);
+    }
 
     Poolable._pool = [];
 
@@ -1150,23 +1183,40 @@
     };
 
     Poolable["new"] = function() {
-      if (arguments.length > 0) {
-        return this.fromPool.apply(this, arguments);
-      }
-      return this.fromPool();
+      return this.fromPool.apply(this, arguments);
     };
 
+
+    /**
+    * Releases the instance to the pool of its class.
+    * @method release
+    * @return This intance
+    * @chainable
+    *
+     */
+
     Poolable.prototype.release = function() {
-      this.constructor._pool.push(this);
-      return this.constructor;
+      if (this.constructor._pool.length < mathJS.settings.maxPoolSize) {
+        this.constructor._pool.push(this);
+      }
+      if (DEBUG) {
+        if (this.constructor._pool.length >= mathJS.settings.maxPoolSize) {
+          console.warn("" + this.constructor.name + "-pool is full:", this.constructor._pool);
+        }
+      }
+      return this;
     };
 
     return Poolable;
 
-  })();
+  })(_mathJS.Interface);
 
-  mathJS.Evaluable = (function() {
-    function Evaluable() {}
+  _mathJS.Evaluable = (function(_super) {
+    __extends(Evaluable, _super);
+
+    function Evaluable() {
+      return Evaluable.__super__.constructor.apply(this, arguments);
+    }
 
     Evaluable.prototype["eval"] = function() {
       throw new Error("to do!");
@@ -1174,7 +1224,7 @@
 
     return Evaluable;
 
-  })();
+  })(_mathJS.Interface);
 
   _mathJS.AbstractNumber = (function(_super) {
     __extends(AbstractNumber, _super);
@@ -1183,7 +1233,7 @@
       return AbstractNumber.__super__.constructor.apply(this, arguments);
     }
 
-    AbstractNumber.implement(mathJS.Orderable, mathJS.Poolable, mathJS.Parseable);
+    AbstractNumber.implement(_mathJS.Orderable, _mathJS.Poolable, _mathJS.Parseable);
 
 
     /**
@@ -1207,7 +1257,9 @@
 
     AbstractNumber.getSet = function() {};
 
-    AbstractNumber["new"] = function(value) {};
+    AbstractNumber["new"] = function(value) {
+      return this.fromPool(value);
+    };
 
     AbstractNumber.prototype._setValue = function(value) {
       if (this.valueIsValid(value)) {
@@ -1438,11 +1490,6 @@
 
     AbstractNumber.prototype.clone = function() {};
 
-    AbstractNumber.prototype.release = function() {
-      this.constructor._pool.push(this);
-      return this.constructor;
-    };
-
     AbstractNumber.prototype["eval"] = function(values) {
       return this;
     };
@@ -1555,10 +1602,6 @@
 
     Number.getSet = function() {
       return mathJS.Domains.R;
-    };
-
-    Number["new"] = function(value) {
-      return this.fromPool(value);
     };
 
     function Number(value) {
@@ -1893,11 +1936,6 @@
 
     Number.prototype.clone = function() {
       return this.fromPool(this.value);
-    };
-
-    Number.prototype.release = function() {
-      this.constructor._pool.push(this);
-      return this.constructor;
     };
 
     Number.prototype["eval"] = function(values) {

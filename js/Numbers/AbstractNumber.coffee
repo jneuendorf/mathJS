@@ -1,8 +1,8 @@
 # This file defines the Number interface.
-# class _mathJS.AbstractNumber extends mixOf mathJS.Orderable, mathJS.Poolable, mathJS.Parseable
+# class _mathJS.AbstractNumber extends mixOf _mathJS.Orderable, _mathJS.Poolable, _mathJS.Parseable
 class _mathJS.AbstractNumber extends _mathJS.Object
 
-    @implement mathJS.Orderable, mathJS.Poolable, mathJS.Parseable
+    @implement _mathJS.Orderable, _mathJS.Poolable, _mathJS.Parseable
 
     ###*
     * @Override mathJS.Poolable
@@ -21,6 +21,7 @@ class _mathJS.AbstractNumber extends _mathJS.Object
     @getSet: () ->
 
     @new: (value) ->
+        return @fromPool value
 
     ############################################################################################
     # PROTECTED METHODS
@@ -195,11 +196,6 @@ class _mathJS.AbstractNumber extends _mathJS.Object
     toString: () ->
 
     clone: () ->
-
-    # add instance to pool
-    release: () ->
-        @constructor._pool.push @
-        return @constructor
 
     # EVALUABLE INTERFACE
     'eval': (values) ->
