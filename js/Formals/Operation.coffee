@@ -10,7 +10,7 @@ class mathJS.Operation
         @inverse = inverse or null
         @setEquivalent = setEquivalent or null
 
-    'eval': (args) ->
+    eval: (args) ->
         return @func.apply(@, args)
 
     invert: () ->

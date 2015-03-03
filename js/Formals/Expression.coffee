@@ -123,12 +123,12 @@ class mathJS.Expression
         return @simplify().equals expression.simplify()
 
     ###*
-    * @method 'eval'
+    * @method eval
     * @param values {Object}
     * An object of the form {varKey: varVal}.
     * @returns The value of the expression (specified by the values).
     *###
-    'eval': (values) ->
+    eval: (values) ->
         # replace primitives with mathJS objects
         for k, v of values
             if mathJS.isPrimitive(v) and mathJS.Number.valueIsValid(v)
@@ -136,23 +136,23 @@ class mathJS.Expression
 
         # leaf => first expression is either a mathJS.Variable or a constant (-> Number)
         if not @operation?
-            return @expressions.first.'eval'(values)
+            return @expressions.first.eval(values)
 
-        # no leaf => 'eval' substrees
+        # no leaf => eval substrees
         args = []
         for expression in @expressions
             # evaluated expression is a variable => stop because this and the "above" expression cant be evaluated further
-            value = expression.'eval'(values)
+            value = expression.eval(values)
             if value instanceof mathJS.Variable
                 return @
             # evaluation succeeded => add to list of evaluated values (which will be passed to the operation)
             args.push value
 
-        return @operation.'eval'(args)
+        return @operation.eval(args)
 
     simplify: () ->
         # simplify numeric values aka. non-variable arithmetics
-        evaluated = @'eval'()
+        evaluated = @eval()
         # actual simplification: less ops!
         # TODO: gather simplification patterns
         return @
@@ -189,7 +189,7 @@ class mathJS.Expression
     * @method getSet
     *###
     getSet: () ->
-        return @'eval'()._getSet()
+        return @eval()._getSet()
 
     # MAKE ALIASES
     evaluatesTo: @::getSet
@@ -200,10 +200,10 @@ class mathJS.Expression
             e2 = new CLASS(new mathJS.Variable("x", mathJS.Number))
             e4 = new CLASS("+", e1, e2)
             console.log e4.getVariables()
-            # console.log e4.'eval'({x: new mathJS.Number(5)})
-            # console.log e4.'eval'()
-            # e5 = e4.'eval'()
-            # console.log e5.'eval'({x: new mathJS.Number(5)})
+            # console.log e4.eval({x: new mathJS.Number(5)})
+            # console.log e4.eval()
+            # e5 = e4.eval()
+            # console.log e5.eval({x: new mathJS.Number(5)})
 
             str = "(5x - 3)  ^ 2 * 2 / (4y + 3!)"
 

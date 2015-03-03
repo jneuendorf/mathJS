@@ -1,0 +1,193 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <title>math.js | an extensive math library for JavaScript and Node.js</title>
+
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="title" content="math.js">
+
+  <meta name="keywords" content="mathjs, math.js, math, js, javascript, node, library, expression, parser, numeric, number, bignumber, complex, matrix, unit, function, variable, string, value, node.js, mathematics, extensive, advanced">
+  <meta name="description" content="Math.js is an extensive math library for JavaScript and Node.js. It features big numbers, complex numbers, matrices, units, and a flexible expression parser.">
+
+  <meta name="author" content="Jos de Jong">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <link href="../../css/style.css" rel="stylesheet" type="text/css">
+  <link href="../../css/commandline.css" rel="stylesheet" type="text/css">
+  <link href="../../css/code.css" rel="stylesheet" type="text/css">
+
+  <script src="../../js/lib/es5-shim.min.js" type="text/javascript"></script>
+  <script src="../../js/lib/es5-sham.min.js" type="text/javascript"></script>
+  <script src="../../js/lib/math.js" type="text/javascript"></script>
+  <script src="../../js/commandline.js" type="text/javascript"></script>
+</head>
+
+<!-- itemscope, itemtype, and  itemprop for google+ meta information -->
+<body itemscope itemtype="http://schema.org/Product">
+<div id="page">
+  <div>
+    <a href="../../index.html">
+      <img src="../../css/img/mathjs_330x100.png" id="logo" alt="math.js" itemprop="image" >
+    </a>
+  </div>
+
+  <div id="search">
+    <script>
+      (function() {
+        var cx = '017327835323070913148:__zkzh4scga';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//www.google.com/cse/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <div id="menu">
+    <a href="../../index.html">
+      Home
+      
+    </a><a href="../../download.html">
+    Download
+    
+    </a><a href="../../docs/getting_started.html">
+      Get started
+      
+    </a><a href="../../docs/index.html">
+        Docs
+        
+    </a><a href="../index.html">
+        Examples
+        
+        <div class="selection"></div>
+        
+    </a>
+  </div>
+
+  <div id="content">
+    <h1>Custom separators</h1>
+
+<p>File: <a href="custom_separators.html">custom_separators.html</a></p>
+<div class="highlight"><pre><code class="language-html" data-lang="html"><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="nt">&lt;html&gt;</span>
+<span class="nt">&lt;head&gt;</span>
+  <span class="nt">&lt;title&gt;</span>math.js | custom separators<span class="nt">&lt;/title&gt;</span>
+  <span class="nt">&lt;style&gt;</span>
+    <span class="nt">body</span><span class="o">,</span> <span class="nt">input</span><span class="o">,</span> <span class="nt">select</span> <span class="p">{</span>
+      <span class="k">font</span><span class="o">:</span> <span class="m">11pt</span> <span class="k">sans-serif</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="nt">input</span><span class="o">,</span> <span class="nt">select</span><span class="o">,</span> <span class="nt">th</span><span class="o">,</span> <span class="nf">#result</span> <span class="p">{</span>
+      <span class="k">padding</span><span class="o">:</span> <span class="m">5px</span> <span class="m">10px</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="nt">th</span> <span class="p">{</span>
+      <span class="k">text-align</span><span class="o">:</span> <span class="k">left</span><span class="p">;</span>
+    <span class="p">}</span>
+  <span class="nt">&lt;/style&gt;</span>
+
+  <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;http://cdnjs.cloudflare.com/ajax/libs/mathjs/1.4.0/math.min.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+<span class="nt">&lt;/head&gt;</span>
+<span class="nt">&lt;body&gt;</span>
+
+<span class="nt">&lt;p&gt;</span>
+  This code example shows how to apply custom separators for function arguments and decimal separator.
+<span class="nt">&lt;/p&gt;</span>
+
+<span class="nt">&lt;table&gt;</span>
+  <span class="nt">&lt;tr&gt;</span>
+    <span class="nt">&lt;th&gt;</span>Argument separator<span class="nt">&lt;/th&gt;</span>
+    <span class="nt">&lt;td&gt;</span>
+      <span class="nt">&lt;input</span> <span class="na">id=</span><span class="s">&quot;args&quot;</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">value=</span><span class="s">&quot;;&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;/td&gt;</span>
+  <span class="nt">&lt;/tr&gt;</span>
+  <span class="nt">&lt;tr&gt;</span>
+    <span class="nt">&lt;th&gt;</span>Decimal separator<span class="nt">&lt;/th&gt;</span>
+    <span class="nt">&lt;td&gt;</span>
+      <span class="nt">&lt;input</span> <span class="na">id=</span><span class="s">&quot;decimals&quot;</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">value=</span><span class="s">&quot;,&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;/td&gt;</span>
+  <span class="nt">&lt;/tr&gt;</span>
+  <span class="nt">&lt;tr&gt;</span>
+    <span class="nt">&lt;th&gt;</span>Expression<span class="nt">&lt;/th&gt;</span>
+    <span class="nt">&lt;td&gt;</span>
+      <span class="nt">&lt;input</span> <span class="na">id=</span><span class="s">&quot;expression&quot;</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">value=</span><span class="s">&quot;sum(3,4; 2,1; 2,0)&quot;</span> <span class="nt">/&gt;</span>
+      <span class="nt">&lt;input</span> <span class="na">id=</span><span class="s">&quot;evaluate&quot;</span> <span class="na">type=</span><span class="s">&quot;button&quot;</span> <span class="na">value=</span><span class="s">&quot;Evaluate&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;/td&gt;</span>
+  <span class="nt">&lt;/tr&gt;</span>
+  <span class="nt">&lt;tr&gt;</span>
+    <span class="nt">&lt;th&gt;</span>Result<span class="nt">&lt;/th&gt;</span>
+    <span class="nt">&lt;td</span> <span class="na">id=</span><span class="s">&quot;result&quot;</span><span class="nt">&gt;&lt;/td&gt;</span>
+  <span class="nt">&lt;/tr&gt;</span>
+<span class="nt">&lt;/table&gt;</span>
+
+<span class="nt">&lt;script&gt;</span>
+  <span class="c1">// pointers to the input elements</span>
+  <span class="kd">var</span> <span class="nx">expression</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;expression&#39;</span><span class="p">);</span>
+  <span class="kd">var</span> <span class="nx">evaluate</span>   <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;evaluate&#39;</span><span class="p">);</span>
+  <span class="kd">var</span> <span class="nx">result</span>     <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;result&#39;</span><span class="p">);</span>
+  <span class="kd">var</span> <span class="nx">args</span>       <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;args&#39;</span><span class="p">);</span>
+  <span class="kd">var</span> <span class="nx">decimals</span>   <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;decimals&#39;</span><span class="p">);</span>
+
+  <span class="c1">// attach event handler to the button</span>
+  <span class="nx">evaluate</span><span class="p">.</span><span class="nx">onclick</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// replace the custom separators in the input with the default separators</span>
+    <span class="kd">var</span> <span class="nx">expr</span> <span class="o">=</span> <span class="nx">expression</span><span class="p">.</span><span class="nx">value</span>
+        <span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="k">new</span> <span class="nb">RegExp</span><span class="p">(</span><span class="s1">&#39;\\&#39;</span> <span class="o">+</span> <span class="nx">decimals</span><span class="p">.</span><span class="nx">value</span> <span class="o">+</span> <span class="s1">&#39;|\\&#39;</span> <span class="o">+</span> <span class="nx">args</span><span class="p">.</span><span class="nx">value</span><span class="p">,</span> <span class="s1">&#39;g&#39;</span><span class="p">),</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">match</span><span class="p">)</span> <span class="p">{</span>
+          <span class="k">return</span> <span class="nx">match</span> <span class="o">==</span> <span class="nx">decimals</span><span class="p">.</span><span class="nx">value</span> <span class="o">?</span> <span class="s1">&#39;.&#39;</span><span class="o">:</span> <span class="s1">&#39;,&#39;</span><span class="p">;</span>
+        <span class="p">});</span>
+
+    <span class="c1">// do the actual evaluation</span>
+    <span class="kd">var</span> <span class="nx">res</span> <span class="o">=</span> <span class="nx">math</span><span class="p">.</span><span class="nb">eval</span><span class="p">(</span><span class="nx">expr</span><span class="p">);</span>
+
+    <span class="c1">// replace the default separators in the output with custom separators</span>
+    <span class="nx">result</span><span class="p">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="nx">res</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span>
+        <span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="k">new</span> <span class="nb">RegExp</span><span class="p">(</span><span class="s1">&#39;,|\\.&#39;</span><span class="p">,</span> <span class="s1">&#39;g&#39;</span><span class="p">),</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">match</span><span class="p">)</span> <span class="p">{</span>
+          <span class="k">return</span> <span class="nx">match</span> <span class="o">==</span> <span class="s1">&#39;.&#39;</span> <span class="o">?</span> <span class="nx">decimals</span><span class="p">.</span><span class="nx">value</span> <span class="o">:</span> <span class="nx">args</span><span class="p">.</span><span class="nx">value</span><span class="p">;</span>
+        <span class="p">});</span>
+  <span class="p">};</span>
+<span class="nt">&lt;/script&gt;</span>
+
+
+<span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span>
+</code></pre></div>
+<!-- Note: This file is automatically generated. Changes made in this file will be overridden. -->
+
+  </div>
+
+</div>
+
+<div id="footer">
+  <a href="../../index.html">mathjs.org</a> &bull;
+  <a href="https://github.com/josdejong/mathjs#license" target="_blank">copyright &copy; 2013-2015 jos de jong</a> &bull;
+  <a href="http://subtlepatterns.com/bright-squares/" target="_blank">background by waseem dahman</a>
+</div>
+
+<div id="forkme">
+  <a href="https://github.com/josdejong/mathjs" target="_blank">
+    <img src="../../css/img/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" >
+  </a>
+</div>
+
+<script type="text/javascript">
+  // change layout for different screen sizes
+  function resize () {
+    var width = document.body.clientWidth;
+
+    var page = document.getElementById('page');
+    page.className = (width < 810) ? 'small' : 'normal';
+    if (width < 620) {
+      page.className += ' tiny';
+    }
+
+    var forkme = document.getElementById('forkme');
+    forkme.className = (width < 810) ? 'small' : 'normal';
+  }
+  resize();
+  window.onresize = resize;
+</script>
+
+</body>
+</html>

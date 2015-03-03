@@ -99,7 +99,7 @@ class _mathJS.ConditionalSet extends mathJS.Set
             p2 = new mathJS.Expression(4)
             p3 = new mathJS.Expression("=", p1, p2)
 
-            console.log p3.'eval'(x: 4)
+            console.log p3.eval(x: 4)
 
             console.log p3.getSet()
 

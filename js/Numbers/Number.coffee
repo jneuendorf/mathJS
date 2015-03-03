@@ -341,7 +341,7 @@ class mathJS.Number extends _mathJS.AbstractNumber
         return @fromPool @value
 
     # EVALUABLE INTERFACE
-    'eval': (values) ->
+    eval: (values) ->
         return @
 
     # TODO: intercept destructor

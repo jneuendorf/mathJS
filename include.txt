@@ -1,5 +1,3 @@
-macros
-
 js/init
 
 js/prototyping

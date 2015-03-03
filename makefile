@@ -1,9 +1,8 @@
 make:
 	./js/build
-	m4 source.coffee > source_temp.coffee
-	mv source_temp.coffee source.coffee
+	python3 py/macro_processing.py source.coffee macros.coffee
 	coffee -c source.coffee
-	replace "child.__super__ = parent.prototype;" "child.__super__ = parent.prototype; child.__superClass__ = parent;" -- source.js
+	python3 py/macro_processing.py source.js macros.js
 
 doc: make
 	coffee --output doc_base --compile js

@@ -1,0 +1,162 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <title>math.js | an extensive math library for JavaScript and Node.js</title>
+
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="title" content="math.js">
+
+  <meta name="keywords" content="mathjs, math.js, math, js, javascript, node, library, expression, parser, numeric, number, bignumber, complex, matrix, unit, function, variable, string, value, node.js, mathematics, extensive, advanced">
+  <meta name="description" content="Math.js is an extensive math library for JavaScript and Node.js. It features big numbers, complex numbers, matrices, units, and a flexible expression parser.">
+
+  <meta name="author" content="Jos de Jong">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <link href="../../css/style.css" rel="stylesheet" type="text/css">
+  <link href="../../css/commandline.css" rel="stylesheet" type="text/css">
+  <link href="../../css/code.css" rel="stylesheet" type="text/css">
+
+  <script src="../../js/lib/es5-shim.min.js" type="text/javascript"></script>
+  <script src="../../js/lib/es5-sham.min.js" type="text/javascript"></script>
+  <script src="../../js/lib/math.js" type="text/javascript"></script>
+  <script src="../../js/commandline.js" type="text/javascript"></script>
+</head>
+
+<!-- itemscope, itemtype, and  itemprop for google+ meta information -->
+<body itemscope itemtype="http://schema.org/Product">
+<div id="page">
+  <div>
+    <a href="../../index.html">
+      <img src="../../css/img/mathjs_330x100.png" id="logo" alt="math.js" itemprop="image" >
+    </a>
+  </div>
+
+  <div id="search">
+    <script>
+      (function() {
+        var cx = '017327835323070913148:__zkzh4scga';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//www.google.com/cse/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <div id="menu">
+    <a href="../../index.html">
+      Home
+      
+    </a><a href="../../download.html">
+    Download
+    
+    </a><a href="../getting_started.html">
+      Get started
+      
+    </a><a href="../index.html">
+        Docs
+        
+        <div class="selection"></div>
+        
+    </a><a href="../../examples/index.html">
+        Examples
+        
+    </a>
+  </div>
+
+  <div id="content">
+    <h1 id="data-types">Data Types <a href="index.html#data-types" title="Permalink">#</a></h1>
+
+<p>The functions of math.js support multiple data types, both native JavaScript
+types as well as more advanced types implemented in math.js. The data types can
+be mixed together in calculations, for example by adding a Number to a
+Complex number or Array.</p>
+
+<p>The supported data types are:</p>
+
+<ul>
+<li>Boolean</li>
+<li><a href="numbers.html">Number</a></li>
+<li><a href="bignumbers.html">BigNumber</a></li>
+<li><a href="complex_numbers.html">Complex</a></li>
+<li><a href="matrices.html">Array</a></li>
+<li><a href="matrices.html">Matrix</a></li>
+<li><a href="units.html">Unit</a></li>
+<li>String</li>
+</ul>
+
+<p>Example usage:</p>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="c1">// use numbers</span>
+<span class="nx">math</span><span class="p">.</span><span class="nx">subtract</span><span class="p">(</span><span class="mf">7.1</span><span class="p">,</span> <span class="mf">2.3</span><span class="p">);</span>        <span class="c1">// 4.8</span>
+<span class="nx">math</span><span class="p">.</span><span class="nx">round</span><span class="p">(</span><span class="nx">math</span><span class="p">.</span><span class="nx">pi</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span>         <span class="c1">// 3.142</span>
+<span class="nx">math</span><span class="p">.</span><span class="nx">sqrt</span><span class="p">(</span><span class="mf">4.41e2</span><span class="p">);</span>              <span class="c1">// 21</span>
+
+<span class="c1">// use BigNumbers</span>
+<span class="nx">math</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">math</span><span class="p">.</span><span class="nx">bignumber</span><span class="p">(</span><span class="mf">0.1</span><span class="p">),</span> <span class="nx">math</span><span class="p">.</span><span class="nx">bignumber</span><span class="p">(</span><span class="mf">0.2</span><span class="p">));</span> <span class="c1">// BigNumber, 0.3</span>
+
+<span class="c1">// use strings</span>
+<span class="nx">math</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="s1">&#39;hello &#39;</span><span class="p">,</span> <span class="s1">&#39;world&#39;</span><span class="p">);</span>    <span class="c1">// &#39;hello world&#39;</span>
+<span class="nx">math</span><span class="p">.</span><span class="nx">max</span><span class="p">(</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;D&#39;</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">);</span>        <span class="c1">// &#39;D&#39;</span>
+
+<span class="c1">// use complex numbers</span>
+<span class="kd">var</span> <span class="nx">a</span> <span class="o">=</span> <span class="nx">math</span><span class="p">.</span><span class="nx">complex</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span>     <span class="c1">// 2 + 3i</span>
+<span class="nx">a</span><span class="p">.</span><span class="nx">re</span><span class="p">;</span>                           <span class="c1">// 2</span>
+<span class="nx">a</span><span class="p">.</span><span class="nx">im</span><span class="p">;</span>                           <span class="c1">// 3</span>
+<span class="kd">var</span> <span class="nx">b</span> <span class="o">=</span> <span class="nx">math</span><span class="p">.</span><span class="nx">complex</span><span class="p">(</span><span class="s1">&#39;4 - 2i&#39;</span><span class="p">);</span> <span class="c1">// 4 - 2i</span>
+<span class="nx">math</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">);</span>                 <span class="c1">// 6 + i</span>
+<span class="nx">math</span><span class="p">.</span><span class="nx">sqrt</span><span class="p">(</span><span class="o">-</span><span class="mi">4</span><span class="p">);</span>                  <span class="c1">// 2i</span>
+
+<span class="c1">// use arrays</span>
+<span class="kd">var</span> <span class="nx">array</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">];</span>
+<span class="nx">math</span><span class="p">.</span><span class="nx">factorial</span><span class="p">(</span><span class="nx">array</span><span class="p">);</span>          <span class="c1">// Array,  [1, 2, 6, 24, 120]</span>
+<span class="nx">math</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">array</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span>             <span class="c1">// Array,  [3, 5, 6, 7, 8]</span>
+
+<span class="c1">// use matrices</span>
+<span class="kd">var</span> <span class="nx">matrix</span> <span class="o">=</span> <span class="nx">math</span><span class="p">.</span><span class="nx">matrix</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">25</span><span class="p">]);</span>  <span class="c1">// Matrix, [1, 4, 9, 16, 25]</span>
+<span class="nx">math</span><span class="p">.</span><span class="nx">sqrt</span><span class="p">(</span><span class="nx">matrix</span><span class="p">);</span>                            <span class="c1">// Matrix, [1, 2, 3, 4, 5]</span>
+
+<span class="c1">// use units</span>
+<span class="kd">var</span> <span class="nx">a</span> <span class="o">=</span> <span class="nx">math</span><span class="p">.</span><span class="nx">unit</span><span class="p">(</span><span class="mi">55</span><span class="p">,</span> <span class="s1">&#39;cm&#39;</span><span class="p">);</span>    <span class="c1">// 550 mm</span>
+<span class="kd">var</span> <span class="nx">b</span> <span class="o">=</span> <span class="nx">math</span><span class="p">.</span><span class="nx">unit</span><span class="p">(</span><span class="s1">&#39;0.1m&#39;</span><span class="p">);</span>      <span class="c1">// 100 mm</span>
+<span class="nx">math</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">);</span>                 <span class="c1">// 0.65 m</span>
+</code></pre></div>
+  </div>
+
+</div>
+
+<div id="footer">
+  <a href="../../index.html">mathjs.org</a> &bull;
+  <a href="https://github.com/josdejong/mathjs#license" target="_blank">copyright &copy; 2013-2015 jos de jong</a> &bull;
+  <a href="http://subtlepatterns.com/bright-squares/" target="_blank">background by waseem dahman</a>
+</div>
+
+<div id="forkme">
+  <a href="https://github.com/josdejong/mathjs" target="_blank">
+    <img src="../../css/img/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" >
+  </a>
+</div>
+
+<script type="text/javascript">
+  // change layout for different screen sizes
+  function resize () {
+    var width = document.body.clientWidth;
+
+    var page = document.getElementById('page');
+    page.className = (width < 810) ? 'small' : 'normal';
+    if (width < 620) {
+      page.className += ' tiny';
+    }
+
+    var forkme = document.getElementById('forkme');
+    forkme.className = (width < 810) ? 'small' : 'normal';
+  }
+  resize();
+  window.onresize = resize;
+</script>
+
+</body>
+</html>

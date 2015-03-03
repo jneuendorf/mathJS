@@ -197,7 +197,7 @@ class _mathJS.AbstractNumber extends _mathJS.Object
     clone: () ->
 
     # EVALUABLE INTERFACE
-    'eval': (values) ->
+    eval: (values) ->
         return @
 
     _getSet: () ->

@@ -1,9 +1,3 @@
-# from macros.coffee
-# TODO: change quotes to _____!?!
-
-
-# end macros.coffee
-
 # from js/init.coffee
 ###*
  * @module mathJS
@@ -937,7 +931,7 @@ class _mathJS.Poolable extends _mathJS.Interface
 class _mathJS.Evaluable extends _mathJS.Interface
 
     eval: () ->
-        throw new mathJS.Errors.NotImplementedError("0 in #{@contructor.name}")
+        throw new mathJS.Errors.NotImplementedError("eval() in #{@contructor.name}")
 # end js/Interfaces/Evaluable.coffee
 
 # from js/Numbers/AbstractNumber.coffee
@@ -2477,7 +2471,7 @@ class mathJS.Expression
         if not @operation?
             return @expressions.first.eval(values)
 
-        # no leaf => 'eval' substrees
+        # no leaf => eval substrees
         args = []
         for expression in @expressions
             # evaluated expression is a variable => stop because this and the "above" expression cant be evaluated further
@@ -2539,10 +2533,10 @@ class mathJS.Expression
             e2 = new CLASS(new mathJS.Variable("x", mathJS.Number))
             e4 = new CLASS("+", e1, e2)
             console.log e4.getVariables()
-            # console.log e4.'eval'({x: new mathJS.Number(5)})
-            # console.log e4.'eval'()
-            # e5 = e4.'eval'()
-            # console.log e5.'eval'({x: new mathJS.Number(5)})
+            # console.log e4.eval({x: new mathJS.Number(5)})
+            # console.log e4.eval()
+            # e5 = e4.eval()
+            # console.log e5.eval({x: new mathJS.Number(5)})
 
             str = "(5x - 3)  ^ 2 * 2 / (4y + 3!)"
 
@@ -2794,8 +2788,8 @@ class mathJS.Set extends _mathJS.AbstractSet
 
         # discrete and conditional set given (from internal calls like union())
         else if parameters.first instanceof _mathJS.DiscreteSet and parameters.second instanceof _mathJS.ConditionalSet
-            @discreteSet = parameters.first#.clone()
-            @conditionalSet = parameters.second#.clone()
+            @discreteSet = parameters.first
+            @conditionalSet = parameters.second
         # set-builder notation
         else if parameters.first instanceof mathJS.Expression and parameters.second instanceof mathJS.Expression
             console.log "set builder"
@@ -3108,7 +3102,7 @@ class _mathJS.ConditionalSet extends mathJS.Set
 
             console.log p3.getSet()
 
-            console.log 2
+            console.log AAA
 
             # set = new _mathJS.ConditionalSet(e3, p3)
 
@@ -3289,13 +3283,13 @@ class mathJS.Generator
         return false
 
     eval: (n) ->
-        # 'eval' each tuple element individually (the tuple knows how to do that)
+        # eval each tuple element individually (the tuple knows how to do that)
         if @tuple?
             return @tuple.eval(n)
-        # 'eval' expression
+        # eval expression
         if @f.eval?
             @f.eval(n)
-        # 'eval' js function
+        # eval js function
         return @f.call(@, n)
 
     hasNext: () ->
@@ -4373,9 +4367,9 @@ class mathJS.Initializer
 mathJS.Initializer.start()
 
 if DEBUG
-    console.log "time to load mathJS: ", Date.now() - startTime, "ms"
-
-# $(document).ready () ->
-#     console.log "dom ready"
+    diff = Date.now() - startTime
+    console.log "time to load mathJS: ", diff, "ms"
+    if diff > 100
+        console.warn "LOADING TIME CRITICAL!"
 # end js/start.coffee
 

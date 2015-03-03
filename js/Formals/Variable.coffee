@@ -37,7 +37,7 @@ class mathJS.Variable extends mathJS.Expression
     divide: (n) ->
         return new mathJS.Expression("/", @, n)
 
-    'eval': (values) ->
+    eval: (values) ->
         if values? and (val = values[@name])?
             if @elementOf.contains val
                 return val

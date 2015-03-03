@@ -1,0 +1,244 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <title>math.js | an extensive math library for JavaScript and Node.js</title>
+
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="title" content="math.js">
+
+  <meta name="keywords" content="mathjs, math.js, math, js, javascript, node, library, expression, parser, numeric, number, bignumber, complex, matrix, unit, function, variable, string, value, node.js, mathematics, extensive, advanced">
+  <meta name="description" content="Math.js is an extensive math library for JavaScript and Node.js. It features big numbers, complex numbers, matrices, units, and a flexible expression parser.">
+
+  <meta name="author" content="Jos de Jong">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <link href="../../css/style.css" rel="stylesheet" type="text/css">
+  <link href="../../css/commandline.css" rel="stylesheet" type="text/css">
+  <link href="../../css/code.css" rel="stylesheet" type="text/css">
+
+  <script src="../../js/lib/es5-shim.min.js" type="text/javascript"></script>
+  <script src="../../js/lib/es5-sham.min.js" type="text/javascript"></script>
+  <script src="../../js/lib/math.js" type="text/javascript"></script>
+  <script src="../../js/commandline.js" type="text/javascript"></script>
+</head>
+
+<!-- itemscope, itemtype, and  itemprop for google+ meta information -->
+<body itemscope itemtype="http://schema.org/Product">
+<div id="page">
+  <div>
+    <a href="../../index.html">
+      <img src="../../css/img/mathjs_330x100.png" id="logo" alt="math.js" itemprop="image" >
+    </a>
+  </div>
+
+  <div id="search">
+    <script>
+      (function() {
+        var cx = '017327835323070913148:__zkzh4scga';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//www.google.com/cse/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <div id="menu">
+    <a href="../../index.html">
+      Home
+      
+    </a><a href="../../download.html">
+    Download
+    
+    </a><a href="../../docs/getting_started.html">
+      Get started
+      
+    </a><a href="../../docs/index.html">
+        Docs
+        
+    </a><a href="../index.html">
+        Examples
+        
+        <div class="selection"></div>
+        
+    </a>
+  </div>
+
+  <div id="content">
+    <h1>Angle configuration</h1>
+
+<p>File: <a href="angle_configuration.html">angle_configuration.html</a></p>
+<div class="highlight"><pre><code class="language-html" data-lang="html"><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="nt">&lt;html&gt;</span>
+<span class="nt">&lt;head&gt;</span>
+  <span class="nt">&lt;title&gt;</span>math.js | angle configuration<span class="nt">&lt;/title&gt;</span>
+  <span class="nt">&lt;style&gt;</span>
+    <span class="nt">body</span><span class="o">,</span> <span class="nt">input</span><span class="o">,</span> <span class="nt">select</span> <span class="p">{</span>
+      <span class="k">font</span><span class="o">:</span> <span class="m">11pt</span> <span class="k">sans-serif</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="nt">input</span><span class="o">,</span> <span class="nt">select</span><span class="o">,</span> <span class="nt">th</span><span class="o">,</span> <span class="nf">#result</span> <span class="p">{</span>
+      <span class="k">padding</span><span class="o">:</span> <span class="m">5px</span> <span class="m">10px</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="nt">th</span> <span class="p">{</span>
+      <span class="k">text-align</span><span class="o">:</span> <span class="k">left</span><span class="p">;</span>
+    <span class="p">}</span>
+  <span class="nt">&lt;/style&gt;</span>
+
+  <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;http://cdnjs.cloudflare.com/ajax/libs/mathjs/1.4.0/math.min.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+<span class="nt">&lt;/head&gt;</span>
+<span class="nt">&lt;body&gt;</span>
+
+<span class="nt">&lt;p&gt;</span>
+  This code example extends the trigonometric functions of math.js with configurable angles: degrees, radians, or gradians.
+<span class="nt">&lt;/p&gt;</span>
+
+<span class="nt">&lt;table&gt;</span>
+  <span class="nt">&lt;tr&gt;</span>
+    <span class="nt">&lt;th&gt;</span>Angles<span class="nt">&lt;/th&gt;</span>
+    <span class="nt">&lt;td&gt;</span>
+      <span class="nt">&lt;select</span> <span class="na">id=</span><span class="s">&quot;angles&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;option</span> <span class="na">value=</span><span class="s">&quot;deg&quot;</span><span class="nt">&gt;</span>deg<span class="nt">&lt;/option&gt;</span>
+        <span class="nt">&lt;option</span> <span class="na">value=</span><span class="s">&quot;grad&quot;</span><span class="nt">&gt;</span>grad<span class="nt">&lt;/option&gt;</span>
+        <span class="nt">&lt;option</span> <span class="na">value=</span><span class="s">&quot;rad&quot;</span><span class="nt">&gt;</span>rad<span class="nt">&lt;/option&gt;</span>
+      <span class="nt">&lt;/select&gt;</span>
+    <span class="nt">&lt;/td&gt;</span>
+  <span class="nt">&lt;/tr&gt;</span>
+  <span class="nt">&lt;tr&gt;</span>
+    <span class="nt">&lt;th&gt;</span>Expression<span class="nt">&lt;/th&gt;</span>
+    <span class="nt">&lt;td&gt;</span>
+      <span class="nt">&lt;input</span> <span class="na">id=</span><span class="s">&quot;expression&quot;</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">value=</span><span class="s">&quot;sin(45)&quot;</span> <span class="nt">/&gt;</span>
+      <span class="nt">&lt;input</span> <span class="na">id=</span><span class="s">&quot;evaluate&quot;</span> <span class="na">type=</span><span class="s">&quot;button&quot;</span> <span class="na">value=</span><span class="s">&quot;Evaluate&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;/td&gt;</span>
+  <span class="nt">&lt;/tr&gt;</span>
+  <span class="nt">&lt;tr&gt;</span>
+    <span class="nt">&lt;th&gt;</span>Result<span class="nt">&lt;/th&gt;</span>
+    <span class="nt">&lt;td</span> <span class="na">id=</span><span class="s">&quot;result&quot;</span><span class="nt">&gt;&lt;/td&gt;</span>
+  <span class="nt">&lt;/tr&gt;</span>
+<span class="nt">&lt;/table&gt;</span>
+
+<span class="nt">&lt;script&gt;</span>
+  <span class="kd">var</span> <span class="nx">replacements</span> <span class="o">=</span> <span class="p">{};</span>
+
+  <span class="c1">// our extended configuration options</span>
+  <span class="kd">var</span> <span class="nx">config</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nx">angles</span><span class="o">:</span> <span class="s1">&#39;deg&#39;</span> <span class="c1">// &#39;rad&#39;, &#39;deg&#39;, &#39;grad&#39;</span>
+  <span class="p">};</span>
+
+  <span class="c1">// create trigonometric functions replacing the input depending on angle config</span>
+  <span class="p">[</span><span class="s1">&#39;sin&#39;</span><span class="p">,</span> <span class="s1">&#39;cos&#39;</span><span class="p">,</span> <span class="s1">&#39;tan&#39;</span><span class="p">,</span> <span class="s1">&#39;sec&#39;</span><span class="p">,</span> <span class="s1">&#39;cot&#39;</span><span class="p">,</span> <span class="s1">&#39;csc&#39;</span><span class="p">].</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">fn</span> <span class="o">=</span> <span class="nx">math</span><span class="p">[</span><span class="nx">name</span><span class="p">];</span> <span class="c1">// the original function</span>
+
+    <span class="nx">replacements</span><span class="p">[</span><span class="nx">name</span><span class="p">]</span> <span class="o">=</span> <span class="kd">function</span> <span class="nx">replacement</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">x</span> <span class="k">instanceof</span> <span class="nx">math</span><span class="p">.</span><span class="nx">type</span><span class="p">.</span><span class="nx">BigNumber</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">x</span> <span class="o">=</span> <span class="nx">x</span><span class="p">.</span><span class="nx">toNumber</span><span class="p">();</span> <span class="c1">// convert to number</span>
+      <span class="p">}</span>
+
+      <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">x</span> <span class="o">===</span> <span class="s1">&#39;boolean&#39;</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">x</span> <span class="o">=</span> <span class="o">+</span><span class="nx">x</span><span class="p">;</span> <span class="c1">// convert to number</span>
+      <span class="p">}</span>
+
+      <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">x</span> <span class="o">===</span> <span class="s1">&#39;number&#39;</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// convert from configured type of angles to radians</span>
+        <span class="k">switch</span><span class="p">(</span><span class="nx">config</span><span class="p">.</span><span class="nx">angles</span><span class="p">)</span> <span class="p">{</span>
+          <span class="k">case</span> <span class="s1">&#39;deg&#39;</span><span class="o">:</span>  <span class="k">return</span> <span class="nx">fn</span><span class="p">(</span><span class="nx">x</span> <span class="o">/</span> <span class="mi">360</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">PI</span><span class="p">);</span>
+          <span class="k">case</span> <span class="s1">&#39;grad&#39;</span><span class="o">:</span> <span class="k">return</span> <span class="nx">fn</span><span class="p">(</span><span class="nx">x</span> <span class="o">/</span> <span class="mi">400</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">PI</span><span class="p">);</span>
+          <span class="k">default</span><span class="o">:</span> <span class="k">return</span> <span class="nx">fn</span><span class="p">(</span><span class="nx">x</span><span class="p">);</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+
+      <span class="k">if</span> <span class="p">(</span><span class="nx">math</span><span class="p">.</span><span class="nx">collection</span><span class="p">.</span><span class="nx">isCollection</span><span class="p">(</span><span class="nx">x</span><span class="p">))</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">math</span><span class="p">.</span><span class="nx">collection</span><span class="p">.</span><span class="nx">deepMap</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span> <span class="nx">replacement</span><span class="p">);</span>
+      <span class="p">}</span>
+
+      <span class="k">return</span> <span class="nx">fn</span><span class="p">(</span><span class="nx">x</span><span class="p">);</span>
+    <span class="p">};</span>
+  <span class="p">});</span>
+
+  <span class="c1">// create trigonometric functions replacing the output depending on angle config</span>
+  <span class="p">[</span><span class="s1">&#39;asin&#39;</span><span class="p">,</span> <span class="s1">&#39;acos&#39;</span><span class="p">,</span> <span class="s1">&#39;atan&#39;</span><span class="p">,</span> <span class="s1">&#39;atan2&#39;</span><span class="p">].</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">fn</span> <span class="o">=</span> <span class="nx">math</span><span class="p">[</span><span class="nx">name</span><span class="p">];</span> <span class="c1">// the original function</span>
+
+    <span class="nx">replacements</span><span class="p">[</span><span class="nx">name</span><span class="p">]</span> <span class="o">=</span> <span class="kd">function</span> <span class="nx">replacement</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span>
+      <span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">fn</span><span class="p">(</span><span class="nx">x</span><span class="p">);</span>
+
+      <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">result</span> <span class="o">===</span> <span class="s1">&#39;number&#39;</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// convert to radians to configured type of angles</span>
+        <span class="k">switch</span><span class="p">(</span><span class="nx">config</span><span class="p">.</span><span class="nx">angles</span><span class="p">)</span> <span class="p">{</span>
+          <span class="k">case</span> <span class="s1">&#39;deg&#39;</span><span class="o">:</span>  <span class="k">return</span> <span class="nx">result</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">/</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">PI</span> <span class="o">*</span> <span class="mi">360</span><span class="p">;</span>
+          <span class="k">case</span> <span class="s1">&#39;grad&#39;</span><span class="o">:</span> <span class="k">return</span> <span class="nx">result</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">/</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">PI</span> <span class="o">*</span> <span class="mi">400</span><span class="p">;</span>
+          <span class="k">default</span><span class="o">:</span> <span class="k">return</span> <span class="nx">result</span><span class="p">;</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+
+      <span class="k">if</span> <span class="p">(</span><span class="nx">math</span><span class="p">.</span><span class="nx">collection</span><span class="p">.</span><span class="nx">isCollection</span><span class="p">(</span><span class="nx">x</span><span class="p">))</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">math</span><span class="p">.</span><span class="nx">collection</span><span class="p">.</span><span class="nx">deepMap</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span> <span class="nx">replacement</span><span class="p">);</span>
+      <span class="p">}</span>
+
+      <span class="k">return</span> <span class="nx">result</span><span class="p">;</span>
+    <span class="p">};</span>
+  <span class="p">});</span>
+
+  <span class="c1">// import all replacements into math.js, override existing trigonometric functions</span>
+  <span class="nx">math</span><span class="p">.</span><span class="kr">import</span><span class="p">(</span><span class="nx">replacements</span><span class="p">,</span> <span class="p">{</span><span class="nx">override</span><span class="o">:</span> <span class="kc">true</span><span class="p">});</span>
+
+  <span class="c1">// pointers to the input elements</span>
+  <span class="kd">var</span> <span class="nx">expression</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;expression&#39;</span><span class="p">);</span>
+  <span class="kd">var</span> <span class="nx">evaluate</span>   <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;evaluate&#39;</span><span class="p">);</span>
+  <span class="kd">var</span> <span class="nx">result</span>     <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;result&#39;</span><span class="p">);</span>
+  <span class="kd">var</span> <span class="nx">angles</span>     <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;angles&#39;</span><span class="p">);</span>
+
+  <span class="c1">// attach event handlers for select box and button</span>
+  <span class="nx">angles</span><span class="p">.</span><span class="nx">onchange</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="nx">config</span><span class="p">.</span><span class="nx">angles</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">value</span><span class="p">;</span>
+  <span class="p">};</span>
+  <span class="nx">evaluate</span><span class="p">.</span><span class="nx">onclick</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="nx">result</span><span class="p">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="nx">math</span><span class="p">.</span><span class="nb">eval</span><span class="p">(</span><span class="nx">expression</span><span class="p">.</span><span class="nx">value</span><span class="p">);</span>
+  <span class="p">};</span>
+<span class="nt">&lt;/script&gt;</span>
+
+
+<span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span>
+</code></pre></div>
+<!-- Note: This file is automatically generated. Changes made in this file will be overridden. -->
+
+  </div>
+
+</div>
+
+<div id="footer">
+  <a href="../../index.html">mathjs.org</a> &bull;
+  <a href="https://github.com/josdejong/mathjs#license" target="_blank">copyright &copy; 2013-2015 jos de jong</a> &bull;
+  <a href="http://subtlepatterns.com/bright-squares/" target="_blank">background by waseem dahman</a>
+</div>
+
+<div id="forkme">
+  <a href="https://github.com/josdejong/mathjs" target="_blank">
+    <img src="../../css/img/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" >
+  </a>
+</div>
+
+<script type="text/javascript">
+  // change layout for different screen sizes
+  function resize () {
+    var width = document.body.clientWidth;
+
+    var page = document.getElementById('page');
+    page.className = (width < 810) ? 'small' : 'normal';
+    if (width < 620) {
+      page.className += ' tiny';
+    }
+
+    var forkme = document.getElementById('forkme');
+    forkme.className = (width < 810) ? 'small' : 'normal';
+  }
+  resize();
+  window.onresize = resize;
+</script>
+
+</body>
+</html>

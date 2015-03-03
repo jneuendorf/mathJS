@@ -1,7 +1,7 @@
 mathJS.Initializer.start()
 
 if DEBUG
-    console.log "time to load mathJS: ", Date.now() - startTime, "ms"
-
-# $(document).ready () ->
-#     console.log "dom ready"
+    diff = Date.now() - startTime
+    console.log "time to load mathJS: ", diff, "ms"
+    if diff > 100
+        console.warn "LOADING TIME CRITICAL!"

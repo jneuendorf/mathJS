@@ -66,8 +66,8 @@ class mathJS.Set extends _mathJS.AbstractSet
 
         # discrete and conditional set given (from internal calls like union())
         else if parameters.first instanceof _mathJS.DiscreteSet and parameters.second instanceof _mathJS.ConditionalSet
-            @discreteSet = parameters.first#.clone()
-            @conditionalSet = parameters.second#.clone()
+            @discreteSet = parameters.first
+            @conditionalSet = parameters.second
         # set-builder notation
         else if parameters.first instanceof mathJS.Expression and parameters.second instanceof mathJS.Expression
             console.log "set builder"

@@ -1,4 +1,4 @@
 class _mathJS.Evaluable extends _mathJS.Interface
 
-    'eval': () ->
+    eval: () ->
         throw new mathJS.Errors.NotImplementedError("eval() in #{@contructor.name}")

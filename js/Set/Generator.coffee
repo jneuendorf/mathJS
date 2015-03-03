@@ -34,18 +34,18 @@ class mathJS.Generator
         if @f.range.contains(y)
             #
             if @inverseF?
-                return @inverseF.'eval'(y)
+                return @inverseF.eval(y)
             return
         return false
 
-    'eval': (n) ->
-        # 'eval' each tuple element individually (the tuple knows how to do that)
+    eval: (n) ->
+        # eval each tuple element individually (the tuple knows how to do that)
         if @tuple?
-            return @tuple.'eval'(n)
-        # 'eval' expression
-        if @f.'eval'?
-            @f.'eval'(n)
-        # 'eval' js function
+            return @tuple.eval(n)
+        # eval expression
+        if @f.eval?
+            @f.eval(n)
+        # eval js function
         return @f.call(@, n)
 
     hasNext: () ->
@@ -68,7 +68,7 @@ class mathJS.Generator
 
     next: () ->
         if @tuple?
-            res = @'eval'(g.x for g in @tuple.elems)
+            res = @eval(g.x for g in @tuple.elems)
 
             ###
             0 0
@@ -93,7 +93,7 @@ class mathJS.Generator
             return res
 
         # no tuple => simple generator
-        res = @'eval'(@x)
+        res = @eval(@x)
         @_incX()
         return res
 

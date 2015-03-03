@@ -1,0 +1,861 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <title>math.js | an extensive math library for JavaScript and Node.js</title>
+
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="title" content="math.js">
+
+  <meta name="keywords" content="mathjs, math.js, math, js, javascript, node, library, expression, parser, numeric, number, bignumber, complex, matrix, unit, function, variable, string, value, node.js, mathematics, extensive, advanced">
+  <meta name="description" content="Math.js is an extensive math library for JavaScript and Node.js. It features big numbers, complex numbers, matrices, units, and a flexible expression parser.">
+
+  <meta name="author" content="Jos de Jong">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <link href="css/style.css" rel="stylesheet" type="text/css">
+  <link href="css/commandline.css" rel="stylesheet" type="text/css">
+  <link href="css/code.css" rel="stylesheet" type="text/css">
+
+  <script src="js/lib/es5-shim.min.js" type="text/javascript"></script>
+  <script src="js/lib/es5-sham.min.js" type="text/javascript"></script>
+  <script src="js/lib/math.js" type="text/javascript"></script>
+  <script src="js/commandline.js" type="text/javascript"></script>
+</head>
+
+<!-- itemscope, itemtype, and  itemprop for google+ meta information -->
+<body itemscope itemtype="http://schema.org/Product">
+<div id="page">
+  <div>
+    <a href="index.html">
+      <img src="css/img/mathjs_330x100.png" id="logo" alt="math.js" itemprop="image" >
+    </a>
+  </div>
+
+  <div id="search">
+    <script>
+      (function() {
+        var cx = '017327835323070913148:__zkzh4scga';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//www.google.com/cse/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <div id="menu">
+    <a href="index.html">
+      Home
+      
+    </a><a href="download.html">
+    Download
+    
+    </a><a href="docs/getting_started.html">
+      Get started
+      
+    </a><a href="docs/index.html">
+        Docs
+        
+    </a><a href="examples/index.html">
+        Examples
+        
+    </a>
+  </div>
+
+  <div id="content">
+    <h1 id="history">History <a href="history.html#history" title="Permalink">#</a></h1>
+
+<h2 id="20150228-version-140">2015-02-28, version 1.4.0 <a href="history.html#20150228-version-140" title="Permalink">#</a></h2>
+
+<ul>
+<li>Implemented trigonometric functions:
+<code>acosh</code>, <code>acoth</code>, <code>acsch</code>, <code>asech</code>, <code>asinh</code>, <code>atanh</code>, <code>acot</code>, <code>acsc</code>, <code>asec</code>.
+Thanks @BigFav.</li>
+<li>Added BigNumber support for functions: <code>cot</code>, <code>csc</code>, <code>sec</code>, <code>coth</code>,
+<code>csch</code>, <code>sech</code>. Thanks @BigFav.</li>
+<li>Implemented support for serialization and deserialization of math.js data
+types.</li>
+<li>Fixed the calculation of <code>norm()</code> and <code>abs()</code> for large complex numbers.
+Thanks @rjbaucells.</li>
+<li>Fixed #281: improved formatting complex numbers. Round the real or imaginary
+part to zero when the difference is larger than the configured precision.</li>
+</ul>
+
+<h2 id="20150209-version-130">2015-02-09, version 1.3.0 <a href="history.html#20150209-version-130" title="Permalink">#</a></h2>
+
+<ul>
+<li>Implemented BigNumber implementations of most trigonometric functions: <code>sin</code>,
+<code>cos</code>, <code>tan</code>, <code>asin</code>, <code>acos</code>, <code>atan</code>, <code>cosh</code>, <code>sinh</code>, <code>tanh</code>. Thanks @BigFav.</li>
+<li>Implemented function <code>trace</code>. Thanks @pcorey.</li>
+<li>Faster loading of BigNumber configuration with a high precision by lazy
+loading constants like <code>pi</code> and <code>e</code>.</li>
+<li>Fixed constants <code>NaN</code> and <code>Infinity</code> not being BigNumber objects when
+BigNumbers are configured.</li>
+<li>Fixed missing parentheses in the <code>toTex</code> representation of function
+<code>permutations</code>.</li>
+<li>Some minor fixes in the docs. Thanks @KenanY.</li>
+</ul>
+
+<h2 id="20141225-version-120">2014-12-25, version 1.2.0 <a href="history.html#20141225-version-120" title="Permalink">#</a></h2>
+
+<ul>
+<li>Support for bitwise operations <code>bitAnd</code>, <code>bitNot</code>, <code>bitOr</code>, <code>bitXor</code>,
+<code>leftShift</code>, <code>rightArithShift</code>, and <code>rightLogShift</code>. Thanks @BigFav.</li>
+<li>Support for boolean operations <code>and</code>, <code>not</code>, <code>or</code>, <code>xor</code>. Thanks @BigFav.</li>
+<li>Support for <code>gamma</code> function. Thanks @BigFav.</li>
+<li>Converting a unit without value will now result in a unit <em>with</em> value,
+i.e. <code>inch in cm</code> will return <code>2.54 cm</code> instead of <code>cm</code>.</li>
+<li>Improved accuracy of <code>sinh</code> and complex <code>cos</code> and <code>sin</code>. Thanks @pavpanchekha.</li>
+<li>Renamed function <code>select</code> to <code>chain</code>. The old function <code>select</code> will remain
+functional until math.js v2.0.</li>
+<li>Upgraded to decimal.js v4.0.1 (BigNumber library).</li>
+</ul>
+
+<h2 id="20141122-version-111">2014-11-22, version 1.1.1 <a href="history.html#20141122-version-111" title="Permalink">#</a></h2>
+
+<ul>
+<li>Fixed Unit divided by Number returning zero.</li>
+<li>Fixed BigNumber downgrading to Number for a negative base in <code>pow</code>.</li>
+<li>Fixed some typos in error messaging (thanks @andy0130tw) and docs.</li>
+</ul>
+
+<h2 id="20141115-version-110">2014-11-15, version 1.1.0 <a href="history.html#20141115-version-110" title="Permalink">#</a></h2>
+
+<ul>
+<li>Implemented functions <code>dot</code> (dot product), <code>cross</code> (cross product), and
+<code>nthRoot</code>.</li>
+<li>Officially opened up the API of expression trees:
+
+<ul>
+<li>Documented the API.</li>
+<li>Implemented recursive functions <code>clone</code>, <code>map</code>, <code>forEach</code>, <code>traverse</code>,
+<code>transform</code>, and <code>filter</code> for expression trees.</li>
+<li>Parameter <code>index</code> in the callbacks of <code>map</code> and <code>forEach</code> are now cloned
+for every callback.</li>
+<li>Some internal refactoring inside nodes to make the API consistent:</li>
+<li>Renamed <code>params</code> to <code>args</code> and vice versa to make things consistent.</li>
+<li>Renamed <code>Block.nodes</code> to <code>Block.blocks</code>.</li>
+<li><code>FunctionNode</code> now has a <code>name: string</code> instead of a <code>symbol: SymbolNode</code>.</li>
+<li>Changed constructor of <code>RangeNode</code> to
+<code>new RangeNode(start: Node, end: Node [, step: Node])</code>.</li>
+<li>Nodes for a <code>BlockNode</code> must now be passed via the constructor instead
+of via a function <code>add</code>.</li>
+</ul></li>
+<li>Fixed <code>2e</code> giving a syntax error instead of being parsed as <code>2 * e</code>.</li>
+</ul>
+
+<h2 id="20140912-version-101">2014-09-12, version 1.0.1 <a href="history.html#20140912-version-101" title="Permalink">#</a></h2>
+
+<ul>
+<li>Disabled array notation for ranges in a matrix index in the expression parser 
+(it is confusing and redundant there).</li>
+<li>Fixed a regression in the build of function subset not being able to return
+a scalar.</li>
+<li>Fixed some missing docs and broken links in the docs.</li>
+</ul>
+
+<h2 id="20140904-version-100">2014-09-04, version 1.0.0 <a href="history.html#20140904-version-100" title="Permalink">#</a></h2>
+
+<ul>
+<li>Implemented a function <code>filter(x, test)</code>.</li>
+<li>Removed <code>math.distribution</code> for now, needs some rethinking.</li>
+<li><code>math.number</code> can convert units to numbers (requires a second argument)</li>
+<li>Fixed some precedence issues with the range and conversion operators.</li>
+<li>Fixed an zero-based issue when getting a matrix subset using an index 
+containing a matrix.</li>
+</ul>
+
+<h2 id="20140821-version-0270">2014-08-21, version 0.27.0 <a href="history.html#20140821-version-0270" title="Permalink">#</a></h2>
+
+<ul>
+<li>Implemented functions <code>sort(x [, compare])</code> and <code>flatten(x)</code>.</li>
+<li>Implemented support for <code>null</code> in all functions.</li>
+<li>Implemented support for &quot;rawArgs&quot; functions in the expression parser. Raw 
+functions are invoked with unevaluated parameters (nodes).</li>
+<li>Expressions in the expression parser can now be spread over multiple lines,
+like &#39;2 +\n3&#39;.</li>
+<li>Changed default value of the option <code>wrap</code> of function <code>math.import</code> to false.</li>
+<li>Changed the default value for new entries in a resized matrix when to zero. 
+To leave new entries uninitialized, use the new constant <code>math.uninitialized</code> 
+as default value.</li>
+<li>Renamed transform property from <code>__transform__</code> to <code>transform</code>, and documented
+the transform feature.</li>
+<li>Fixed a bug in <code>math.import</code> not applying options when passing a module name.</li>
+<li>A returned matrix subset is now only squeezed when the <code>index</code> consists of
+scalar values, and no longer for ranges resolving into a single value. </li>
+</ul>
+
+<h2 id="20140803-version-0260">2014-08-03, version 0.26.0 <a href="history.html#20140803-version-0260" title="Permalink">#</a></h2>
+
+<ul>
+<li>A new instance of math.js can no longer be created like <code>math([options])</code>,
+to prevent side effects from math being a function instead of an object.
+Instead, use the function <code>math.create([options])</code> to create a new instance.</li>
+<li>Implemented <code>BigNumber</code> support for all constants: <code>pi</code>, <code>tau</code>, <code>e</code>, <code>phi</code>,
+<code>E</code>, <code>LN2</code>, <code>LN10</code>, <code>LOG2E</code>, <code>LOG10E</code>, <code>PI</code>, <code>SQRT1_2</code>, and <code>SQRT2</code>.</li>
+<li>Implemented <code>BigNumber</code> support for functions <code>gcd</code>, <code>xgcd</code>, and <code>lcm</code>.</li>
+<li>Fixed function <code>gxcd</code> returning an Array when math.js was configured 
+as <code>{matrix: &#39;matrix&#39;}</code>.</li>
+<li>Multi-line expressions now return a <code>ResultSet</code> instead of an <code>Array</code>.</li>
+<li>Implemented transforms (used right now to transform one-based indices to 
+zero-based for expressions).</li>
+<li>When used inside the expression parser, functions <code>concat</code>, <code>min</code>, <code>max</code>,
+and <code>mean</code> expect an one-based dimension number.</li>
+<li>Functions <code>map</code> and <code>forEach</code> invoke the callback with one-based indices
+when used from within the expression parser.</li>
+<li>When adding or removing dimensions when resizing a matrix, the dimensions
+are added/removed from the inner side (right) instead of outer side (left).</li>
+<li>Improved index out of range errors.</li>
+<li>Fixed function <code>concat</code> not accepting a <code>BigNumber</code> for parameter <code>dim</code>.</li>
+<li>Function <code>squeeze</code> now squeezes both inner and outer singleton dimensions.</li>
+<li>Output of getting a matrix subset is not automatically squeezed anymore
+except for scalar output.</li>
+<li>Renamed <code>FunctionNode</code> to <code>FunctionAssignmentNode</code>, and renamed <code>ParamsNode</code>
+to <code>FunctionNode</code> for more clarity.</li>
+<li>Fixed broken auto completion in CLI.</li>
+<li>Some minor fixes.</li>
+</ul>
+
+<h2 id="20140701-version-0250">2014-07-01, version 0.25.0 <a href="history.html#20140701-version-0250" title="Permalink">#</a></h2>
+
+<ul>
+<li><p>The library now immediately returns a default instance of mathjs, there is
+no need to instantiate math.js in a separate step unless one ones to set 
+configuration options: </p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">// instead of:
+var mathjs = require(&#39;mathjs&#39;),  // load math.js
+    math = mathjs();             // create an instance
+
+// just do:
+var math = require(&#39;mathjs&#39;);
+</code></pre></div></li>
+<li><p>Implemented support for implicit multiplication, like <code>math.eval(&#39;2a&#39;, {a:3})</code>
+and <code>math.eval(&#39;(2+3)(1-3)&#39;)</code>. This changes behavior of matrix indexes as 
+well: an expression like <code>[...][...]</code> is not evaluated as taking a subset of 
+the first matrix, but as an implicit multiplication of two matrices.</p></li>
+<li><p>Removed utility function <code>ifElse</code>. This function is redundant now the 
+expression parser has a conditional operator <code>a ? b : c</code>.</p></li>
+<li><p>Fixed a bug with multiplying a number with a temperature,<br>
+like <code>math.eval(&#39;10 * celsius&#39;)</code>.</p></li>
+<li><p>Fixed a bug with symbols having value <code>undefined</code> not being evaluated.</p></li>
+</ul>
+
+<h2 id="20140620-version-0241">2014-06-20, version 0.24.1 <a href="history.html#20140620-version-0241" title="Permalink">#</a></h2>
+
+<ul>
+<li>Something went wrong with publishing on npm.</li>
+</ul>
+
+<h2 id="20140620-version-0240">2014-06-20, version 0.24.0 <a href="history.html#20140620-version-0240" title="Permalink">#</a></h2>
+
+<ul>
+<li>Added constant <code>null</code>.</li>
+<li>Functions <code>equal</code> and <code>unequal</code> support <code>null</code> and <code>undefined</code> now.</li>
+<li>Function <code>typeof</code> now recognizes regular expressions as well.</li>
+<li>Objects <code>Complex</code>, <code>Unit</code>, and <code>Help</code> now return their string representation
+when calling <code>.valueOf()</code>.</li>
+<li>Changed the default number of significant digits for BigNumbers from 20 to 64.</li>
+<li>Changed the behavior of the conditional operator (a ? b : c) to lazy 
+evaluating.</li>
+<li>Fixed imported, wrapped functions not accepting <code>null</code> and <code>undefined</code> as
+function arguments.</li>
+</ul>
+
+<h2 id="20140610-version-0230">2014-06-10, version 0.23.0 <a href="history.html#20140610-version-0230" title="Permalink">#</a></h2>
+
+<ul>
+<li>Renamed some functions (everything now has a logical, camel case name):
+
+<ul>
+<li>Renamed functions <code>edivide</code>, <code>emultiply</code>, and <code>epow</code> to <code>dotDivide</code>, 
+<code>dotMultiply</code>, and <code>dotPow</code> respectively. </li>
+<li>Renamed functions <code>smallereq</code> and <code>largereq</code> to <code>smallerEq</code> and <code>largerEq</code>.</li>
+<li>Renamed function <code>unary</code> to <code>unaryMinus</code> and added support for strings.</li>
+</ul></li>
+<li><code>end</code> is now a reserved keyword which cannot be used as function or symbol
+name in the expression parser, and is not allowed in the scope against which
+an expression is evaluated.</li>
+<li>Implemented function <code>unaryPlus</code> and unary plus operator.</li>
+<li>Implemented function <code>deepEqual</code> for matrix comparisons. </li>
+<li>Added constant <code>phi</code>, the golden ratio (<code>phi = 1.618...</code>).</li>
+<li>Added constant <code>version</code>, returning the version number of math.js as string.</li>
+<li>Added unit <code>drop</code> (<code>gtt</code>).</li>
+<li>Fixed not being able to load math.js using AMD/require.js.</li>
+<li>Changed signature of <code>math.parse(expr, nodes)</code> to <code>math.parse(expr, options)</code>
+where <code>options: {nodes: Object.&lt;String, Node&gt;}</code></li>
+<li>Removed matrix support from conditional function <code>ifElse</code>.</li>
+<li><p>Removed automatic assignment of expression results to variable <code>ans</code>. 
+This functionality can be restored by pre- or postprocessing every evaluation, 
+something like:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">function evalWithAns (expr, scope) {
+  var ans = math.eval(expr, scope);
+  if (scope) {
+    scope.ans = ans;
+  }
+  return ans;
+}
+</code></pre></div></li>
+</ul>
+
+<h2 id="20140522-version-0220">2014-05-22, version 0.22.0 <a href="history.html#20140522-version-0220" title="Permalink">#</a></h2>
+
+<ul>
+<li>Implemented support to export expressions to LaTeX. Thanks Niels Heisterkamp
+(@nheisterkamp).</li>
+<li>Output of matrix multiplication is now consistently squeezed.</li>
+<li>Added reference documentation in the section /docs/reference.</li>
+<li>Fixed a bug in multiplying units without value with a number (like <code>5 * cm</code>).</li>
+<li>Fixed a bug in multiplying two matrices containing vectors (worked fine for 
+arrays).</li>
+<li>Fixed random functions not accepting Matrix as input, and always returning
+a Matrix as output.</li>
+</ul>
+
+<h2 id="20140513-version-0211">2014-05-13, version 0.21.1 <a href="history.html#20140513-version-0211" title="Permalink">#</a></h2>
+
+<ul>
+<li>Removed <code>crypto</code> library from the bundle.</li>
+<li>Deprecated functions <code>Parser.parse</code> and <code>Parser.compile</code>. Use
+<code>math.parse</code> and <code>math.compile</code> instead.</li>
+<li>Fixed function <code>add</code> not adding strings and matrices element wise.</li>
+<li>Fixed parser not being able to evaluate an exponent followed by a unary minus
+like <code>2^-3</code>, and a transpose followed by an index like <code>[3]&#39;[1]</code>.</li>
+</ul>
+
+<h2 id="20140424-version-0210">2014-04-24, version 0.21.0 <a href="history.html#20140424-version-0210" title="Permalink">#</a></h2>
+
+<ul>
+<li>Implemented trigonometric hyperbolic functions <code>cosh</code>, <code>coth</code>, <code>csch</code>,
+<code>sech</code>, <code>sinh</code>, <code>tanh</code>. Thanks Rogelio J. Baucells (@rjbaucells).</li>
+<li>Added property <code>type</code> to all expression nodes in an expression tree.</li>
+<li>Fixed functions <code>log</code>, <code>log10</code>, <code>pow</code>, and <code>sqrt</code> not supporting complex
+results from BigNumber input (like <code>sqrt(bignumber(-4))</code>).</li>
+</ul>
+
+<h2 id="20140416-version-0200">2014-04-16, version 0.20.0 <a href="history.html#20140416-version-0200" title="Permalink">#</a></h2>
+
+<ul>
+<li>Switched to module <code>decimal.js</code> for BigNumber support, instead of
+<code>bignumber.js</code>.</li>
+<li>Implemented support for polar coordinates to the <code>Complex</code> datatype.
+Thanks Finn Pauls (@finnp).</li>
+<li>Implemented BigNumber support for functions <code>exp</code>, <code>log</code>, and <code>log10</code>.</li>
+<li>Implemented conditional operator <code>a ? b : c</code> in expression parser.</li>
+<li>Improved floating point comparison: the functions now check whether values
+are nearly equal, against a configured maximum relative difference <code>epsilon</code>.
+Thanks Rogelio J. Baucells (@rjbaucells).</li>
+<li>Implemented function <code>norm</code>. Thanks Rogelio J. Baucells (@rjbaucells).</li>
+<li>Improved function <code>ifElse</code>, is now specified for special data types too.</li>
+<li>Improved function <code>det</code>. Thanks Bryan Cuccioli (@bcuccioli).</li>
+<li>Implemented <code>BigNumber</code> support for functions <code>det</code> and <code>diag</code>.</li>
+<li>Added unit alias <code>lbs</code> (pound mass).</li>
+<li>Changed configuration option <code>decimals</code> to <code>precision</code> (applies to BigNumbers
+only).</li>
+<li>Fixed support for element-wise comparisons between a string and a matrix.</li>
+<li>Fixed: expression parser now trows IndexErrors with one-based indices instead
+of zero-based.</li>
+<li>Minor bug fixes.</li>
+</ul>
+
+<h2 id="20140330-version-0190">2014-03-30, version 0.19.0 <a href="history.html#20140330-version-0190" title="Permalink">#</a></h2>
+
+<ul>
+<li>Implemented functions <code>compare</code>, <code>sum</code>, <code>prod</code>, <code>var</code>, <code>std</code>, <code>median</code>.</li>
+<li>Implemented function <code>ifElse</code> Thanks @mtraynham.</li>
+<li>Minor bug fixes.</li>
+</ul>
+
+<h2 id="20140215-version-0181">2014-02-15, version 0.18.1 <a href="history.html#20140215-version-0181" title="Permalink">#</a></h2>
+
+<ul>
+<li>Added unit <code>feet</code>.</li>
+<li>Implemented function <code>compile</code> (shortcut for parsing and then compiling).</li>
+<li>Improved performance of function <code>pow</code> for matrices. Thanks @hamadu.</li>
+<li>Fixed broken auto completion in the command line interface.</li>
+<li>Fixed an error in function <code>combinations</code> for large numbers, and
+improved performance of both functions <code>combinations</code> and <code>permutations</code>.</li>
+</ul>
+
+<h2 id="20140118-version-0180">2014-01-18, version 0.18.0 <a href="history.html#20140118-version-0180" title="Permalink">#</a></h2>
+
+<ul>
+<li>Changed matrix index notation of expression parser from round brackets to
+square brackets, for example <code>A[1, 1:3]</code> instead of <code>A(1, 1:3)</code>.</li>
+<li>Removed need to use the <code>function</code> keyword for function assignments in the
+expression parser, you can define a function now like <code>f(x) = x^2</code>.</li>
+<li>Implemented a compilation step in the expression parser: expressions are
+compiled into JavaScript, giving much better performance (easily 10x as fast).</li>
+<li>Renamed unit conversion function and operator <code>in</code> to <code>to</code>. Operator <code>in</code> is
+still available in the expression parser as an alias for <code>to</code>. Added unit
+<code>in</code>, an abbreviation for <code>inch</code>. Thanks Elijah Insua (@tmpvar).</li>
+<li>Added plurals and aliases for units.</li>
+<li>Implemented an argument <code>includeEnd</code> for function <code>range</code> (false by default).</li>
+<li>Ranges in the expression parser now support big numbers.</li>
+<li>Implemented functions <code>permutations</code> and <code>combinations</code>.
+Thanks Daniel Levin (@daniel-levin).</li>
+<li>Added lower case abbreviation <code>l</code> for unit litre.</li>
+</ul>
+
+<h2 id="20131219-version-0171">2013-12-19, version 0.17.1 <a href="history.html#20131219-version-0171" title="Permalink">#</a></h2>
+
+<ul>
+<li>Fixed a bug with negative temperatures.</li>
+<li>Fixed a bug with prefixes of units squared meter <code>m2</code> and cubic meter <code>m3</code>.</li>
+</ul>
+
+<h2 id="20131212-version-0170">2013-12-12, version 0.17.0 <a href="history.html#20131212-version-0170" title="Permalink">#</a></h2>
+
+<ul>
+<li>Renamed and flattened configuration settings:
+
+<ul>
+<li><code>number.defaultType</code> is now <code>number</code>.</li>
+<li><code>number.precision</code> is now <code>decimals</code>.</li>
+<li><code>matrix.defaultType</code> is now <code>matrix</code>.</li>
+</ul></li>
+<li>Function <code>multiply</code> now consistently outputs a complex number on complex input.</li>
+<li>Fixed <code>mod</code> and <code>in</code> not working as function (only as operator).</li>
+<li>Fixed support for old browsers (IE8 and older), compatible when using es5-shim.</li>
+<li>Fixed support for Java&#39;s ScriptEngine.</li>
+</ul>
+
+<h2 id="20131128-version-0160">2013-11-28, version 0.16.0 <a href="history.html#20131128-version-0160" title="Permalink">#</a></h2>
+
+<ul>
+<li>Implemented BigNumber support for arbitrary precision calculations.
+Added settings <code>number.defaultType</code> and <code>number.precision</code> to configure
+big numbers.</li>
+<li>Documentation is extended.</li>
+<li>Removed utility functions <code>isScalar</code>, <code>toScalar</code>, <code>isVector</code>, <code>toVector</code>
+from <code>Matrix</code> and <code>Range</code>. Use <code>math.squeeze</code> and <code>math.size</code> instead.</li>
+<li>Implemented functions <code>get</code> and <code>set</code> on <code>Matrix</code>, for easier and faster
+retrieval/replacement of elements in a matrix.</li>
+<li>Implemented function <code>resize</code>, handling matrices, scalars, and strings.</li>
+<li>Functions <code>ones</code> and <code>zeros</code> now return an empty matrix instead of a
+number 1 or 0 when no arguments are provided.</li>
+<li>Implemented functions <code>min</code> and <code>max</code> for <code>Range</code> and <code>Index</code>.</li>
+<li>Resizing matrices now leaves new elements undefined by default instead of
+filling them with zeros. Function <code>resize</code> now has an extra optional
+parameter <code>defaultValue</code>.</li>
+<li>Range operator <code>:</code> in expression parser has been given a higher precedence.</li>
+<li>Functions don&#39;t allow arguments of unknown type anymore.</li>
+<li>Options be set when constructing a math.js instance or using the new function
+<code>config(options</code>. Options are no longer accessible via <code>math.options</code>.</li>
+<li>Renamed <code>scientific</code> notation to <code>exponential</code> in function <code>format</code>.</li>
+<li>Function <code>format</code> outputs exponential notation with positive exponents now
+always with <code>+</code> sign, so outputs <code>2.1e+3</code> instead of <code>2.1e3</code>.</li>
+<li>Fixed function <code>squeeze</code> not being able squeeze into a scalar.</li>
+<li>Some fixes and performance improvements in the <code>resize</code> and <code>subset</code>
+functions.</li>
+<li>Function <code>size</code> now adheres to the option <code>matrix.defaultType</code> for scalar
+input.</li>
+<li>Minor bug fixes.</li>
+</ul>
+
+<h2 id="20131026-version-0150">2013-10-26, version 0.15.0 <a href="history.html#20131026-version-0150" title="Permalink">#</a></h2>
+
+<ul>
+<li>Math.js must be instantiated now, static calls are no longer supported. Usage:
+
+<ul>
+<li>node.js: <code>var math = require(&#39;mathjs&#39;)();</code></li>
+<li>browser: <code>var math = mathjs();</code></li>
+</ul></li>
+<li>Implemented support for multiplying vectors with matrices.</li>
+<li>Improved number formatting:
+
+<ul>
+<li>Function <code>format</code> now support various options: precision, different
+notations (<code>fixed</code>, <code>scientific</code>, <code>auto</code>), and more.</li>
+<li>Numbers are no longer rounded to 5 digits by default when formatted.</li>
+<li>Implemented a function <code>format</code> for <code>Matrix</code>, <code>Complex</code>, <code>Unit</code>, <code>Range</code>,
+and <code>Selector</code> to format using options.</li>
+<li>Function <code>format</code> does only stringify values now, and has a new parameter
+<code>precision</code> to round to a specific number of digits.</li>
+<li>Removed option <code>math.options.precision</code>,
+use <code>math.format(value [, precision])</code> instead.</li>
+<li>Fixed formatting numbers as scientific notation in some cases returning
+a zero digit left from the decimal point. (like &quot;0.33333e8&quot; rather than
+&quot;3.3333e7&quot;). Thanks @husayt.</li>
+</ul></li>
+<li>Implemented a function <code>print</code> to interpolate values in a template string,
+this functionality was moved from the function <code>format</code>.</li>
+<li>Implemented statistics function <code>mean</code>. Thanks Guillermo Indalecio Fernandez
+(@guillermobox).</li>
+<li>Extended and changed <code>max</code> and <code>min</code> for multi dimensional matrices: they now
+return the maximum and minimum of the flattened array. An optional second
+argument <code>dim</code> allows to calculate the <code>max</code> or <code>min</code> for specified dimension.</li>
+<li>Renamed option <code>math.options.matrix.default</code> to
+<code>math.options.matrix.defaultType</code>.</li>
+<li>Removed support for comparing complex numbers in functions <code>smaller</code>,
+<code>smallereq</code>, <code>larger</code>, <code>largereq</code>. Complex numbers cannot be ordered.</li>
+</ul>
+
+<h2 id="20131008-version-0140">2013-10-08, version 0.14.0 <a href="history.html#20131008-version-0140" title="Permalink">#</a></h2>
+
+<ul>
+<li>Introduced an option <code>math.options.matrix.default</code> which can have values
+<code>matrix</code> (default) or <code>array</code>. This option is used by the functions <code>eye</code>,
+<code>ones</code>, <code>range</code>, and <code>zeros</code>, to determine the type of matrix output.</li>
+<li>Getting a subset of a matrix will automatically squeeze the resulting subset,
+setting a subset of a matrix will automatically unsqueeze the given subset.</li>
+<li>Removed concatenation of nested arrays in the expression parser.
+You can now input nested arrays like in JavaScript. Matrices can be
+concatenated using the function <code>concat</code>.</li>
+<li>The matrix syntax <code>[...]</code> in the expression parser now creates 1 dimensional
+matrices by default. <code>math.eval(&#39;[1,2,3,4]&#39;)</code> returns a matrix with
+size <code>[4]</code>, <code>math.eval(&#39;[1,2;3,4]&#39;)</code> returns a matrix with size <code>[2,2]</code>.</li>
+<li>Documentation is restructured and extended.</li>
+<li>Fixed non working operator <code>mod</code> (modulus operator).</li>
+</ul>
+
+<h2 id="20130903-version-0130">2013-09-03, version 0.13.0 <a href="history.html#20130903-version-0130" title="Permalink">#</a></h2>
+
+<ul>
+<li>Implemented support for booleans in all relevant functions.</li>
+<li>Implemented functions <code>map</code> and <code>forEach</code>. Thanks Sebastien Piquemal (@sebpic).</li>
+<li>All construction functions can be used to convert the type of variables,
+also element-wise for all elements in an Array or Matrix.</li>
+<li>Changed matrix indexes of the expression parser to one-based with the
+upper-bound included, similar to most math applications. Note that on a
+JavaScript level, math.js uses zero-based indexes with excluded upper-bound.</li>
+<li>Removed support for scalars in the function <code>subset</code>, it now only supports
+Array, Matrix, and String.</li>
+<li>Removed the functions <code>get</code> and <code>set</code> from a selector, they are a duplicate
+of the function <code>subset</code>.</li>
+<li>Replaced functions <code>get</code> and <code>set</code> of <code>Matrix</code> with a single function
+<code>subset</code>.</li>
+<li>Some moving around with code and namespaces:
+
+<ul>
+<li>Renamed namespace <code>math.expr</code> to <code>math.expression</code> (contains Scope, Parser,
+node objects).</li>
+<li>Renamed namespace <code>math.docs</code> to <code>math.expression.docs</code>.</li>
+<li>Moved <code>math.expr.Selector</code> to <code>math.chaining.Selector</code>.</li>
+</ul></li>
+<li>Fixed some edge cases in functions <code>lcm</code> and <code>xgcd</code>.</li>
+</ul>
+
+<h2 id="20130822-version-0121">2013-08-22, version 0.12.1 <a href="history.html#20130822-version-0121" title="Permalink">#</a></h2>
+
+<ul>
+<li>Fixed outdated version of README.md.</li>
+<li>Fixed a broken unit test.</li>
+</ul>
+
+<h2 id="20130822-version-0120">2013-08-22, version 0.12.0 <a href="history.html#20130822-version-0120" title="Permalink">#</a></h2>
+
+<ul>
+<li>Implemented functions <code>random([min, max])</code>, <code>randomInt([min, max])</code>,
+<code>pickRandom(array)</code>. Thanks Sebastien Piquemal (@sebpic).</li>
+<li>Implemented function <code>distribution(name)</code>, generating a distribution object
+with functions <code>random</code>, <code>randomInt</code>, <code>pickRandom</code> for different
+distributions. Currently supporting <code>uniform</code> and <code>normal</code>.</li>
+<li>Changed the behavior of <code>range</code> to exclude the upper bound, so <code>range(1, 4)</code>
+now returns <code>[1, 2, 3]</code> instead of <code>[1, 2, 3, 4]</code>.</li>
+<li>Changed the syntax of <code>range</code>, which is now <code>range(start, end [, step])</code>
+instead of <code>range(start, [step, ] end)</code>.</li>
+<li>Changed the behavior of <code>ones</code> and <code>zeros</code> to geometric dimensions, for
+example <code>ones(3)</code> returns a vector with length 3, filled with ones, and
+<code>ones(3,3)</code> returns a 2D array with size [3, 3].</li>
+<li>Changed the return type of <code>ones</code> and <code>zeros</code>: they now return an Array when
+arguments are Numbers or an Array, and returns a Matrix when the argument
+is a Matrix.</li>
+<li>Change matrix index notation in parser from round brackets to square brackets,
+for example <code>A[0, 0:3]</code>.</li>
+<li>Removed the feature introduced in v0.10.0 to automatically convert a complex
+value with an imaginary part equal to zero to a number.</li>
+<li>Fixed zeros being formatted as null. Thanks @TimKraft.</li>
+</ul>
+
+<h2 id="20130723-version-0111">2013-07-23, version 0.11.1 <a href="history.html#20130723-version-0111" title="Permalink">#</a></h2>
+
+<ul>
+<li>Fixed missing development dependency</li>
+</ul>
+
+<h2 id="20130723-version-0110">2013-07-23, version 0.11.0 <a href="history.html#20130723-version-0110" title="Permalink">#</a></h2>
+
+<ul>
+<li>Changed math.js from one-based to zero-based indexes.
+
+<ul>
+<li>Getting and setting matrix subset is now zero-based.</li>
+<li>The dimension argument in function <code>concat</code> is now zero-based.</li>
+</ul></li>
+<li>Improvements in the string output of function help.</li>
+<li>Added constants <code>true</code> and <code>false</code>.</li>
+<li>Added constructor function <code>boolean</code>.</li>
+<li>Fixed function <code>select</code> not accepting <code>0</code> as input.
+Thanks Elijah Manor (@elijahmanor).</li>
+<li>Parser now supports multiple unary minus operators after each other.</li>
+<li>Fixed not accepting empty matrices like <code>[[], []]</code>.</li>
+<li>Some fixes in the end user documentation.</li>
+</ul>
+
+<h2 id="20130708-version-0100">2013-07-08, version 0.10.0 <a href="history.html#20130708-version-0100" title="Permalink">#</a></h2>
+
+<ul>
+<li>For complex calculations, all functions now automatically replace results
+having an imaginary part of zero with a Number. (<code>2i * 2i</code> now returns a
+Number <code>-4</code> instead of a Complex <code>-4 + 0i</code>).</li>
+<li>Implemented support for injecting custom node handlers in the parser. Can be
+used for example to implement a node handler for plotting a graph.</li>
+<li>Implemented end user documentation and a new <code>help</code> function.</li>
+<li>Functions <code>size</code> and <code>squeeze</code> now return a Matrix instead of an Array as
+output on Matrix input.</li>
+<li>Added a constant tau (2 * pi). Thanks Zak Zibrat (@palimpsests).</li>
+<li>Renamed function <code>unaryminus</code> to <code>unary</code>.</li>
+<li>Fixed a bug in determining node dependencies in function assignments.</li>
+</ul>
+
+<h2 id="20130614-version-091">2013-06-14, version 0.9.1 <a href="history.html#20130614-version-091" title="Permalink">#</a></h2>
+
+<ul>
+<li>Implemented element-wise functions and operators: <code>emultiply</code> (<code>x .* y</code>),
+<code>edivide</code> (<code>x ./ y</code>), <code>epow</code> (<code>x .^ y</code>).</li>
+<li>Added constants <code>Infinity</code> and <code>NaN</code>.</li>
+<li>Removed support for Workspace to keep the library focused on its core task.</li>
+<li>Fixed a bug in the Complex constructor, not accepting NaN values.</li>
+<li>Fixed division by zero in case of pure complex values.</li>
+<li>Fixed a bug in function multiply multiplying a pure complex value with
+Infinity.</li>
+</ul>
+
+<h2 id="20130529-version-090">2013-05-29, version 0.9.0 <a href="history.html#20130529-version-090" title="Permalink">#</a></h2>
+
+<ul>
+<li>Implemented function <code>math.parse(expr [,scope])</code>. Optional parameter scope can
+be a plain JavaScript Object containing variables.</li>
+<li>Extended function <code>math.expr(expr [, scope])</code> with an additional parameter
+<code>scope</code>, similar to <code>parse</code>. Example: <code>math.eval(&#39;x^a&#39;, {x:3, a:2});</code>.</li>
+<li>Implemented function <code>subset</code>, to get or set a subset from a matrix, string,
+or other data types.</li>
+<li>Implemented construction functions number and string (mainly useful inside
+the parser).</li>
+<li>Improved function <code>det</code>. Thanks Bryan Cuccioli (@bcuccioli).</li>
+<li>Moved the parse code from prototype math.expr.Parser to function math.parse,
+simplified Parser a little bit.</li>
+<li>Strongly simplified the code of Scope and Workspace.</li>
+<li>Fixed function mod for negative numerators, and added error messages in case
+of wrong input.</li>
+</ul>
+
+<h2 id="20130518-version-082">2013-05-18, version 0.8.2 <a href="history.html#20130518-version-082" title="Permalink">#</a></h2>
+
+<ul>
+<li>Extended the import function and some other minor improvements.</li>
+<li>Fixed a bug in merging one dimensional vectors into a matrix.</li>
+<li>Fixed a bug in function subtract, when subtracting a complex number from a
+real number.</li>
+</ul>
+
+<h2 id="20130510-version-081">2013-05-10, version 0.8.1 <a href="history.html#20130510-version-081" title="Permalink">#</a></h2>
+
+<ul>
+<li>Fixed an npm warning when installing mathjs globally.</li>
+</ul>
+
+<h2 id="20130510-version-080">2013-05-10, version 0.8.0 <a href="history.html#20130510-version-080" title="Permalink">#</a></h2>
+
+<ul>
+<li>Implemented a command line interface. When math.js is installed globally via
+npm, the application is available on your system as &#39;mathjs&#39;.</li>
+<li>Implemented <code>end</code> keyword for index operator, and added support for implicit
+start and end (expressions like <code>a(2,:)</code> and <code>b(2:end,3:end-1)</code> are supported
+now).</li>
+<li>Function math.eval is more flexible now: it supports variables and multi-line
+expressions.</li>
+<li>Removed the read-only option from Parser and Scope.</li>
+<li>Fixed non-working unequal operator != in the parser.</li>
+<li>Fixed a bug in resizing matrices when replacing a subset.</li>
+<li>Fixed a bug in updating a subset of a non-existing variable.</li>
+<li>Minor bug fixes.</li>
+</ul>
+
+<h2 id="20130504-version-072">2013-05-04, version 0.7.2 <a href="history.html#20130504-version-072" title="Permalink">#</a></h2>
+
+<ul>
+<li>Fixed method unequal, which was checking for equality instead of inequality.
+Thanks @FJS2.</li>
+</ul>
+
+<h2 id="20130427-version-071">2013-04-27, version 0.7.1 <a href="history.html#20130427-version-071" title="Permalink">#</a></h2>
+
+<ul>
+<li>Improvements in the parser:
+
+<ul>
+<li>Added support for chained arguments.</li>
+<li>Added support for chained variable assignments.</li>
+<li>Added a function remove(name) to remove a variable from the parsers scope.</li>
+<li>Renamed nodes for more consistency and to resolve naming conflicts.</li>
+<li>Improved stringification of an expression tree.</li>
+<li>Some simplifications in the code.</li>
+<li>Minor bug fixes.</li>
+</ul></li>
+<li>Fixed a bug in the parser, returning NaN instead of throwing an error for a
+number with multiple decimal separators like <code>2.3.4</code>.</li>
+<li>Fixed a bug in Workspace.insertAfter.</li>
+<li>Fixed: math.js now works on IE 6-8 too.</li>
+</ul>
+
+<h2 id="20130420-version-070">2013-04-20, version 0.7.0 <a href="history.html#20130420-version-070" title="Permalink">#</a></h2>
+
+<ul>
+<li>Implemented method <code>math.eval</code>, which uses a readonly parser to evaluate
+expressions.</li>
+<li>Implemented method <code>xgcd</code> (extended eucledian algorithm). Thanks Bart Kiers
+(@bkiers).</li>
+<li>Improved math.format, which now rounds values to a maximum number of digits
+instead of decimals (default is 5 digits, for example <code>math.format(math.pi)</code>
+returns <code>3.1416</code>).</li>
+<li>Added examples.</li>
+<li>Changed methods square and cube to evaluate matrices element wise (consistent
+with all other methods).</li>
+<li>Changed second parameter of method import to an object with options.</li>
+<li>Fixed method math.typeof on IE.</li>
+<li>Minor bug fixes and improvements.</li>
+</ul>
+
+<h2 id="20130413-version-060">2013-04-13, version 0.6.0 <a href="history.html#20130413-version-060" title="Permalink">#</a></h2>
+
+<ul>
+<li>Implemented chained operations via method math.select(). For example
+<code>math.select(3).add(4).subtract(2).done()</code> will return <code>5</code>.</li>
+<li>Implemented methods gcd and lcm.</li>
+<li>Implemented method <code>Unit.in(unit)</code>, which creates a clone of the unit with a
+fixed representation. For example <code>math.unit(&#39;5.08 cm&#39;).in(&#39;inch&#39;)</code> will
+return a unit which string representation always is in inch, thus <code>2 inch</code>.
+<code>Unit.in(unit)</code> is the same as method <code>math.in(x, unit)</code>.</li>
+<li>Implemented <code>Unit.toNumber(unit)</code>, which returns the value of the unit when
+represented with given unit. For example
+<code>math.unit(&#39;5.08 cm&#39;).toNumber(&#39;inch&#39;)</code> returns the number <code>2</code>, as the
+representation of the unit in inches has 2 as value.</li>
+<li>Improved: method <code>math.in(x, unit)</code> now supports a string as second parameter,
+for example <code>math.in(math.unit(&#39;5.08 cm&#39;), &#39;inch&#39;)</code>.</li>
+<li>Split the end user documentation of the parser functions from the source
+files.</li>
+<li>Removed function help and the built-in documentation from the core library.</li>
+<li>Fixed constant i being defined as -1i instead of 1i.</li>
+<li>Minor bug fixes.</li>
+</ul>
+
+<h2 id="20130406-version-050">2013-04-06, version 0.5.0 <a href="history.html#20130406-version-050" title="Permalink">#</a></h2>
+
+<ul>
+<li>Implemented data types Matrix and Range.</li>
+<li>Implemented matrix methods clone, concat, det, diag, eye, inv, ones, size,
+squeeze, transpose, zeros.</li>
+<li>Implemented range operator <code>:</code>, and transpose operator <code>&#39;</code> in parser.</li>
+<li>Changed: created construction methods for easy object creation for all data
+types and for the parser. For example, a complex value is now created
+with <code>math.complex(2, 3)</code> instead of <code>new math.Complex(2, 3)</code>, and a parser
+is now created with <code>math.parser()</code> instead of <code>new math.parser.Parser()</code>.</li>
+<li>Changed: moved all data types under the namespace math.type, and moved the
+Parser, Workspace, etc. under the namespace math.expr.</li>
+<li>Changed: changed operator precedence of the power operator:
+
+<ul>
+<li>it is now right associative instead of left associative like most scripting
+languages. So <code>2^3^4</code> is now calculated as <code>2^(3^4)</code>.</li>
+<li>it has now higher precedence than unary minus most languages, thus <code>-3^2</code> is
+now calculated as <code>-(3^2)</code>.</li>
+</ul></li>
+<li>Changed: renamed the parsers method &#39;put&#39; into &#39;set&#39;.</li>
+<li>Fixed: method &#39;in&#39; did not check for units to have the same base.</li>
+</ul>
+
+<h2 id="20130316-version-040">2013-03-16, version 0.4.0 <a href="history.html#20130316-version-040" title="Permalink">#</a></h2>
+
+<ul>
+<li>Implemented Array support for all methods.</li>
+<li>Implemented Array support in the Parser.</li>
+<li>Implemented method format.</li>
+<li>Implemented parser for units, math.Unit.parse(str).</li>
+<li>Improved parser for complex values math.Complex.parse(str);</li>
+<li>Improved method help: it now evaluates the examples.</li>
+<li>Fixed: a scoping issue with the Parser when defining functions.</li>
+<li>Fixed: method &#39;typeof&#39; was not working well with minified and mangled code.</li>
+<li>Fixed: errors in determining the best prefix for a unit.</li>
+</ul>
+
+<h2 id="20130309-version-030">2013-03-09, version 0.3.0 <a href="history.html#20130309-version-030" title="Permalink">#</a></h2>
+
+<ul>
+<li>Implemented Workspace</li>
+<li>Implemented methods cot, csc, sec.</li>
+<li>Implemented Array support for methods with one parameter.</li>
+</ul>
+
+<h2 id="20130225-version-020">2013-02-25, version 0.2.0 <a href="history.html#20130225-version-020" title="Permalink">#</a></h2>
+
+<ul>
+<li>Parser, Scope, and expression tree with Nodes implemented.</li>
+<li>Implemented method import which makes it easy to extend math.js.</li>
+<li>Implemented methods arg, conj, cube, equal, factorial, im, largereq,
+log(x, base), log10, mod, re, sign, smallereq, square, unequal.</li>
+</ul>
+
+<h2 id="20130218-version-010">2013-02-18, version 0.1.0 <a href="history.html#20130218-version-010" title="Permalink">#</a></h2>
+
+<ul>
+<li>Reached full compatibility with Javascripts built-in Math library.</li>
+<li>More functions implemented.</li>
+<li>Some bugfixes.</li>
+</ul>
+
+<h2 id="20130216-version-002">2013-02-16, version 0.0.2 <a href="history.html#20130216-version-002" title="Permalink">#</a></h2>
+
+<ul>
+<li>All constants of Math implemented, plus the imaginary unit i.</li>
+<li>Data types Complex and Unit implemented.</li>
+<li>First set of functions implemented.</li>
+</ul>
+
+<h2 id="20130215-version-001">2013-02-15, version 0.0.1 <a href="history.html#20130215-version-001" title="Permalink">#</a></h2>
+
+<ul>
+<li>First publish of the mathjs package. (package is still empty)</li>
+</ul>
+
+  </div>
+
+</div>
+
+<div id="footer">
+  <a href="index.html">mathjs.org</a> &bull;
+  <a href="https://github.com/josdejong/mathjs#license" target="_blank">copyright &copy; 2013-2015 jos de jong</a> &bull;
+  <a href="http://subtlepatterns.com/bright-squares/" target="_blank">background by waseem dahman</a>
+</div>
+
+<div id="forkme">
+  <a href="https://github.com/josdejong/mathjs" target="_blank">
+    <img src="css/img/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" >
+  </a>
+</div>
+
+<script type="text/javascript">
+  // change layout for different screen sizes
+  function resize () {
+    var width = document.body.clientWidth;
+
+    var page = document.getElementById('page');
+    page.className = (width < 810) ? 'small' : 'normal';
+    if (width < 620) {
+      page.className += ' tiny';
+    }
+
+    var forkme = document.getElementById('forkme');
+    forkme.className = (width < 810) ? 'small' : 'normal';
+  }
+  resize();
+  window.onresize = resize;
+</script>
+
+</body>
+</html>

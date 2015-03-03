@@ -1,0 +1,375 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <title>math.js | an extensive math library for JavaScript and Node.js</title>
+
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="title" content="math.js">
+
+  <meta name="keywords" content="mathjs, math.js, math, js, javascript, node, library, expression, parser, numeric, number, bignumber, complex, matrix, unit, function, variable, string, value, node.js, mathematics, extensive, advanced">
+  <meta name="description" content="Math.js is an extensive math library for JavaScript and Node.js. It features big numbers, complex numbers, matrices, units, and a flexible expression parser.">
+
+  <meta name="author" content="Jos de Jong">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <link href="../../css/style.css" rel="stylesheet" type="text/css">
+  <link href="../../css/commandline.css" rel="stylesheet" type="text/css">
+  <link href="../../css/code.css" rel="stylesheet" type="text/css">
+
+  <script src="../../js/lib/es5-shim.min.js" type="text/javascript"></script>
+  <script src="../../js/lib/es5-sham.min.js" type="text/javascript"></script>
+  <script src="../../js/lib/math.js" type="text/javascript"></script>
+  <script src="../../js/commandline.js" type="text/javascript"></script>
+</head>
+
+<!-- itemscope, itemtype, and  itemprop for google+ meta information -->
+<body itemscope itemtype="http://schema.org/Product">
+<div id="page">
+  <div>
+    <a href="../../index.html">
+      <img src="../../css/img/mathjs_330x100.png" id="logo" alt="math.js" itemprop="image" >
+    </a>
+  </div>
+
+  <div id="search">
+    <script>
+      (function() {
+        var cx = '017327835323070913148:__zkzh4scga';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//www.google.com/cse/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <div id="menu">
+    <a href="../../index.html">
+      Home
+      
+    </a><a href="../../download.html">
+    Download
+    
+    </a><a href="../getting_started.html">
+      Get started
+      
+    </a><a href="../index.html">
+        Docs
+        
+        <div class="selection"></div>
+        
+    </a><a href="../../examples/index.html">
+        Examples
+        
+    </a>
+  </div>
+
+  <div id="content">
+    <h1 id="matrices">Matrices <a href="matrices.html#matrices" title="Permalink">#</a></h1>
+
+<p>Math.js supports multi dimensional matrices and arrays. Matrices can be
+created, manipulated, and used in calculations. Both regular JavaScript
+arrays as well as the matrix type implemented by math.js can be used
+interchangeably in all relevant math.js functions.</p>
+
+<h2 id="arrays-and-matrices">Arrays and matrices <a href="matrices.html#arrays-and-matrices" title="Permalink">#</a></h2>
+
+<p>Math.js supports two types of matrices:</p>
+
+<ul>
+<li><code>Array</code>, a regular JavaScript array. A multi dimensional array can be created
+by nesting arrays.</li>
+<li><code>Matrix</code>, a matrix implementation by math.js. A <code>Matrix</code> is an object wrapped
+around a regular JavaScript <code>Array</code>, providing utility functions for easy
+matrix manipulation such as <code>subset</code>, <code>size</code>, <code>resize</code>, <code>clone</code>, and more.</li>
+</ul>
+
+<p>In most cases, the type of matrix output from functions is determined by the
+function input: An <code>Array</code> as input will return an <code>Array</code>, a <code>Matrix</code> as input
+will return a <code>Matrix</code>. In case of mixed input, a <code>Matrix</code> is returned.
+For functions where the type of output cannot be determined from the
+input, the output is determined by the configuration option <code>matrix</code>,
+which can be a string <code>&#39;matrix&#39;</code> (default) or <code>&#39;array&#39;</code>.</p>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="c1">// create an array and a matrix</span>
+<span class="kd">var</span> <span class="nx">array</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">]];</span>                <span class="c1">// Array</span>
+<span class="kd">var</span> <span class="nx">matrix</span> <span class="o">=</span> <span class="nx">math</span><span class="p">.</span><span class="nx">matrix</span><span class="p">([[</span><span class="mi">7</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]]);</span>  <span class="c1">// Matrix</span>
+
+<span class="c1">// perform a calculation on an array and matrix</span>
+<span class="nx">math</span><span class="p">.</span><span class="nx">square</span><span class="p">(</span><span class="nx">array</span><span class="p">);</span>                           <span class="c1">// Array,  [[4, 0], [1, 9]]</span>
+<span class="nx">math</span><span class="p">.</span><span class="nx">square</span><span class="p">(</span><span class="nx">matrix</span><span class="p">);</span>                          <span class="c1">// Matrix, [[49, 1], [4, 9]]</span>
+
+<span class="c1">// perform calculations with mixed array and matrix input</span>
+<span class="nx">math</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">array</span><span class="p">,</span> <span class="nx">matrix</span><span class="p">);</span>                      <span class="c1">// Matrix, [[9, 1], [-3, 6]]</span>
+<span class="nx">math</span><span class="p">.</span><span class="nx">multiply</span><span class="p">(</span><span class="nx">array</span><span class="p">,</span> <span class="nx">matrix</span><span class="p">);</span>                 <span class="c1">// Matrix, [[14, 2], [-13, 8]]</span>
+
+<span class="c1">// create a matrix. Type of output of function ones is determined by the</span>
+<span class="c1">// configuration option `matrix`</span>
+<span class="nx">math</span><span class="p">.</span><span class="nx">ones</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span>                              <span class="c1">// Matrix, [[1, 1, 1], [1, 1, 1]]</span>
+</code></pre></div>
+<h2 id="creation">Creation <a href="matrices.html#creation" title="Permalink">#</a></h2>
+
+<p>A matrix can be created from an array using the function <code>math.matrix</code>. The
+provided array can contain nested arrays in order to create a multi
+dimensional matrix. When called without arguments, an empty matrix will be
+created.</p>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="c1">// create matrices</span>
+<span class="nx">math</span><span class="p">.</span><span class="nx">matrix</span><span class="p">();</span>                          <span class="c1">// Matrix, size [0]</span>
+<span class="nx">math</span><span class="p">.</span><span class="nx">matrix</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]);</span>                 <span class="c1">// Matrix, size [3]</span>
+<span class="nx">math</span><span class="p">.</span><span class="nx">matrix</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]]);</span>  <span class="c1">// Matrix, size [3, 2]</span>
+</code></pre></div>
+<p>Math.js supports regular Arrays. Multiple dimensions can be created
+by nesting Arrays in each other.</p>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="c1">// create arrays</span>
+<span class="p">[];</span>                                     <span class="c1">// Array, size [0]</span>
+<span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="p">;</span>                             <span class="c1">// Array, size [3]</span>
+<span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]];</span>               <span class="c1">// Array, size [3, 2]</span>
+</code></pre></div>
+<p>Matrices can contain different types of values: numbers, complex numbers,
+units, or strings. Different types can be mixed together in a single matrix.</p>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="c1">// create a matrix with mixed types</span>
+<span class="kd">var</span> <span class="nx">a</span> <span class="o">=</span> <span class="nx">math</span><span class="p">.</span><span class="nx">matrix</span><span class="p">([</span><span class="mf">2.3</span><span class="p">,</span> <span class="s1">&#39;hello&#39;</span><span class="p">,</span> <span class="nx">math</span><span class="p">.</span><span class="nx">complex</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="o">-</span><span class="mi">4</span><span class="p">),</span> <span class="nx">math</span><span class="p">.</span><span class="nx">unit</span><span class="p">(</span><span class="s1">&#39;5.2 mm&#39;</span><span class="p">)]);</span>
+<span class="nx">a</span><span class="p">.</span><span class="nx">subset</span><span class="p">(</span><span class="nx">math</span><span class="p">.</span><span class="nx">index</span><span class="p">(</span><span class="mi">1</span><span class="p">));</span> <span class="c1">// &#39;hello&#39;</span>
+</code></pre></div>
+<p>There are a number of functions to create a matrix with a specific size and
+content: <code>ones</code>, <code>zeros</code>, <code>eye</code>.</p>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="c1">// zeros creates a matrix filled with zeros</span>
+<span class="nx">math</span><span class="p">.</span><span class="nx">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span>          <span class="c1">// Matrix, size [3],    [0, 0, 0]</span>
+<span class="nx">math</span><span class="p">.</span><span class="nx">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span>       <span class="c1">// Matrix, size [3, 2], [[0, 0], [0, 0], [0, 0]]</span>
+<span class="nx">math</span><span class="p">.</span><span class="nx">zeros</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span>    <span class="c1">// Matrix, size [2, 2, 2],</span>
+                        <span class="c1">//   [[[0, 0], [0, 0]], [[0, 0], [0, 0]]]</span>
+
+<span class="c1">// ones creates a matrix filled with ones</span>
+<span class="nx">math</span><span class="p">.</span><span class="nx">ones</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span>                       <span class="c1">// Matrix, size [3],    [1, 1, 1]</span>
+<span class="nx">math</span><span class="p">.</span><span class="nx">multiply</span><span class="p">(</span><span class="nx">math</span><span class="p">.</span><span class="nx">ones</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="mi">5</span><span class="p">);</span>  <span class="c1">// Matrix, size [2, 2], [[5, 5], [5, 5]]</span>
+
+<span class="c1">// eye creates an identity matrix</span>
+<span class="nx">math</span><span class="p">.</span><span class="nx">eye</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span>     <span class="c1">// Matrix, size [3, 3], [[1, 0, 0], [0, 1, 0], [0, 0, 1]]</span>
+<span class="nx">math</span><span class="p">.</span><span class="nx">eye</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span>  <span class="c1">// Matrix, size [2, 3], [[1, 0, 0], [0, 1, 0]]</span>
+</code></pre></div>
+<p>The functions <code>ones</code>, <code>zeros</code>, and <code>eye</code> also accept a single array
+or matrix containing the dimensions for the matrix. When the input is an Array,
+the functions will output an Array. When the input is a Matrix, the output will
+be a Matrix. Note that in case of numbers as arguments, the output is
+determined by the option <code>matrix</code> as discussed in section
+<a href="matrices.html#arrays-and-matrices">Arrays and matrices</a>.</p>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="c1">// Array as input gives Array as output</span>
+<span class="nx">math</span><span class="p">.</span><span class="nx">ones</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]);</span>              <span class="c1">// Array,  size [3, 2], [[1, 1, 1], [1, 1, 1]]</span>
+<span class="nx">math</span><span class="p">.</span><span class="nx">ones</span><span class="p">(</span><span class="nx">math</span><span class="p">.</span><span class="nx">matrix</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]));</span> <span class="c1">// Matrix, size [3, 2], [[1, 1, 1], [1, 1, 1]]</span>
+</code></pre></div>
+<p>Ranges can be created using the function <code>range</code>. The function <code>range</code> is
+called with parameters start and end, and optionally a parameter step.
+The start of the range is included, the end of the range is excluded.</p>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">math</span><span class="p">.</span><span class="nx">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">);</span>       <span class="c1">// [0, 1, 2, 3]</span>
+<span class="nx">math</span><span class="p">.</span><span class="nx">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span>    <span class="c1">// [0, 2, 4, 6]</span>
+<span class="nx">math</span><span class="p">.</span><span class="nx">range</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">);</span>  <span class="c1">// [3, 2, 1, 0]</span>
+</code></pre></div>
+<h2 id="calculations">Calculations <a href="matrices.html#calculations" title="Permalink">#</a></h2>
+
+<p>All relevant functions of math.js support matrices and arrays.</p>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="c1">// perform a calculation on a matrix</span>
+<span class="kd">var</span> <span class="nx">a</span> <span class="o">=</span> <span class="nx">math</span><span class="p">.</span><span class="nx">matrix</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">25</span><span class="p">]);</span>   <span class="c1">// Matrix, [1, 4, 9, 16, 25]</span>
+<span class="nx">math</span><span class="p">.</span><span class="nx">sqrt</span><span class="p">(</span><span class="nx">a</span><span class="p">);</span>                             <span class="c1">// Matrix, [1, 2, 3, 4, 5]</span>
+
+<span class="c1">// perform a calculation on an array</span>
+<span class="kd">var</span> <span class="nx">b</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">];</span>
+<span class="nx">math</span><span class="p">.</span><span class="nx">factorial</span><span class="p">(</span><span class="nx">b</span><span class="p">);</span>                        <span class="c1">// Array,  [1, 2, 6, 24, 120]</span>
+
+<span class="c1">// multiply an array with a matrix</span>
+<span class="kd">var</span> <span class="nx">c</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">]];</span>                <span class="c1">// Array</span>
+<span class="kd">var</span> <span class="nx">d</span> <span class="o">=</span> <span class="nx">math</span><span class="p">.</span><span class="nx">matrix</span><span class="p">([[</span><span class="mi">7</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]]);</span>   <span class="c1">// Matrix</span>
+<span class="nx">math</span><span class="p">.</span><span class="nx">multiply</span><span class="p">(</span><span class="nx">c</span><span class="p">,</span> <span class="nx">d</span><span class="p">);</span>                      <span class="c1">// Matrix, [[14, 2], [-13, 8]]</span>
+
+<span class="c1">// add a number to a matrix</span>
+<span class="nx">math</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">c</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span>                           <span class="c1">// Array, [[4, 2], [1, 5]]</span>
+
+<span class="c1">// calculate the determinant of a matrix</span>
+<span class="nx">math</span><span class="p">.</span><span class="nx">det</span><span class="p">(</span><span class="nx">c</span><span class="p">);</span>                              <span class="c1">// 6</span>
+<span class="nx">math</span><span class="p">.</span><span class="nx">det</span><span class="p">(</span><span class="nx">d</span><span class="p">);</span>                              <span class="c1">// 23</span>
+</code></pre></div>
+<h2 id="size-and-dimensions">Size and Dimensions <a href="matrices.html#size-and-dimensions" title="Permalink">#</a></h2>
+
+<p>Math.js uses geometric dimensions:</p>
+
+<ul>
+<li>A scalar is zero dimensional.</li>
+<li>A vector is one dimensional.</li>
+<li>A matrix is two or multi dimensional.</li>
+</ul>
+
+<p>The size of a matrix can be calculated with the function <code>size</code>. Function <code>size</code>
+returns a <code>Matrix</code> or <code>Array</code>, depending on the configuration option <code>matrix</code>.
+Furthermore, matrices have a function <code>size</code> as well, which always returns
+an Array.</p>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="c1">// get the size of a scalar</span>
+<span class="nx">math</span><span class="p">.</span><span class="nx">size</span><span class="p">(</span><span class="mf">2.4</span><span class="p">);</span>                               <span class="c1">// Matrix, []</span>
+<span class="nx">math</span><span class="p">.</span><span class="nx">size</span><span class="p">(</span><span class="nx">math</span><span class="p">.</span><span class="nx">complex</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">));</span>                <span class="c1">// Matrix, []</span>
+<span class="nx">math</span><span class="p">.</span><span class="nx">size</span><span class="p">(</span><span class="nx">math</span><span class="p">.</span><span class="nx">unit</span><span class="p">(</span><span class="s1">&#39;5.3 mm&#39;</span><span class="p">));</span>               <span class="c1">// Matrix, []</span>
+
+<span class="c1">// get the size of a one dimensional matrix (a vector) and a string</span>
+<span class="nx">math</span><span class="p">.</span><span class="nx">size</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]);</span>                      <span class="c1">// Array, [4]</span>
+<span class="nx">math</span><span class="p">.</span><span class="nx">size</span><span class="p">(</span><span class="s1">&#39;hello world&#39;</span><span class="p">);</span>                     <span class="c1">// Matrix, [11]</span>
+
+<span class="c1">// get the size of a two dimensional matrix</span>
+<span class="kd">var</span> <span class="nx">a</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]];</span>                       <span class="c1">// Array</span>
+<span class="kd">var</span> <span class="nx">b</span> <span class="o">=</span> <span class="nx">math</span><span class="p">.</span><span class="nx">matrix</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]]);</span>  <span class="c1">// Matrix</span>
+<span class="nx">math</span><span class="p">.</span><span class="nx">size</span><span class="p">(</span><span class="nx">a</span><span class="p">);</span>                                 <span class="c1">// Array, [1, 4]</span>
+<span class="nx">math</span><span class="p">.</span><span class="nx">size</span><span class="p">(</span><span class="nx">b</span><span class="p">);</span>                                 <span class="c1">// Matrix, [2, 3]</span>
+
+<span class="c1">// matrices have a function size (always returns an Array)</span>
+<span class="nx">b</span><span class="p">.</span><span class="nx">size</span><span class="p">();</span>                                     <span class="c1">// Array, [2, 3]</span>
+
+<span class="c1">// get the size of a multi dimensional matrix</span>
+<span class="kd">var</span> <span class="nx">c</span> <span class="o">=</span> <span class="p">[[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]],</span> <span class="p">[[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">],</span> <span class="p">[</span><span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">11</span><span class="p">]]];</span>
+<span class="nx">math</span><span class="p">.</span><span class="nx">size</span><span class="p">(</span><span class="nx">c</span><span class="p">);</span>                                 <span class="c1">// Array, [2, 2, 3]</span>
+</code></pre></div>
+<h2 id="resizing">Resizing <a href="matrices.html#resizing" title="Permalink">#</a></h2>
+
+<p>Matrices can be resized using their <code>resize</code> function. This function is called
+with an Array with the new size as first argument, and accepts an optional
+default value. If no default value is provided, new entries will be filled with
+zero. To leave new entries uninitialized, specify <code>math.uninitialized</code> as 
+default value.</p>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">a</span> <span class="o">=</span> <span class="nx">math</span><span class="p">.</span><span class="nx">matrix</span><span class="p">();</span>  <span class="c1">// Matrix, size [0],       []</span>
+<span class="nx">a</span><span class="p">.</span><span class="nx">resize</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]);</span>       <span class="c1">// Matrix, size [2, 3],    [[0, 0, 0], [0, 0, 0]]</span>
+<span class="nx">a</span><span class="p">.</span><span class="nx">resize</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">]);</span>    <span class="c1">// Matrix, size [2, 2, 2],</span>
+                        <span class="c1">//   [[[0, 0], [0, 0]], [[0, 0], [0, 0]]]</span>
+
+<span class="kd">var</span> <span class="nx">b</span> <span class="o">=</span> <span class="nx">math</span><span class="p">.</span><span class="nx">matrix</span><span class="p">();</span>
+<span class="nx">b</span><span class="p">.</span><span class="nx">resize</span><span class="p">([</span><span class="mi">3</span><span class="p">],</span> <span class="mi">7</span><span class="p">);</span>       <span class="c1">// Matrix, size [3],    [7, 7, 7]</span>
+<span class="nx">b</span><span class="p">.</span><span class="nx">resize</span><span class="p">([</span><span class="mi">5</span><span class="p">],</span> <span class="mi">9</span><span class="p">);</span>       <span class="c1">// Matrix, size [5],    [7, 7, 7, 9, 9]</span>
+<span class="nx">b</span><span class="p">.</span><span class="nx">resize</span><span class="p">([</span><span class="mi">2</span><span class="p">]);</span>          <span class="c1">// Matrix, size [2],    [7, 7]</span>
+</code></pre></div>
+<p>Outer dimensions of a matrix can be squeezed using the function <code>squeeze</code>. When
+getting or setting a subset in a matrix, the subset is automatically squeezed
+or unsqueezed.</p>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="c1">// squeeze a matrix</span>
+<span class="kd">var</span> <span class="nx">a</span> <span class="o">=</span> <span class="p">[[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]]];</span>
+<span class="nx">math</span><span class="p">.</span><span class="nx">squeeze</span><span class="p">(</span><span class="nx">a</span><span class="p">);</span>        <span class="c1">// [0, 1, 2]</span>
+<span class="nx">math</span><span class="p">.</span><span class="nx">squeeze</span><span class="p">([[</span><span class="mi">3</span><span class="p">]]);</span>    <span class="c1">// 3</span>
+
+<span class="c1">// subsets are automatically squeezed</span>
+<span class="kd">var</span> <span class="nx">b</span> <span class="o">=</span> <span class="nx">math</span><span class="p">.</span><span class="nx">matrix</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]]);</span>
+<span class="nx">b</span><span class="p">.</span><span class="nx">subset</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]);</span>       <span class="c1">// 2</span>
+</code></pre></div>
+<h2 id="getting-or-replacing-subsets">Getting or replacing subsets <a href="matrices.html#getting-or-replacing-subsets" title="Permalink">#</a></h2>
+
+<p>Subsets of a matrix can be retrieved or replaced using the function <code>subset</code>.
+Matrices have a <code>subset</code> function, which is applied to the matrix itself:
+<code>Matrix.subset(index [, replacement])</code>. For both matrices and arrays,
+the static function <code>subset(matrix, index [, replacement])</code> can be used.
+When parameter <code>replacement</code> is provided, the function will replace a subset
+in the matrix, and if not, a subset of the matrix will be returned.</p>
+
+<p>A subset can be defined using an <code>Index</code>. An <code>Index</code> contains a range (start,
+end, step) or a single value for each dimension of a matrix. An <code>Index</code> can be
+created using the function <code>index</code>.
+Matrix indexes in math.js are zero-based, like most programming languages
+including JavaScript itself. The lower-bound of a range is included, the
+upper-bound is excluded.</p>
+
+<p>Note that mathematical applications like Matlab and Octave work differently,
+as they use one-based indexes and include the upper-bound of a range.</p>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="c1">// create some matrices</span>
+<span class="kd">var</span> <span class="nx">a</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">];</span>
+<span class="kd">var</span> <span class="nx">b</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]];</span>
+<span class="kd">var</span> <span class="nx">c</span> <span class="o">=</span> <span class="nx">math</span><span class="p">.</span><span class="nx">zeros</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">d</span> <span class="o">=</span> <span class="nx">math</span><span class="p">.</span><span class="nx">matrix</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span> <span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">]]);</span>
+<span class="kd">var</span> <span class="nx">e</span> <span class="o">=</span> <span class="nx">math</span><span class="p">.</span><span class="nx">matrix</span><span class="p">();</span>
+
+<span class="c1">// get a subset</span>
+<span class="nx">math</span><span class="p">.</span><span class="nx">subset</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">math</span><span class="p">.</span><span class="nx">index</span><span class="p">(</span><span class="mi">1</span><span class="p">));</span>                <span class="c1">// 1</span>
+<span class="nx">math</span><span class="p">.</span><span class="nx">subset</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">math</span><span class="p">.</span><span class="nx">index</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">]));</span>           <span class="c1">// Array, [2, 3]</span>
+<span class="nx">math</span><span class="p">.</span><span class="nx">subset</span><span class="p">(</span><span class="nx">b</span><span class="p">,</span> <span class="nx">math</span><span class="p">.</span><span class="nx">index</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span>             <span class="c1">// 2</span>
+<span class="nx">math</span><span class="p">.</span><span class="nx">subset</span><span class="p">(</span><span class="nx">b</span><span class="p">,</span> <span class="nx">math</span><span class="p">.</span><span class="nx">index</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]));</span>        <span class="c1">// Array, [2, 3]</span>
+<span class="nx">math</span><span class="p">.</span><span class="nx">subset</span><span class="p">(</span><span class="nx">b</span><span class="p">,</span> <span class="nx">math</span><span class="p">.</span><span class="nx">index</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="mi">0</span><span class="p">));</span>        <span class="c1">// Matrix, [[0], [2]]</span>
+
+<span class="c1">// get a subset</span>
+<span class="nx">d</span><span class="p">.</span><span class="nx">subset</span><span class="p">(</span><span class="nx">math</span><span class="p">.</span><span class="nx">index</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]));</span>         <span class="c1">// Matrix, [[3, 4], [6, 7]]</span>
+<span class="nx">d</span><span class="p">.</span><span class="nx">subset</span><span class="p">(</span><span class="nx">math</span><span class="p">.</span><span class="nx">index</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">));</span>                   <span class="c1">// 5</span>
+
+<span class="c1">// replace a subset. The subset will be applied to a clone of the matrix</span>
+<span class="nx">math</span><span class="p">.</span><span class="nx">subset</span><span class="p">(</span><span class="nx">b</span><span class="p">,</span> <span class="nx">math</span><span class="p">.</span><span class="nx">index</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="mi">9</span><span class="p">);</span>          <span class="c1">// Array, [[0, 1], [9, 3]]</span>
+<span class="nx">math</span><span class="p">.</span><span class="nx">subset</span><span class="p">(</span><span class="nx">b</span><span class="p">,</span> <span class="nx">math</span><span class="p">.</span><span class="nx">index</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]),</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]);</span><span class="c1">// Array, [[0, 1], [2, 3], [4, 5]]</span>
+
+<span class="c1">// replace a subset. The subset will be applied to the matrix itself</span>
+<span class="nx">c</span><span class="p">.</span><span class="nx">subset</span><span class="p">(</span><span class="nx">math</span><span class="p">.</span><span class="nx">index</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span><span class="mi">1</span><span class="p">);</span>                 <span class="c1">// Matrix, [[0, 1], [0, 0]]</span>
+<span class="nx">c</span><span class="p">.</span><span class="nx">subset</span><span class="p">(</span><span class="nx">math</span><span class="p">.</span><span class="nx">index</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]),</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]);</span>      <span class="c1">// Matrix, [[0, 1], [2, 3]]</span>
+<span class="nx">e</span><span class="p">.</span><span class="nx">resize</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="mi">0</span><span class="p">);</span>                          <span class="c1">// Matrix, [[0, 0, 0], [0, 0, 0]]</span>
+<span class="nx">e</span><span class="p">.</span><span class="nx">subset</span><span class="p">(</span><span class="nx">math</span><span class="p">.</span><span class="nx">index</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="mi">5</span><span class="p">);</span>                <span class="c1">// Matrix, [[0, 0, 0], [0, 0, 5]]</span>
+</code></pre></div>
+<h2 id="iterating">Iterating <a href="matrices.html#iterating" title="Permalink">#</a></h2>
+
+<p>Matrices contain functions <code>map</code> and <code>forEach</code> to iterate over all elements of
+the (multidimensional) matrix. The callback function of <code>map</code> and <code>forEach</code> has
+three parameters: <code>value</code> (the value of the currently iterated element),
+<code>index</code> (an array with the index value for each dimension), and <code>matrix</code> (the
+matrix being iterated). This syntax is similar to the <code>map</code> and <code>forEach</code>
+functions of native JavaScript Arrays, except that the index is no number but
+an Array with numbers for each dimension.</p>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">a</span> <span class="o">=</span> <span class="nx">math</span><span class="p">.</span><span class="nx">matrix</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]]);</span>
+
+<span class="c1">// The iteration below will output the following in the console:</span>
+<span class="c1">//    value: 0 index: [0, 0]</span>
+<span class="c1">//    value: 1 index: [0, 1]</span>
+<span class="c1">//    value: 2 index: [1, 0]</span>
+<span class="c1">//    value: 3 index: [1, 1]</span>
+<span class="c1">//    value: 4 index: [2, 0]</span>
+<span class="c1">//    value: 5 index: [2, 1]</span>
+<span class="nx">a</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">index</span><span class="p">,</span> <span class="nx">matrix</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;value:&#39;</span><span class="p">,</span> <span class="nx">value</span><span class="p">,</span> <span class="s1">&#39;index:&#39;</span><span class="p">,</span> <span class="nx">index</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="c1">// Apply a transformation on the matrix</span>
+<span class="kd">var</span> <span class="nx">b</span> <span class="o">=</span> <span class="nx">a</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">index</span><span class="p">,</span> <span class="nx">matrix</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">math</span><span class="p">.</span><span class="nx">multiply</span><span class="p">(</span><span class="nx">math</span><span class="p">.</span><span class="nx">sin</span><span class="p">(</span><span class="nx">value</span><span class="p">),</span> <span class="nx">math</span><span class="p">.</span><span class="nx">exp</span><span class="p">(</span><span class="nx">math</span><span class="p">.</span><span class="nx">abs</span><span class="p">(</span><span class="nx">value</span><span class="p">)));</span>
+<span class="p">});</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">b</span><span class="p">.</span><span class="nx">format</span><span class="p">(</span><span class="mi">5</span><span class="p">));</span> <span class="c1">// [[0, 2.2874], [6.7188, 2.8345], [-41.32, -142.32]]</span>
+
+<span class="c1">// Create a matrix with the cumulative of all elements</span>
+<span class="kd">var</span> <span class="nx">count</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">cum</span> <span class="o">=</span> <span class="nx">a</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">index</span><span class="p">,</span> <span class="nx">matrix</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">count</span> <span class="o">+=</span> <span class="nx">value</span><span class="p">;</span>
+  <span class="k">return</span> <span class="nx">count</span><span class="p">;</span>
+<span class="p">});</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">cum</span><span class="p">.</span><span class="nx">toString</span><span class="p">());</span> <span class="c1">// [[0, 1], [3, 6], [10, 15]]</span>
+</code></pre></div>
+  </div>
+
+</div>
+
+<div id="footer">
+  <a href="../../index.html">mathjs.org</a> &bull;
+  <a href="https://github.com/josdejong/mathjs#license" target="_blank">copyright &copy; 2013-2015 jos de jong</a> &bull;
+  <a href="http://subtlepatterns.com/bright-squares/" target="_blank">background by waseem dahman</a>
+</div>
+
+<div id="forkme">
+  <a href="https://github.com/josdejong/mathjs" target="_blank">
+    <img src="../../css/img/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" >
+  </a>
+</div>
+
+<script type="text/javascript">
+  // change layout for different screen sizes
+  function resize () {
+    var width = document.body.clientWidth;
+
+    var page = document.getElementById('page');
+    page.className = (width < 810) ? 'small' : 'normal';
+    if (width < 620) {
+      page.className += ' tiny';
+    }
+
+    var forkme = document.getElementById('forkme');
+    forkme.className = (width < 810) ? 'small' : 'normal';
+  }
+  resize();
+  window.onresize = resize;
+</script>
+
+</body>
+</html>

@@ -7,7 +7,7 @@
  */
 
 (function() {
-  var cached, startTime, _mathJS,
+  var cached, diff, startTime, _mathJS,
     __modulo = function(a, b) { return (+a % (b = +b) + b) % b; },
     __slice = [].slice,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
@@ -1198,7 +1198,7 @@
     }
 
     Evaluable.prototype["eval"] = function() {
-      throw new mathJS.Errors.NotImplementedError("0 in " + this.contructor.name);
+      throw new mathJS.Errors.NotImplementedError("eval() in " + this.contructor.name);
     };
 
     return Evaluable;
@@ -3651,7 +3651,7 @@
           x: 4
         }));
         console.log(p3.getSet());
-        console.log(2);
+        console.log(AAA);
         return "done";
       };
     }
@@ -5174,7 +5174,11 @@
   mathJS.Initializer.start();
 
   if (DEBUG) {
-    console.log("time to load mathJS: ", Date.now() - startTime, "ms");
+    diff = Date.now() - startTime;
+    console.log("time to load mathJS: ", diff, "ms");
+    if (diff > 100) {
+      console.warn("LOADING TIME CRITICAL!");
+    }
   }
 
 }).call(this);

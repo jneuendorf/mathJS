@@ -49,7 +49,7 @@ class mathJS.Function extends mathJS.Set
     * If an array the first value will be associated with the first variable name. Otherwise an object like {x: 42} is expected.
     * @return
     *###
-    'eval': (values...) ->
+    eval: (values...) ->
         tmp = {}
         if values instanceof Array
             for value, i in values
@@ -61,8 +61,8 @@ class mathJS.Function extends mathJS.Set
             if not domain.contains(val)
                 return null
 
-        return @expression.'eval'(values)
+        return @expression.eval(values)
 
     # make alias
-    at: @'eval'
-    get: @'eval'
+    at: @eval
+    get: @eval

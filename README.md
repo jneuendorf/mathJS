@@ -21,8 +21,7 @@ See the wiki.
 ### For development
 
 - (unix)
-- m4
-- replace
+- python3
 - coffee
 
 ### For production code

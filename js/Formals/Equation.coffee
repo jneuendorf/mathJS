@@ -23,8 +23,8 @@ class mathJS.Equation
 
         return solutions
 
-    'eval': (values) ->
-        return @left.'eval'(values).equals @right.'eval'(values)
+    eval: (values) ->
+        return @left.eval(values).equals @right.eval(values)
 
     simplify: () ->
         @left = @left.simplify()
