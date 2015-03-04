@@ -17,7 +17,7 @@ More than that its design is made as close as possible to actual math.
 
 Classes:
 
-![image](class_diagram.png =1200x)
+![image](class_diagram.png)
 
 For more information see the wiki.
 
