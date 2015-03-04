@@ -1,8 +1,3 @@
-# ###*
-# * @class ConditionalSet
-# * @constructor
-# * @param {mathJS.Expression}
-# *###
 class _mathJS.ConditionalSet extends mathJS.Set
 
     CLASS = @
@@ -26,6 +21,7 @@ class _mathJS.ConditionalSet extends mathJS.Set
     # predicate is an boolean expression
     # TODO: try to find out if the set is actually discrete!
     # TODO: maybe a 3rd parameter "baseSet" should be passed to indicate where the generator comes from
+    # TODO: predicate could also be the base set itself. if not it must be derived from the (boolean) predicate
     constructor: (expression, predicate) ->
         # empty set
         if arguments.length is 0
@@ -49,7 +45,7 @@ class _mathJS.ConditionalSet extends mathJS.Set
 
     cartesianProduct: (sets...) ->
         generators = [@generator].concat(set.generator for set in sets)
-        return new _mathJS.ConditionalSet(mathJS.Generator.newFromMany(generators...))
+        return new _mathJS.ConditionalSet(mathJS.Generator.product(generators...))
 
     clone: () ->
         return new CLASS()

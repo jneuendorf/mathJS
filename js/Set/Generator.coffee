@@ -1,8 +1,7 @@
 class mathJS.Generator
 
-    @newFromMany: (generators...) ->
-        return new mathJS.Generator(null, 0, Infinity, null, null, new mathJS.Tuple(generators))
-
+    ###########################################################################
+    # CONSTRUCTOR
     constructor: (f, minX=0, maxX=Infinity, stepSize=mathJS.config.number.real.distance, maxIndex=mathJS.config.generator.maxIndex, tuple) ->
         @f = f
         @inverseF = f.getInverse()
@@ -16,6 +15,8 @@ class mathJS.Generator
         @overflowed = false
         @index = 0
 
+    ###########################################################################
+    # DEFINED PROPS
     Object.defineProperties @::, {
         function:
             get: () ->
@@ -25,6 +26,18 @@ class mathJS.Generator
                 @inverseF = f.getInverse()
                 return @
     }
+
+    ###########################################################################
+    # STATIC
+    @product: (generators...) ->
+        return new mathJS.Generator(null, 0, Infinity, null, null, new mathJS.Tuple(generators))
+
+    @or: () ->
+
+    @and: () ->
+
+    ###########################################################################
+    # PUBLIC
 
     ###*
     * Indicates whether the set the generator creates contains the given value or not.
@@ -138,7 +151,7 @@ class mathJS.Generator
                 10,
                 2
             )
-            g = mathJS.Generator.newFromMany(g1, g2)
+            g = mathJS.Generator.product(g1, g2)
 
             res = []
             while g.hasNext()

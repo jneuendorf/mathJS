@@ -1,6 +1,7 @@
 # mathJS
 
-A JavaScript math library.
+A JavaScript math library. It is more than just an extension of arithmetical functions.
+More than that its design is made as close as possible to actual math.
 
 ## Features
 
@@ -14,7 +15,11 @@ A JavaScript math library.
 
 ## API Documentation
 
-See the wiki.
+Classes:
+
+![image](class_diagram.png =1200x)
+
+For more information see the wiki.
 
 ## Requirements
 
