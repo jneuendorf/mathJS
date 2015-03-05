@@ -17,7 +17,7 @@ More than that its design is made as close as possible to actual math.
 
 Classes:
 
-![image](class_diagram.png)
+[class diagram](class_diagram.pdf)
 
 For more information see the wiki.
 

@@ -1,4 +1,4 @@
-class mathJS.Generator
+class _mathJS.AbstractGenerator extends _mathJS.Object
 
     ###########################################################################
     # CONSTRUCTOR
@@ -30,11 +30,10 @@ class mathJS.Generator
     ###########################################################################
     # STATIC
     @product: (generators...) ->
-        return new mathJS.Generator(null, 0, Infinity, null, null, new mathJS.Tuple(generators))
 
-    @or: () ->
+    @or: (gen1, gen2) ->
 
-    @and: () ->
+    @and: (gen1, gen2) ->
 
     ###########################################################################
     # PUBLIC

@@ -34,21 +34,24 @@ js/Formals/Equation
 
 js/Logic/Predicate
 
-js/Set/AbstractSet
-js/Set/Set
-js/Set/DiscreteSet
-js/Set/ConditionalSet
-js/Set/Tuple
-js/Set/Generator
-js/Set/Function
+js/Sets/AbstractSet
+js/Sets/Set
+js/Sets/DiscreteSet
+js/Sets/ConditionalSet
+js/Sets/Tuple
+js/Sets/Function
 
-js/Set/Domains/Domain
-js/Set/Domains/N
-js/Set/Domains/Z
-js/Set/Domains/Q
-js/Set/Domains/I
-js/Set/Domains/R
-js/Set/Domains/C
+js/Sets/Generators/AbstractGenerator
+js/Sets/Generators/DiscreteGenerator
+js/Sets/Generators/ContinuousGenerator
+
+js/Sets/Domains/Domain
+js/Sets/Domains/N
+js/Sets/Domains/Z
+js/Sets/Domains/Q
+js/Sets/Domains/I
+js/Sets/Domains/R
+js/Sets/Domains/C
 
 js/Calculus/Integral
 
