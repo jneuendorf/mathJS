@@ -14,6 +14,7 @@ window.mathJS =
     Geometry: {}
     Operations: {}
     Sets: {}
+    Utils: {}
 
 # Take namespaces from mathJS
 _mathJS = $.extend {}, mathJS

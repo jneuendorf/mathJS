@@ -15,6 +15,7 @@ window.mathJS =
     Geometry: {}
     Operations: {}
     Sets: {}
+    Utils: {}
 
 # Take namespaces from mathJS
 _mathJS = $.extend {}, mathJS
@@ -1507,14 +1508,7 @@ class mathJS.Number extends _mathJS.AbstractNumber
 
 # from js/Numbers/Double.coffee
 class mathJS.Double extends mathJS.Number
-
-    # constructor: (value) ->
-    #     super
 # end js/Numbers/Double.coffee
-
-# from js/Numbers/Float.coffee
-class mathJS.Float extends mathJS.Double
-# end js/Numbers/Float.coffee
 
 # from js/Numbers/Int.coffee
 ###*
@@ -2334,7 +2328,9 @@ mathJS.Operations =
 ###*
 * Tree structure of expressions. It consists of 2 expression and 1 operation.
 * @class Expression
-
+* @constructor
+* @param operation {Operation|String}
+* @param expressions... {Expression}
 *###
 class mathJS.Expression
 
@@ -2631,13 +2627,7 @@ class mathJS.Equation
     # ...
 # end js/Formals/Equation.coffee
 
-# from js/Logic/Predicate.coffee
-class mathJS.Predicate
-
-    constructor: () ->
-# end js/Logic/Predicate.coffee
-
-# from js/Set/AbstractSet.coffee
+# from js/Sets/AbstractSet.coffee
 class _mathJS.AbstractSet extends _mathJS.Object
 
     @implement _mathJS.Orderable, _mathJS.Poolable, _mathJS.Parseable
@@ -2717,9 +2707,9 @@ class _mathJS.AbstractSet extends _mathJS.Object
         return @
 
     @_makeAliases()
-# end js/Set/AbstractSet.coffee
+# end js/Sets/AbstractSet.coffee
 
-# from js/Set/Set.coffee
+# from js/Sets/Set.coffee
 ###*
 * @class Set
 * @constructor
@@ -2882,9 +2872,9 @@ class mathJS.Set extends _mathJS.AbstractSet
     infimum: () ->
 
     supremum: () ->
-# end js/Set/Set.coffee
+# end js/Sets/Set.coffee
 
-# from js/Set/DiscreteSet.coffee
+# from js/Sets/DiscreteSet.coffee
 ###*
 * This class is a Setof explicitely listed elements (with no needed logic).
 * @class DiscreteSet
@@ -2994,14 +2984,9 @@ class _mathJS.DiscreteSet extends mathJS.Set
     supremum: () ->
 
     @_makeAliases()
-# end js/Set/DiscreteSet.coffee
+# end js/Sets/DiscreteSet.coffee
 
-# from js/Set/ConditionalSet.coffee
-# ###*
-# * @class ConditionalSet
-# * @constructor
-# * @param {mathJS.Expression}
-# *###
+# from js/Sets/ConditionalSet.coffee
 class _mathJS.ConditionalSet extends mathJS.Set
 
     CLASS = @
@@ -3025,6 +3010,8 @@ class _mathJS.ConditionalSet extends mathJS.Set
     # predicate is an boolean expression
     # TODO: try to find out if the set is actually discrete!
     # TODO: maybe a 3rd parameter "baseSet" should be passed to indicate where the generator comes from
+    # TODO: predicate could also be the base set itself. if not it must be derived from the (boolean) predicate
+    # TODO: predicate's type is Expression.Boolean
     constructor: (expression, predicate) ->
         # empty set
         if arguments.length is 0
@@ -3048,7 +3035,7 @@ class _mathJS.ConditionalSet extends mathJS.Set
 
     cartesianProduct: (sets...) ->
         generators = [@generator].concat(set.generator for set in sets)
-        return new _mathJS.ConditionalSet(mathJS.Generator.newFromMany(generators...))
+        return new _mathJS.ConditionalSet(mathJS.Generator.product(generators...))
 
     clone: () ->
         return new CLASS()
@@ -3109,9 +3096,9 @@ class _mathJS.ConditionalSet extends mathJS.Set
             # console.log set
 
             return "done"
-# end js/Set/ConditionalSet.coffee
+# end js/Sets/ConditionalSet.coffee
 
-# from js/Set/Tuple.coffee
+# from js/Sets/Tuple.coffee
 class mathJS.Tuple
 
     ###########################################################################
@@ -3239,14 +3226,84 @@ class mathJS.Tuple
     insertAt: @::insert
 
     reduceBy: @::remove
-# end js/Set/Tuple.coffee
+# end js/Sets/Tuple.coffee
 
-# from js/Set/Generator.coffee
-class mathJS.Generator
+# from js/Sets/Function.coffee
+class mathJS.Function extends mathJS.Set
 
-    @newFromMany: (generators...) ->
-        return new mathJS.Generator(null, 0, Infinity, null, null, new mathJS.Tuple(generators))
+    # EQUAL!
+    # function:
+    # f: X -> Y, f(x) = 3x^2 - 5x + 7
+    # set:
+    # {(x, 3x^2 - 5x + 7) | x in X}
 
+    # domain is implicit by variables" types contained in the expression
+    # range is implicit by the expression
+    # constructor: (name, domain, range, expression) ->
+    constructor: (name, expression, domain, range) ->
+        @name = name
+        @expression = expression
+
+        if domain instanceof mathJS.Set
+            @domain = domain
+        else
+            @domain = new mathJS.Set(expression.getVariables())
+
+        if range instanceof mathJS.Set
+            @range = range
+        else
+            @range = expression.getSet()
+
+        @_cache = {}
+        @caching = true
+
+        super()
+
+    ###*
+    * Empty the cache or reset to given cache.
+    * @method clearCache
+    * @param cache {Object}
+    * @return mathJS.Function
+    * @chainable
+    *###
+    clearCache: (cache) ->
+        if not cache?
+            @_cache = {}
+        else
+            @_cache = cache
+        return @
+
+    ###*
+    * Evaluate the function for given values.
+    * @method get
+    * @param values {Array|Object}
+    * If an array the first value will be associated with the first variable name. Otherwise an object like {x: 42} is expected.
+    * @return
+    *###
+    eval: (values...) ->
+        tmp = {}
+        if values instanceof Array
+            for value, i in values
+                tmp[@variableNames[i]] = value
+            values = tmp
+
+        # check if values are in domain
+        for varName, val of values
+            if not domain.contains(val)
+                return null
+
+        return @expression.eval(values)
+
+    # make alias
+    at: @eval
+    get: @eval
+# end js/Sets/Function.coffee
+
+# from js/Sets/Generators/AbstractGenerator.coffee
+class _mathJS.AbstractGenerator extends _mathJS.Object
+
+    ###########################################################################
+    # CONSTRUCTOR
     constructor: (f, minX=0, maxX=Infinity, stepSize=mathJS.config.number.real.distance, maxIndex=mathJS.config.generator.maxIndex, tuple) ->
         @f = f
         @inverseF = f.getInverse()
@@ -3260,6 +3317,8 @@ class mathJS.Generator
         @overflowed = false
         @index = 0
 
+    ###########################################################################
+    # DEFINED PROPS
     Object.defineProperties @::, {
         function:
             get: () ->
@@ -3269,6 +3328,17 @@ class mathJS.Generator
                 @inverseF = f.getInverse()
                 return @
     }
+
+    ###########################################################################
+    # STATIC
+    @product: (generators...) ->
+
+    @or: (gen1, gen2) ->
+
+    @and: (gen1, gen2) ->
+
+    ###########################################################################
+    # PUBLIC
 
     ###*
     * Indicates whether the set the generator creates contains the given value or not.
@@ -3382,7 +3452,7 @@ class mathJS.Generator
                 10,
                 2
             )
-            g = mathJS.Generator.newFromMany(g1, g2)
+            g = mathJS.Generator.product(g1, g2)
 
             res = []
             while g.hasNext()
@@ -3405,80 +3475,367 @@ class mathJS.Generator
             # console.log tmp
 
             return "done"
-# end js/Set/Generator.coffee
+# end js/Sets/Generators/AbstractGenerator.coffee
 
-# from js/Set/Function.coffee
-class mathJS.Function extends mathJS.Set
+# from js/Sets/Generators/DiscreteGenerator.coffee
+class mathJS.DiscreteGenerator extends _mathJS.AbstractGenerator
 
-    # EQUAL!
-    # function:
-    # f: X -> Y, f(x) = 3x^2 - 5x + 7
-    # set:
-    # {(x, 3x^2 - 5x + 7) | x in X}
+    ###########################################################################
+    # CONSTRUCTOR
+    constructor: (f, minX=0, maxX=Infinity, stepSize=mathJS.config.number.real.distance, maxIndex=mathJS.config.generator.maxIndex, tuple) ->
+        @f = f
+        @inverseF = f.getInverse()
+        @minX = minX
+        @maxX = maxX
+        @stepSize = stepSize
+        @maxIndex = maxIndex
+        @tuple = tuple
 
-    # domain is implicit by variables" types contained in the expression
-    # range is implicit by the expression
-    # constructor: (name, domain, range, expression) ->
-    constructor: (name, expression, domain, range) ->
-        @name = name
-        @expression = expression
+        @x = minX
+        @overflowed = false
+        @index = 0
 
-        if domain instanceof mathJS.Set
-            @domain = domain
-        else
-            @domain = new mathJS.Set(expression.getVariables())
+    ###########################################################################
+    # DEFINED PROPS
+    Object.defineProperties @::, {
+        function:
+            get: () ->
+                return @f
+            set: (f) ->
+                @f = f
+                @inverseF = f.getInverse()
+                return @
+    }
 
-        if range instanceof mathJS.Set
-            @range = range
-        else
-            @range = expression.getSet()
+    ###########################################################################
+    # STATIC
+    @product: (generators...) ->
+        return new mathJS.Generator(null, 0, Infinity, null, null, new mathJS.Tuple(generators))
 
-        @_cache = {}
-        @caching = true
+    @or: () ->
 
-        super()
+    @and: () ->
+
+    ###########################################################################
+    # PUBLIC
 
     ###*
-    * Empty the cache or reset to given cache.
-    * @method clearCache
-    * @param cache {Object}
-    * @return mathJS.Function
-    * @chainable
+    * Indicates whether the set the generator creates contains the given value or not.
+    * @method generates
     *###
-    clearCache: (cache) ->
-        if not cache?
-            @_cache = {}
-        else
-            @_cache = cache
+    generates: (y) ->
+        if @f.range.contains(y)
+            #
+            if @inverseF?
+                return @inverseF.eval(y)
+            return
+        return false
+
+    eval: (n) ->
+        # eval each tuple element individually (the tuple knows how to do that)
+        if @tuple?
+            return @tuple.eval(n)
+        # eval expression
+        if @f.eval?
+            @f.eval(n)
+        # eval js function
+        return @f.call(@, n)
+
+    hasNext: () ->
+        if @tuple?
+            for g, i in @tuple.elems when g.hasNext()
+                return true
+            return false
+        return not @overflowed and @x < @maxX and @index < @maxIndex
+
+    _incX: () ->
+        @index++
+        # more calculation than just "@x += @stepSize" but more precise!
+        @x = @minX + @index * @stepSize
+
+        if @x > @maxX
+            @x = @minX
+            @index = 0
+            @overflowed = true
+        return @x
+
+    next: () ->
+        if @tuple?
+            res = @eval(g.x for g in @tuple.elems)
+
+            ###
+            0 0
+            0 1
+            1 0
+            1 1
+            ###
+            # start binary-like counting (so all possibilities are done)
+            i = 0
+            maxI = @tuple.length
+            generator = @tuple.first
+            generator._incX()
+
+            while i < maxI and generator.overflowed
+                generator.overflowed = false
+                generator = @tuple.at(++i)
+                # # "if" needed for very last value -> i should theoretically overflow
+                # => i refers to the (n+1)st tuple element (which only has n elements)
+                if generator?
+                    generator._incX()
+
+            return res
+
+        # no tuple => simple generator
+        res = @eval(@x)
+        @_incX()
+        return res
+
+    reset: () ->
+        @x = @minX
+        @index = 0
         return @
 
+    if DEBUG
+        @test = () ->
+            # simple
+            g = new mathJS.Generator(
+                (x) ->
+                    return 3*x*x+2*x-5
+                -10
+                10
+                0.2
+            )
+
+            res = []
+            while g.hasNext()
+                tmp = g.next()
+                # console.log tmp
+                res.push tmp
+
+            tmp = g.next()
+            # console.log tmp
+            res.push tmp
+
+            console.log "simple test:", (if res.length is ((g.maxX - g.minX) / g.stepSize + 1) then "successful" else "failed")
+
+            # "nested"
+            g1 = new mathJS.Generator(
+                (x) -> x,
+                0,
+                5,
+                0.5
+            )
+            g2 = new mathJS.Generator(
+                (x) -> 2*x,
+                -2,
+                10,
+                2
+            )
+            g = mathJS.Generator.product(g1, g2)
+
+            res = []
+            while g.hasNext()
+                tmp = g.next()
+                res.push tmp
+                # console.log (x.value for x in tmp.elems)
+
+            tmp = g.next()
+            res.push tmp
+            # console.log (x.value for x in tmp.elems)
+
+            console.log "tuple test:", (if res.length is ((g1.maxX - g1.minX) / g1.stepSize + 1) * ((g2.maxX - g2.minX) / g2.stepSize + 1) then "successful" else "failed")
+
+            g = new mathJS.Generator((x) -> x)
+
+            while g.hasNext()
+                tmp = g.next()
+                # console.log tmp
+            tmp = g.next()
+            # console.log tmp
+
+            return "done"
+# end js/Sets/Generators/DiscreteGenerator.coffee
+
+# from js/Sets/Generators/ContinuousGenerator.coffee
+class mathJS.ContinuousGenerator extends _mathJS.AbstractGenerator
+
+    ###########################################################################
+    # CONSTRUCTOR
+    constructor: (f, minX=0, maxX=Infinity, stepSize=mathJS.config.number.real.distance, maxIndex=mathJS.config.generator.maxIndex, tuple) ->
+        @f = f
+        @inverseF = f.getInverse()
+        @minX = minX
+        @maxX = maxX
+        @stepSize = stepSize
+        @maxIndex = maxIndex
+        @tuple = tuple
+
+        @x = minX
+        @overflowed = false
+        @index = 0
+
+    ###########################################################################
+    # DEFINED PROPS
+    Object.defineProperties @::, {
+        function:
+            get: () ->
+                return @f
+            set: (f) ->
+                @f = f
+                @inverseF = f.getInverse()
+                return @
+    }
+
+    ###########################################################################
+    # STATIC
+    @product: (generators...) ->
+        return new mathJS.Generator(null, 0, Infinity, null, null, new mathJS.Tuple(generators))
+
+    @or: () ->
+
+    @and: () ->
+
+    ###########################################################################
+    # PUBLIC
+
     ###*
-    * Evaluate the function for given values.
-    * @method get
-    * @param values {Array|Object}
-    * If an array the first value will be associated with the first variable name. Otherwise an object like {x: 42} is expected.
-    * @return
+    * Indicates whether the set the generator creates contains the given value or not.
+    * @method generates
     *###
-    eval: (values...) ->
-        tmp = {}
-        if values instanceof Array
-            for value, i in values
-                tmp[@variableNames[i]] = value
-            values = tmp
+    generates: (y) ->
+        if @f.range.contains(y)
+            #
+            if @inverseF?
+                return @inverseF.eval(y)
+            return
+        return false
 
-        # check if values are in domain
-        for varName, val of values
-            if not domain.contains(val)
-                return null
+    eval: (n) ->
+        # eval each tuple element individually (the tuple knows how to do that)
+        if @tuple?
+            return @tuple.eval(n)
+        # eval expression
+        if @f.eval?
+            @f.eval(n)
+        # eval js function
+        return @f.call(@, n)
 
-        return @expression.eval(values)
+    hasNext: () ->
+        if @tuple?
+            for g, i in @tuple.elems when g.hasNext()
+                return true
+            return false
+        return not @overflowed and @x < @maxX and @index < @maxIndex
 
-    # make alias
-    at: @eval
-    get: @eval
-# end js/Set/Function.coffee
+    _incX: () ->
+        @index++
+        # more calculation than just "@x += @stepSize" but more precise!
+        @x = @minX + @index * @stepSize
 
-# from js/Set/Domains/Domain.coffee
+        if @x > @maxX
+            @x = @minX
+            @index = 0
+            @overflowed = true
+        return @x
+
+    next: () ->
+        if @tuple?
+            res = @eval(g.x for g in @tuple.elems)
+
+            ###
+            0 0
+            0 1
+            1 0
+            1 1
+            ###
+            # start binary-like counting (so all possibilities are done)
+            i = 0
+            maxI = @tuple.length
+            generator = @tuple.first
+            generator._incX()
+
+            while i < maxI and generator.overflowed
+                generator.overflowed = false
+                generator = @tuple.at(++i)
+                # # "if" needed for very last value -> i should theoretically overflow
+                # => i refers to the (n+1)st tuple element (which only has n elements)
+                if generator?
+                    generator._incX()
+
+            return res
+
+        # no tuple => simple generator
+        res = @eval(@x)
+        @_incX()
+        return res
+
+    reset: () ->
+        @x = @minX
+        @index = 0
+        return @
+
+    if DEBUG
+        @test = () ->
+            # simple
+            g = new mathJS.Generator(
+                (x) ->
+                    return 3*x*x+2*x-5
+                -10
+                10
+                0.2
+            )
+
+            res = []
+            while g.hasNext()
+                tmp = g.next()
+                # console.log tmp
+                res.push tmp
+
+            tmp = g.next()
+            # console.log tmp
+            res.push tmp
+
+            console.log "simple test:", (if res.length is ((g.maxX - g.minX) / g.stepSize + 1) then "successful" else "failed")
+
+            # "nested"
+            g1 = new mathJS.Generator(
+                (x) -> x,
+                0,
+                5,
+                0.5
+            )
+            g2 = new mathJS.Generator(
+                (x) -> 2*x,
+                -2,
+                10,
+                2
+            )
+            g = mathJS.Generator.product(g1, g2)
+
+            res = []
+            while g.hasNext()
+                tmp = g.next()
+                res.push tmp
+                # console.log (x.value for x in tmp.elems)
+
+            tmp = g.next()
+            res.push tmp
+            # console.log (x.value for x in tmp.elems)
+
+            console.log "tuple test:", (if res.length is ((g1.maxX - g1.minX) / g1.stepSize + 1) * ((g2.maxX - g2.minX) / g2.stepSize + 1) then "successful" else "failed")
+
+            g = new mathJS.Generator((x) -> x)
+
+            while g.hasNext()
+                tmp = g.next()
+                # console.log tmp
+            tmp = g.next()
+            # console.log tmp
+
+            return "done"
+# end js/Sets/Generators/ContinuousGenerator.coffee
+
+# from js/Sets/Domains/Domain.coffee
 ###*
 * Domain ranks are like so:
 * N -> 0
@@ -3539,9 +3896,9 @@ class _mathJS.Sets.Domain extends _mathJS.AbstractSet
         return false
 
     @_makeAliases()
-# end js/Set/Domains/Domain.coffee
+# end js/Sets/Domains/Domain.coffee
 
-# from js/Set/Domains/N.coffee
+# from js/Sets/Domains/N.coffee
 class mathJS.Sets.N extends _mathJS.Sets.Domain
 
     CLASS = @
@@ -3737,9 +4094,9 @@ do () ->
             enumerable: true
             configurable: false
     }
-# end js/Set/Domains/N.coffee
+# end js/Sets/Domains/N.coffee
 
-# from js/Set/Domains/Z.coffee
+# from js/Sets/Domains/Z.coffee
 class mathJS.Sets.Z extends _mathJS.Sets.Domain
 
     CLASS = @
@@ -3794,9 +4151,9 @@ do () ->
             enumerable: true
             configurable: false
     }
-# end js/Set/Domains/Z.coffee
+# end js/Sets/Domains/Z.coffee
 
-# from js/Set/Domains/Q.coffee
+# from js/Sets/Domains/Q.coffee
 class mathJS.Sets.Q extends _mathJS.Sets.Domain
 
     CLASS = @
@@ -3851,9 +4208,9 @@ do () ->
             enumerable: true
             configurable: false
     }
-# end js/Set/Domains/Q.coffee
+# end js/Sets/Domains/Q.coffee
 
-# from js/Set/Domains/I.coffee
+# from js/Sets/Domains/I.coffee
 class mathJS.Sets.I extends _mathJS.Sets.Domain
 
     CLASS = @
@@ -3908,9 +4265,9 @@ do () ->
             enumerable: true
             configurable: false
     }
-# end js/Set/Domains/I.coffee
+# end js/Sets/Domains/I.coffee
 
-# from js/Set/Domains/R.coffee
+# from js/Sets/Domains/R.coffee
 class mathJS.Sets.R extends _mathJS.Sets.Domain
 
     CLASS = @
@@ -3965,9 +4322,9 @@ do () ->
             enumerable: true
             configurable: false
     }
-# end js/Set/Domains/R.coffee
+# end js/Sets/Domains/R.coffee
 
-# from js/Set/Domains/C.coffee
+# from js/Sets/Domains/C.coffee
 class mathJS.Sets.C extends _mathJS.Sets.Domain
 
     CLASS = @
@@ -4022,7 +4379,7 @@ do () ->
             enumerable: true
             configurable: false
     }
-# end js/Set/Domains/C.coffee
+# end js/Sets/Domains/C.coffee
 
 # from js/Calculus/Integral.coffee
 class mathJS.Integral

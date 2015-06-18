@@ -1,7 +1,9 @@
 ###*
 * Tree structure of expressions. It consists of 2 expression and 1 operation.
 * @class Expression
-
+* @constructor
+* @param operation {Operation|String}
+* @param expressions... {Expression}
 *###
 class mathJS.Expression
 

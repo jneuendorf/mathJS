@@ -22,6 +22,7 @@ class _mathJS.ConditionalSet extends mathJS.Set
     # TODO: try to find out if the set is actually discrete!
     # TODO: maybe a 3rd parameter "baseSet" should be passed to indicate where the generator comes from
     # TODO: predicate could also be the base set itself. if not it must be derived from the (boolean) predicate
+    # TODO: predicate's type is Expression.Boolean
     constructor: (expression, predicate) ->
         # empty set
         if arguments.length is 0

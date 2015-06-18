@@ -8,6 +8,9 @@ doc: make
 	coffee --output doc_base --compile js
 	yuidoc -o doc doc_base
 
+test: make
+	sh tests/build.sh
+
 production: make
 	uglifyjs source.js -o source.js -c drop_console=true -d DEBUG=false
 

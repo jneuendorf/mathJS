@@ -1,3 +1,0 @@
-class mathJS.Predicate
-
-    constructor: () ->
