@@ -1,6 +1,6 @@
 class _mathJS.AbstractSet extends _mathJS.Object
 
-    @implement _mathJS.Orderable, _mathJS.Poolable, _mathJS.Parseable
+    @implements _mathJS.Orderable, _mathJS.Poolable, _mathJS.Parseable
 
     @fromString: (str) ->
 

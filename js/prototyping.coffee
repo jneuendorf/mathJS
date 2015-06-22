@@ -5,6 +5,12 @@ Array::reverseCopy = () ->
     res.push(item) for item in @ by -1
     return res
 
+Array::unique = () ->
+    res = []
+    for elem in @ when elem not in res
+        res.push elem
+    return res
+
 Array::sample = (n = 1, forceArray = false) ->
     if n is 1
         if not forceArray
@@ -18,7 +24,6 @@ Array::sample = (n = 1, forceArray = false) ->
     res = []
     arr = @clone()
     while i++ < n
-        console.log arr
         elem = arr.sample(1)
         res.push elem
         arr.remove elem

@@ -9,10 +9,6 @@ class _mathJS.Poolable extends _mathJS.Interface
         # return new @()
         throw new mathJS.Errors.NotImplementedError("static fromPool in #{@name}")
 
-    # Alias for fromPool.
-    @new: () ->
-        return @fromPool.apply(@, arguments)
-
     ###*
     * Releases the instance to the pool of its class.
     * @method release

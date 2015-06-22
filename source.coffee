@@ -33,6 +33,12 @@ Array::reverseCopy = () ->
     res.push(item) for item in @ by -1
     return res
 
+Array::unique = () ->
+    res = []
+    for elem in @ when elem not in res
+        res.push elem
+    return res
+
 Array::sample = (n = 1, forceArray = false) ->
     if n is 1
         if not forceArray
@@ -46,7 +52,6 @@ Array::sample = (n = 1, forceArray = false) ->
     res = []
     arr = @clone()
     while i++ < n
-        console.log arr
         elem = arr.sample(1)
         res.push elem
         arr.remove elem
@@ -736,19 +741,21 @@ mathJS.config = mathJS.settings
 *###
 class _mathJS.Object
 
-    @implements = []
+    @_implements    = []
+    @_implementedBy = []
 
-    @implement = (classes...) ->
+    @implements = (classes...) ->
         if classes.first instanceof Array
             classes = classes.first
 
         for clss in classes
-            # for statistical reasons make the class / interface know what classes implement it
-            if @ not in clss.implementedBy
-                clss.implementedBy.push @
+            # make the class / interface know what classes implement it
+            if @ not in clss._implementedBy
+                clss._implementedBy.push @
 
             # implement class / interface
-            clssPrototype = clss::
+            clssPrototype = clss.prototype
+            # "window." necessary because coffee creates an "Object" variable for this class
             prototypeKeys = window.Object.keys(clssPrototype)
             # static
             for name, method of clss when name not in prototypeKeys
@@ -756,8 +763,8 @@ class _mathJS.Object
             # non-static (from prototype)
             for name, method of clssPrototype
                 @::[name] = method
-            @implements.push clss
-            
+            @_implements.push clss
+
         return @
 
     isA: (clss) ->
@@ -767,12 +774,12 @@ class _mathJS.Object
         if @ instanceof clss
             return true
 
-        for c in @constructor.implements
+        for c in @constructor._implements
             # direct hit
             if c is clss
                 return true
 
-            # check super classes
+            # check super classes ("__superClass__" is set when coffee extends classes using macros...see macros.js)
             while (c = c.__superClass__)?
                 if c is clss
                     return true
@@ -784,15 +791,27 @@ class _mathJS.Object
 # end js/mathJSObject.coffee
 
 # from js/Errors/SimpleErrors.coffee
-class mathJS.Errors.CalculationExceedanceError extends Error
+class _mathJS.Errors.Error extends Error
 
-class mathJS.Errors.InvalidVariableError extends Error
+    constructor: (message, fileName, lineNumber, misc...) ->
+        super(message, fileName, lineNumber)
+        @misc = misc
 
-class mathJS.Errors.InvalidParametersError extends Error
+    toString: () ->
+        return "#{super()}\n more data: #{@misc.toString()}"
 
-class mathJS.Errors.InvalidArityError extends Error
 
-class mathJS.Errors.NotImplementedError extends Error
+
+
+class mathJS.Errors.CalculationExceedanceError extends _mathJS.Errors.Error
+
+class mathJS.Errors.InvalidVariableError extends _mathJS.Errors.Error
+
+class mathJS.Errors.InvalidParametersError extends _mathJS.Errors.Error
+
+class mathJS.Errors.InvalidArityError extends _mathJS.Errors.Error
+
+class mathJS.Errors.NotImplementedError extends _mathJS.Errors.Error
 # end js/Errors/SimpleErrors.coffee
 
 # from js/Interfaces/Interface.coffee
@@ -893,6 +912,9 @@ class _mathJS.Parseable extends _mathJS.Interface
     @parse: (str) ->
         throw new mathJS.Errors.NotImplementedError("static parse in #{@name}")
 
+    @fromString: (str) ->
+        return @parse(str)
+
     toString: (args) ->
         throw new mathJS.Errors.NotImplementedError("toString in #{@contructor.name}")
 # end js/Interfaces/Parseable.coffee
@@ -908,10 +930,6 @@ class _mathJS.Poolable extends _mathJS.Interface
         #     return @_pool.pop()
         # return new @()
         throw new mathJS.Errors.NotImplementedError("static fromPool in #{@name}")
-
-    # Alias for fromPool.
-    @new: () ->
-        return @fromPool.apply(@, arguments)
 
     ###*
     * Releases the instance to the pool of its class.
@@ -939,14 +957,27 @@ class _mathJS.Evaluable extends _mathJS.Interface
 # This file defines the Number interface.
 class _mathJS.AbstractNumber extends _mathJS.Object
 
-    @implement _mathJS.Orderable, _mathJS.Poolable, _mathJS.Parseable
+    @implements _mathJS.Orderable, _mathJS.Poolable, _mathJS.Parseable
 
     ###*
     * @Override mathJS.Poolable
     * @static
     * @method fromPool
     *###
-    @fromPool: (val) ->
+    @fromPool: (value) ->
+        if @_pool.length > 0
+            if (val = @_getPrimitive(value))?
+                number = @_pool.pop()
+                number.value = val.value or val
+                return number
+            throw new mathJS.Errors.InvalidParametersError(
+                "Can't instatiate number from given '#{value}'"
+                "AbstractNumber.coffee"
+                undefined
+                value
+            )
+        # param check is done in constructor
+        return new @(value)
 
     ###*
     * @Override mathJS.Parseable
@@ -954,26 +985,38 @@ class _mathJS.AbstractNumber extends _mathJS.Object
     * @method parse
     *###
     @parse: (str) ->
+        return @fromPool(parseFloat(str))
 
     @getSet: () ->
+        throw new mathJS.Errors.NotImplementedError("getSet in #{@name}")
 
-    @new: (value) ->
-        return @fromPool value
+    @new: (param) ->
+        return @fromPool param
+
+    ###*
+    * This method is used to parse and check a parameter.
+    * Either a valid value is returned or null (for invalid parameters).
+    * @static
+    * @method _getPrimitive
+    * @param param {Object}
+    * @param skipCheck {Boolean}
+    * @return {mathJS.Number}
+    *###
+    @_getPrimitive: (param, skipCheck) ->
+        return null
 
     ############################################################################################
     # PROTECTED METHODS
     _setValue: (value) ->
-        if @valueIsValid(value)
-            @_value = @_getValueFromParam(value, true)
+        # if (val = @_getPrimitive(value))?
+        #     @_value = val
         return @
 
     _getValue: () ->
         return @_value
 
-    # link to static methods
-    valueIsValid: @valueIsValid
-
-    _getValueFromParam: @_getValueFromParam
+    _getPrimitive: (param) ->
+        return @constructor._getPrimitive(param)
 
     ############################################################################################
     # PUBLIC METHODS
@@ -988,7 +1031,9 @@ class _mathJS.AbstractNumber extends _mathJS.Object
     * @return {Boolean}
     *###
     equals: (n) ->
-        return @value is @_getValueFromParam(n)
+        if (val = @_getPrimitive(n))?
+            return @value is val
+        return false
 
     ###*
     * @Override mathJS.Orderable
@@ -996,7 +1041,9 @@ class _mathJS.AbstractNumber extends _mathJS.Object
     * @method lessThan
     *###
     lessThan: (n) ->
-        return @value < @_getValueFromParam(n)
+        if (val = @_getPrimitive(n))?
+            return @value < val
+        return false
 
     ###*
     * @Override mathJS.Orderable
@@ -1006,7 +1053,9 @@ class _mathJS.AbstractNumber extends _mathJS.Object
     * @return {Boolean}
     *###
     greaterThan: (n) ->
-        return @value > @_getValueFromParam(n)
+        if (val = @_getPrimitive(n))?
+            return @value > val
+        return false
 
     ###*
     * @Override mathJS.Orderable
@@ -1016,7 +1065,7 @@ class _mathJS.AbstractNumber extends _mathJS.Object
     * @return {Boolean}
     *###
     lessThanOrEqualTo: (n) ->
-        return @value <= @_getValueFromParam(n)
+        return @lessThan(n) or @equals(n)
 
     ###*
     * This method checks for mathmatical ">=".
@@ -1025,7 +1074,7 @@ class _mathJS.AbstractNumber extends _mathJS.Object
     * @return {Boolean}
     *###
     greaterThanOrEqualTo: (n) ->
-        return @value >= @_getValueFromParam(n)
+        return @greaterThan(n) or @equals(n)
     # END - IMPLEMENTING COMPARABLE
     ############################################################################################
 
@@ -1033,28 +1082,52 @@ class _mathJS.AbstractNumber extends _mathJS.Object
     * This method adds 2 numbers and returns a new one.
     * @method plus
     * @param {Number} n
-    * @return {Number} Calculated Number.
+    * @return {mathJS.Number} Calculated Number.
     *###
     plus: (n) ->
-        return @fromPool(@value + @_getValueFromParam(n))
+        if (val = @_getPrimitive(n))?
+            return mathJS.Number.new(@value + val)
+
+        throw new mathJS.Errors.InvalidParametersError(
+            "Can't instatiate number from given '#{n}'"
+            "AbstractNumber.coffee"
+            undefined
+            n
+        )
 
     ###*
     * This method substracts 2 numbers and returns a new one.
     * @method minus
     * @param {Number} n
-    * @return {Number} Calculated Number.
+    * @return {mathJS.Number} Calculated Number.
     *###
     minus: (n) ->
-        return @fromPool(@value - n)
+        if (val = @_getPrimitive(n))?
+            return mathJS.Number.new(@value - val)
+
+        throw new mathJS.Errors.InvalidParametersError(
+            "Can't instatiate number from given '#{n}'"
+            "AbstractNumber.coffee"
+            undefined
+            n
+        )
 
     ###*
     * This method multiplies 2 numbers and returns a new one.
     * @method times
     * @param {Number} n
-    * @return {Number} Calculated Number.
+    * @return {mathJS.Number} Calculated Number.
     *###
     times: (n) ->
-        return @fromPool(@value * @_getValueFromParam(n))
+        if (val = @_getPrimitive(n))?
+            return mathJS.Number.new(@value * val)
+
+        throw new mathJS.Errors.InvalidParametersError(
+            "Can't instatiate number from given '#{n}'"
+            "AbstractNumber.coffee"
+            undefined
+            n
+        )
 
     ###*
     * This method divides 2 numbers and returns a new one.
@@ -1063,7 +1136,15 @@ class _mathJS.AbstractNumber extends _mathJS.Object
     * @return {Number} Calculated Number.
     *###
     divide: (n) ->
-        return @fromPool(@value / @_getValueFromParam(n))
+        if (val = @_getPrimitive(n))?
+            return mathJS.Number.new(@value / val)
+
+        throw new mathJS.Errors.InvalidParametersError(
+            "Can't instatiate number from given '#{n}'"
+            "AbstractNumber.coffee"
+            undefined
+            n
+        )
 
     ###*
     * This method squares this instance and returns a new one.
@@ -1071,7 +1152,7 @@ class _mathJS.AbstractNumber extends _mathJS.Object
     * @return {Number} Calculated Number.
     *###
     square: () ->
-        return @fromPool(@value * @value)
+        return mathJS.Number.new(@value * @value)
 
     ###*
     * This method cubes this instance and returns a new one.
@@ -1079,7 +1160,7 @@ class _mathJS.AbstractNumber extends _mathJS.Object
     * @return {Number} Calculated Number.
     *###
     cube: () ->
-        return @fromPool(@value * @value * @value)
+        return mathJS.Number.new(@value * @value * @value)
 
     ###*
     * This method calculates the square root of this instance and returns a new one.
@@ -1087,7 +1168,7 @@ class _mathJS.AbstractNumber extends _mathJS.Object
     * @return {Number} Calculated Number.
     *###
     sqrt: () ->
-        return @fromPool mathJS.sqrt(@value)
+        return mathJS.Number.new(mathJS.sqrt(@value))
 
     ###*
     * This method calculates the cubic root of this instance and returns a new one.
@@ -1095,36 +1176,70 @@ class _mathJS.AbstractNumber extends _mathJS.Object
     * @return {Number} Calculated Number.
     *###
     curt: () ->
-        return @pow(1 / 3)
+        return @pow(0.3333333333333333)
 
     ###*
     * This method calculates any root of this instance and returns a new one.
-    * @method plus
+    * @method root
     * @param {Number} exponent
     * @return {Number} Calculated Number.
     *###
     root: (exp) ->
+        if (val = @_getPrimitive(exp))?
+            return @pow(1 / val)
+
+        throw new mathJS.Errors.InvalidParametersError(
+            "Can't instatiate number from given '#{exp}'"
+            "AbstractNumber.coffee"
+            undefined
+            exp
+        )
 
     ###*
-    * This method adds 2 numbers and returns a new one.
-    * @method plus
-    * @param {Number} n
+    * This method returns the reciprocal (1/n) of this number.
+    * @method reciprocal
     * @return {Number} Calculated Number.
     *###
     reciprocal: () ->
+        return mathJS.Number.new(1 / @value)
 
     ###*
-    * This method adds 2 numbers and returns a new one.
-    * @method plus
+    * This method returns this' value the the n-th power (this^n).
+    * @method pow
     * @param {Number} n
     * @return {Number} Calculated Number.
     *###
     pow: (n) ->
-        return @fromPool mathJS.pow @value, @_getValueFromParam(n)
+        if (val = @_getPrimitive(n))?
+            return mathJS.Number.new(mathJS.pow(@value, val))
 
-    sign: () ->
+        throw new mathJS.Errors.InvalidParametersError(
+            "Can't instatiate number from given '#{n}'"
+            "AbstractNumber.coffee"
+            undefined
+            n
+        )
+
+    ###*
+    * This method returns the sign of this number (sign(this)).
+    * @method sign
+    * @param plain {Boolean}
+    * Indicates whether the return value is wrapped in a mathJS.Number or not (-> primitive value).
+    * @return {Number|mathJS.Number}
+    *###
+    sign: (plain=true) ->
+        val = @value
+        if plain is true
+            if val < 0
+                return -1
+            return 1
+        # else:
+        if val < 0
+            return mathJS.Number.new(-1)
+        return mathJS.Number.new(1)
 
     negate: () ->
+        return mathJS.Number.new(-@value)
 
     toInt: () ->
 
@@ -1161,57 +1276,46 @@ class _mathJS.AbstractNumber extends _mathJS.Object
 class mathJS.Number extends _mathJS.AbstractNumber
     ###########################################################################################
     # STATIC
-    @valueIsValid: (value) ->
-        return value instanceof mathJS.Number or mathJS.isNum(value)
-
-    ###*
-    * This method gets the value from a parameter. The validity is determined by this.valueIsValid().
-    * @static
-    * @protected
-    * @method _getValueFromParam
-    * @param {Number} param
-    * @param {Boolean} skipCheck
-    * If `true` the given parameter is not (again) checked for validity. If the function that calls _getValueFromParam() has already checked the passed parameter this `skipCheck` should be set to true.
-    * @return {Number} The primitive value or null.
-    *###
-    @_getValueFromParam: (param, skipCheck) ->
-        if not skipCheck and not @valueIsValid(param)
-            return null
+    @_getPrimitive: (param, skipCheck) ->
+        if skipCheck is true
+            return param
 
         if param instanceof mathJS.Number
-            value = param.value
-        else if param instanceof Number
-            value = param.valueOf()
-        else if mathJS.isNum param
-            value = param
+            return param.value
 
-        return value
+        if param instanceof Number
+            return param.valueOf()
 
-    ###*
-    * @Override mathJS.Poolable
-    * @static
-    * @method fromPool
-    *###
-    @fromPool: (val) ->
-        if @_pool.length > 0
-            if @valueIsValid val
-                number = @_pool.pop()
-                number.value = val.value or val
-                return number
-            return null
-        else
-            # param check is done in constructor
-            return new @(val)
+        if mathJS.isNum(param)
+            return param
 
-    ###*
-    * @Override mathJS.Parseable
-    * @static
-    * @method parse
-    *###
-    @parse: (str) ->
-        if mathJS.isNum(parsed = parseFloat(str))
-            return @fromPool parsed
-        return parsed
+        return null
+
+    # ###*
+    # * @Override mathJS.Poolable
+    # * @static
+    # * @method fromPool
+    # *###
+    # @fromPool: (val) ->
+    #     if @_pool.length > 0
+    #         if @valueIsValid val
+    #             number = @_pool.pop()
+    #             number.value = val.value or val
+    #             return number
+    #         return null
+    #     else
+    #         # param check is done in constructor
+    #         return new @(val)
+
+    # ###*
+    # * @Override mathJS.Parseable
+    # * @static
+    # * @method parse
+    # *###
+    # @parse: (str) ->
+    #     if mathJS.isNum(parsed = parseFloat(str))
+    #         return @fromPool parsed
+    #     return parsed
 
     @random: (max, min) ->
         return @fromPool mathJS.randNum(max, min)
@@ -1228,255 +1332,45 @@ class mathJS.Number extends _mathJS.AbstractNumber
     # @new: (value) ->
     #     return @fromPool value
 
-    ###########################################################################
+    ###########################################################################################
     # CONSTRUCTOR
     constructor: (value) ->
-        # if not @valueIsValid(value)
-        #     fStr = arguments.callee.caller.toString()
-        #     throw new Error("mathJS: Expected plain number! Given #{value} in \"#{fStr.substring(0, fStr.indexOf(")") + 1)}\"")
+        @_value = null
 
         Object.defineProperties @, {
             value:
                 get: @_getValue
                 set: @_setValue
-            fromPool:
-                value: @constructor.fromPool.bind(@constructor)
-                writable: false
-                enumarable: false
-                configurable: false
         }
 
-        @value = @_getValueFromParam(value, true)
+        if (val = @_getPrimitive(value))?
+            @_value = val
+        else
+            throw new mathJS.Errors.InvalidParametersError(
+                "Can't instatiate number from given '#{value}'"
+                "Number.coffee"
+                undefined
+                value
+            )
 
-    ###########################################################################
+    ###########################################################################################
     # PRIVATE METHODS
 
-    ###########################################################################
+    ###########################################################################################
     # PROTECTED METHODS
-    _setValue: (value) ->
-        if @valueIsValid(value)
-            @_value = @_getValueFromParam(value, true)
-        return @
 
-    _getValue: () ->
-        return @_value
-
-    # link to static methods
-    valueIsValid: @valueIsValid
-
-    _getValueFromParam: @_getValueFromParam
-
-
-    ###########################################################################
+    ###########################################################################################
     # PUBLIC METHODS
 
+    ########################################################
     # IMPLEMENTING COMPARABLE
-    ###*
-    * @Override mathJS.Comparable
-    * This method checks for mathmatical equality. This means new mathJS.Double(4.2).equals(4.2) is true.
-    * @method equals
-    * @param {Number} n
-    * @return {Boolean}
-    *###
-    equals: (n) ->
-        return @value is @_getValueFromParam(n)
-
-    ###*
-    * @Override mathJS.Orderable
-    * This method check for mathmatical "<". This means new mathJS.Double(4.2).lessThan(5.2) is true.
-    * @method lessThan
-    *###
-    lessThan: (n) ->
-        return @value < @_getValueFromParam(n)
-
-    ###*
-    * @Override mathJS.Orderable
-    * This method check for mathmatical ">". This means new mathJS.Double(4.2).greaterThan(3.2) is true.
-    * @method greaterThan
-    * @param {Number} n
-    * @return {Boolean}
-    *###
-    greaterThan: (n) ->
-        return @value > @_getValueFromParam(n)
-
-    ###*
-    * @Override mathJS.Orderable
-    * This method check for mathmatical equality. This means new mathJS.Double(4.2).lessThanOrEqualTo(3.2) is true.
-    * @method lessThanOrEqualTo
-    * @param {Number} n
-    * @return {Boolean}
-    *###
-    lessThanOrEqualTo: (n) ->
-        return @value <= @_getValueFromParam(n)
-
-    ###*
-    * This method check for mathmatical equality. This means new mathJS.Double(4.2).lessThanOrEqualTo(3.2) is true.
-    * @method greaterThanOrEqualTo
-    * @param {Number} n
-    * @return {Boolean}
-    *###
-    greaterThanOrEqualTo: (n) ->
-        return @value >= @_getValueFromParam(n)
-
-
+    # see AbstractNumber
     # END - IMPLEMENTING COMPARABLE
 
-    ###*
-    * This method adds 2 numbers and returns a new one.
-    * @method plus
-    * @param {Number} n
-    * @return {Number} Calculated Number.
-    *###
-    plus: (n) ->
-        return @fromPool(@value + @_getValueFromParam(n))
-
-    ###*
-    * This method adds the given number to this instance.
-    * @method increase
-    * @param {Number} n
-    * @return {Number} This instance.
-    *###
-    increase: (n) ->
-        @value += @_getValueFromParam(n)
-        return @
-
-    ###*
-    * See increase().
-    * @method plusSelf
-    *###
-    plusSelf: @increase
-
-    ###*
-    * This method substracts 2 numbers and returns a new one.
-    * @method minus
-    * @param {Number} n
-    * @return {Number} Calculated Number.
-    *###
-    minus: (n) ->
-        return @fromPool(@value - n)
-
-    decrease: (n) ->
-        @value -= @_getValueFromParam(n)
-        return @
-
-    minusSelf: @decrease
-
-    ###*
-    * This method multiplies 2 numbers and returns a new one.
-    * @method times
-    * @param {Number} n
-    * @return {Number} Calculated Number.
-    *###
-    times: (n) ->
-        return @fromPool(@value * @_getValueFromParam(n))
-
-    timesSelf: (n) ->
-        @value *= @_getValueFromParam(n)
-        return @
-
-    ###*
-    * This method divides 2 numbers and returns a new one.
-    * @method divide
-    * @param {Number} n
-    * @return {Number} Calculated Number.
-    *###
-    divide: (n) ->
-        return @fromPool(@value / @_getValueFromParam(n))
-
-    divideSelf: (n) ->
-        @value /= @_getValueFromParam(n)
-        return @
-
-    ###*
-    * This method squares this instance and returns a new one.
-    * @method square
-    * @return {Number} Calculated Number.
-    *###
-    square: () ->
-        return @fromPool(@value * @value)
-
-    squareSelf: () ->
-        @value *= @value
-        return @
-
-    ###*
-    * This method cubes this instance and returns a new one.
-    * @method cube
-    * @return {Number} Calculated Number.
-    *###
-    cube: () ->
-        return @fromPool(@value * @value * @value)
-
-    cubeSelf: () ->
-        @value *= @value * @value
-        return @
-
-    ###*
-    * This method calculates the square root of this instance and returns a new one.
-    * @method sqrt
-    * @return {Number} Calculated Number.
-    *###
-    sqrt: () ->
-        return @fromPool mathJS.sqrt(@value)
-
-    sqrtSelf: () ->
-        @value = mathJS.sqrt @value
-        return @
-
-    ###*
-    * This method calculates the cubic root of this instance and returns a new one.
-    * @method curt
-    * @return {Number} Calculated Number.
-    *###
-    curt: () ->
-        return @pow(1 / 3)
-
-    curtSelf: () ->
-        return @powSelf(1 / 3)
-
-    ###*
-    * This method calculates any root of this instance and returns a new one.
-    * @method plus
-    * @param {Number} exponent
-    * @return {Number} Calculated Number.
-    *###
-    root: (exp) ->
-        return @pow(1 / exp)
-
-    rootSelf: (exp) ->
-        return @powSelf(1 / exp)
-
-    ###*
-    * This method adds 2 numbers and returns a new one.
-    * @method plus
-    * @param {Number} n
-    * @return {Number} Calculated Number.
-    *###
-    reciprocal: () ->
-        return @fromPool( 1 / @value )
-
-    reciprocalSelf: () ->
-        @value = 1 / @value
-        return @
-
-    ###*
-    * This method adds 2 numbers and returns a new one.
-    * @method plus
-    * @param {Number} n
-    * @return {Number} Calculated Number.
-    *###
-    pow: (n) ->
-        return @fromPool mathJS.pow @value, @_getValueFromParam(n)
-
-    powSelf: (n) ->
-        @value = mathJS.pow @value, @_getValueFromParam(n)
-        return @
-
-    sign: () ->
-        return mathJS.sign @value
-
-    negate: () ->
-        return @fromPool -@value
+    ########################################################
+    # IMPLEMENTING BASIC OPERATIONS
+    # see AbstractNumber
+    # END - IMPLEMENTING BASIC OPERATIONS
 
     toInt: () ->
         return mathJS.Int.fromPool mathJS.floor(@value)
@@ -1523,15 +1417,15 @@ class mathJS.Int extends mathJS.Number
     # STATIC
 
     # convert return value of inherited method to integer
-    do () =>
-        inherited = @_getValueFromParam.bind(@)
-        @_getValueFromParam = (value) ->
-            return ~~inherited(value)
+    # do () =>
+        # inherited = @_getValueFromParam.bind(@)
+        # @_getValueFromParam = (value) ->
+        #     return ~~inherited(value)
 
     # _pool, fromPool are inherited
 
     @parse: (str) ->
-        if mathJS.isNum(parsed = parseIn(str, 10))
+        if mathJS.isNum(parsed = parseInt(str, 10))
             return @fromPool parsed
         return parsed
 
@@ -2630,7 +2524,7 @@ class mathJS.Equation
 # from js/Sets/AbstractSet.coffee
 class _mathJS.AbstractSet extends _mathJS.Object
 
-    @implement _mathJS.Orderable, _mathJS.Poolable, _mathJS.Parseable
+    @implements _mathJS.Orderable, _mathJS.Poolable, _mathJS.Parseable
 
     @fromString: (str) ->
 
@@ -3865,13 +3759,16 @@ class _mathJS.Sets.Domain extends _mathJS.AbstractSet
         return null
 
     constructor: (name, rank, isCountable) ->
-        @isDomain = true
-        @name = name
-        @rank = rank
+        @isDomain   = true
+        @name       = name
+        @rank       = rank
         @isCountable = isCountable
 
     clone: () ->
         return @constructor.new()
+
+    size: () ->
+        return Infinity
 
     equals: (set) ->
         return set instanceof @constructor

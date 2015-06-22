@@ -3,7 +3,7 @@ describe "Domains", () ->
     it "N", () ->
         set = mathJS.Domains.N
 
-        expect(set.size).toBe(Infinity)
+        expect(set.size()).toBe(Infinity)
 
         expect(set.contains(0)).toBe(true)
 
@@ -18,7 +18,7 @@ describe "Domains", () ->
     it "Z", () ->
         set = mathJS.Domains.Z
 
-        expect(set.size).toBe(Infinity)
+        expect(set.size()).toBe(Infinity)
 
         expect(set.contains(0)).toBe(true)
 
@@ -33,7 +33,7 @@ describe "Domains", () ->
     it "Q", () ->
         set = mathJS.Domains.Q
 
-        expect(set.size).toBe(Infinity)
+        expect(set.size()).toBe(Infinity)
 
         expect(set.contains(0)).toBe(true)
 
@@ -48,7 +48,7 @@ describe "Domains", () ->
     it "I", () ->
         set = mathJS.Domains.I
 
-        expect(set.size).toBe(Infinity)
+        expect(set.size()).toBe(Infinity)
 
         expect(set.contains(0)).toBe(true)
 
@@ -65,7 +65,7 @@ describe "Domains", () ->
     it "R", () ->
         set = mathJS.Domains.R
 
-        expect(set.size).toBe(Infinity)
+        expect(set.size()).toBe(Infinity)
 
         expect(set.contains(0)).toBe(true)
 
@@ -87,11 +87,11 @@ describe "Sets", () ->
 
         it "ellipsis", () ->
             set = mathJS.Set.fromString("{1, 2, 3, ...}")
-            expect(set.size).toBe(Infinity)
+            expect(set.size()).toBe(Infinity)
 
         it "simple expression (variable) + domain", () ->
             set = mathJS.Set.fromString("{ x | x in R}")
-            expect(set.size).toBe(Infinity)
+            expect(set.size()).toBe(Infinity)
 
             set2 = mathJS.Set.fromString("{ x : x in R}")
-            expect(set.size).toBe(Infinity)
+            expect(set.size()).toBe(Infinity)

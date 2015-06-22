@@ -24,6 +24,7 @@ macro_defs = []
 i = 0
 while i < len(macros):
     line = macros[i]
+    # ignore # and // comments
     if len(line) > 0 and line[0] != "#" and line[0] != "/" and len(line) > 1 and line[1] != "/":
         macro_defs.append(line)
         i += 1

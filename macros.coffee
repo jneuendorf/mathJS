@@ -1,1 +1,2 @@
-# for coffescript
+# macros / replacements for coffescript
+# KEY = VALUE

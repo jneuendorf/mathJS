@@ -8,9 +8,9 @@
 
 (function() {
   var _mathJS, cached, diff, startTime,
+    indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     modulo = function(a, b) { return (+a % (b = +b) + b) % b; },
     slice = [].slice,
-    indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; child.__superClass__ = parent; return child; },
     hasProp = {}.hasOwnProperty;
 
@@ -45,6 +45,18 @@
     return res;
   };
 
+  Array.prototype.unique = function() {
+    var elem, l, len, res;
+    res = [];
+    for (l = 0, len = this.length; l < len; l++) {
+      elem = this[l];
+      if (indexOf.call(res, elem) < 0) {
+        res.push(elem);
+      }
+    }
+    return res;
+  };
+
   Array.prototype.sample = function(n, forceArray) {
     var arr, elem, i, res;
     if (n == null) {
@@ -66,7 +78,6 @@
     res = [];
     arr = this.clone();
     while (i++ < n) {
-      console.log(arr);
       elem = arr.sample(1);
       res.push(elem);
       arr.remove(elem);
@@ -862,9 +873,11 @@
   _mathJS.Object = (function() {
     function Object() {}
 
-    Object["implements"] = [];
+    Object._implements = [];
 
-    Object.implement = function() {
+    Object._implementedBy = [];
+
+    Object["implements"] = function() {
       var classes, clss, clssPrototype, l, len, method, name, prototypeKeys;
       classes = 1 <= arguments.length ? slice.call(arguments, 0) : [];
       if (classes.first instanceof Array) {
@@ -872,8 +885,8 @@
       }
       for (l = 0, len = classes.length; l < len; l++) {
         clss = classes[l];
-        if (indexOf.call(clss.implementedBy, this) < 0) {
-          clss.implementedBy.push(this);
+        if (indexOf.call(clss._implementedBy, this) < 0) {
+          clss._implementedBy.push(this);
         }
         clssPrototype = clss.prototype;
         prototypeKeys = window.Object.keys(clssPrototype);
@@ -887,7 +900,7 @@
           method = clssPrototype[name];
           this.prototype[name] = method;
         }
-        this["implements"].push(clss);
+        this._implements.push(clss);
       }
       return this;
     };
@@ -900,7 +913,7 @@
       if (this instanceof clss) {
         return true;
       }
-      ref = this.constructor["implements"];
+      ref = this.constructor._implements;
       for (l = 0, len = ref.length; l < len; l++) {
         c = ref[l];
         if (c === clss) {
@@ -923,6 +936,24 @@
 
   })();
 
+  _mathJS.Errors.Error = (function(superClass) {
+    extend(Error, superClass);
+
+    function Error() {
+      var fileName, lineNumber, message, misc;
+      message = arguments[0], fileName = arguments[1], lineNumber = arguments[2], misc = 4 <= arguments.length ? slice.call(arguments, 3) : [];
+      Error.__super__.constructor.call(this, message, fileName, lineNumber);
+      this.misc = misc;
+    }
+
+    Error.prototype.toString = function() {
+      return (Error.__super__.toString.call(this)) + "\n more data: " + (this.misc.toString());
+    };
+
+    return Error;
+
+  })(Error);
+
   mathJS.Errors.CalculationExceedanceError = (function(superClass) {
     extend(CalculationExceedanceError, superClass);
 
@@ -932,7 +963,7 @@
 
     return CalculationExceedanceError;
 
-  })(Error);
+  })(_mathJS.Errors.Error);
 
   mathJS.Errors.InvalidVariableError = (function(superClass) {
     extend(InvalidVariableError, superClass);
@@ -943,7 +974,7 @@
 
     return InvalidVariableError;
 
-  })(Error);
+  })(_mathJS.Errors.Error);
 
   mathJS.Errors.InvalidParametersError = (function(superClass) {
     extend(InvalidParametersError, superClass);
@@ -954,7 +985,7 @@
 
     return InvalidParametersError;
 
-  })(Error);
+  })(_mathJS.Errors.Error);
 
   mathJS.Errors.InvalidArityError = (function(superClass) {
     extend(InvalidArityError, superClass);
@@ -965,7 +996,7 @@
 
     return InvalidArityError;
 
-  })(Error);
+  })(_mathJS.Errors.Error);
 
   mathJS.Errors.NotImplementedError = (function(superClass) {
     extend(NotImplementedError, superClass);
@@ -976,7 +1007,7 @@
 
     return NotImplementedError;
 
-  })(Error);
+  })(_mathJS.Errors.Error);
 
   _mathJS.Interface = (function(superClass) {
     extend(Interface, superClass);
@@ -1141,6 +1172,10 @@
       throw new mathJS.Errors.NotImplementedError("static parse in " + this.name);
     };
 
+    Parseable.fromString = function(str) {
+      return this.parse(str);
+    };
+
     Parseable.prototype.toString = function(args) {
       throw new mathJS.Errors.NotImplementedError("toString in " + this.contructor.name);
     };
@@ -1160,10 +1195,6 @@
 
     Poolable.fromPool = function() {
       throw new mathJS.Errors.NotImplementedError("static fromPool in " + this.name);
-    };
-
-    Poolable["new"] = function() {
-      return this.fromPool.apply(this, arguments);
     };
 
 
@@ -1213,7 +1244,7 @@
       return AbstractNumber.__super__.constructor.apply(this, arguments);
     }
 
-    AbstractNumber.implement(_mathJS.Orderable, _mathJS.Poolable, _mathJS.Parseable);
+    AbstractNumber["implements"](_mathJS.Orderable, _mathJS.Poolable, _mathJS.Parseable);
 
 
     /**
@@ -1223,7 +1254,18 @@
     *
      */
 
-    AbstractNumber.fromPool = function(val) {};
+    AbstractNumber.fromPool = function(value) {
+      var number, val;
+      if (this._pool.length > 0) {
+        if ((val = this._getPrimitive(value)) != null) {
+          number = this._pool.pop();
+          number.value = val.value || val;
+          return number;
+        }
+        throw new mathJS.Errors.InvalidParametersError("Can't instatiate number from given '" + value + "'", "AbstractNumber.coffee", void 0, value);
+      }
+      return new this(value);
+    };
 
 
     /**
@@ -1233,18 +1275,35 @@
     *
      */
 
-    AbstractNumber.parse = function(str) {};
+    AbstractNumber.parse = function(str) {
+      return this.fromPool(parseFloat(str));
+    };
 
-    AbstractNumber.getSet = function() {};
+    AbstractNumber.getSet = function() {
+      throw new mathJS.Errors.NotImplementedError("getSet in " + this.name);
+    };
 
-    AbstractNumber["new"] = function(value) {
-      return this.fromPool(value);
+    AbstractNumber["new"] = function(param) {
+      return this.fromPool(param);
+    };
+
+
+    /**
+    * This method is used to parse and check a parameter.
+    * Either a valid value is returned or null (for invalid parameters).
+    * @static
+    * @method _getPrimitive
+    * @param param {Object}
+    * @param skipCheck {Boolean}
+    * @return {mathJS.Number}
+    *
+     */
+
+    AbstractNumber._getPrimitive = function(param, skipCheck) {
+      return null;
     };
 
     AbstractNumber.prototype._setValue = function(value) {
-      if (this.valueIsValid(value)) {
-        this._value = this._getValueFromParam(value, true);
-      }
       return this;
     };
 
@@ -1252,9 +1311,9 @@
       return this._value;
     };
 
-    AbstractNumber.prototype.valueIsValid = AbstractNumber.valueIsValid;
-
-    AbstractNumber.prototype._getValueFromParam = AbstractNumber._getValueFromParam;
+    AbstractNumber.prototype._getPrimitive = function(param) {
+      return this.constructor._getPrimitive(param);
+    };
 
 
     /**
@@ -1267,7 +1326,11 @@
      */
 
     AbstractNumber.prototype.equals = function(n) {
-      return this.value === this._getValueFromParam(n);
+      var val;
+      if ((val = this._getPrimitive(n)) != null) {
+        return this.value === val;
+      }
+      return false;
     };
 
 
@@ -1279,7 +1342,11 @@
      */
 
     AbstractNumber.prototype.lessThan = function(n) {
-      return this.value < this._getValueFromParam(n);
+      var val;
+      if ((val = this._getPrimitive(n)) != null) {
+        return this.value < val;
+      }
+      return false;
     };
 
 
@@ -1293,7 +1360,11 @@
      */
 
     AbstractNumber.prototype.greaterThan = function(n) {
-      return this.value > this._getValueFromParam(n);
+      var val;
+      if ((val = this._getPrimitive(n)) != null) {
+        return this.value > val;
+      }
+      return false;
     };
 
 
@@ -1307,7 +1378,7 @@
      */
 
     AbstractNumber.prototype.lessThanOrEqualTo = function(n) {
-      return this.value <= this._getValueFromParam(n);
+      return this.lessThan(n) || this.equals(n);
     };
 
 
@@ -1320,7 +1391,7 @@
      */
 
     AbstractNumber.prototype.greaterThanOrEqualTo = function(n) {
-      return this.value >= this._getValueFromParam(n);
+      return this.greaterThan(n) || this.equals(n);
     };
 
 
@@ -1328,12 +1399,16 @@
     * This method adds 2 numbers and returns a new one.
     * @method plus
     * @param {Number} n
-    * @return {Number} Calculated Number.
+    * @return {mathJS.Number} Calculated Number.
     *
      */
 
     AbstractNumber.prototype.plus = function(n) {
-      return this.fromPool(this.value + this._getValueFromParam(n));
+      var val;
+      if ((val = this._getPrimitive(n)) != null) {
+        return mathJS.Number["new"](this.value + val);
+      }
+      throw new mathJS.Errors.InvalidParametersError("Can't instatiate number from given '" + n + "'", "AbstractNumber.coffee", void 0, n);
     };
 
 
@@ -1341,12 +1416,16 @@
     * This method substracts 2 numbers and returns a new one.
     * @method minus
     * @param {Number} n
-    * @return {Number} Calculated Number.
+    * @return {mathJS.Number} Calculated Number.
     *
      */
 
     AbstractNumber.prototype.minus = function(n) {
-      return this.fromPool(this.value - n);
+      var val;
+      if ((val = this._getPrimitive(n)) != null) {
+        return mathJS.Number["new"](this.value - val);
+      }
+      throw new mathJS.Errors.InvalidParametersError("Can't instatiate number from given '" + n + "'", "AbstractNumber.coffee", void 0, n);
     };
 
 
@@ -1354,12 +1433,16 @@
     * This method multiplies 2 numbers and returns a new one.
     * @method times
     * @param {Number} n
-    * @return {Number} Calculated Number.
+    * @return {mathJS.Number} Calculated Number.
     *
      */
 
     AbstractNumber.prototype.times = function(n) {
-      return this.fromPool(this.value * this._getValueFromParam(n));
+      var val;
+      if ((val = this._getPrimitive(n)) != null) {
+        return mathJS.Number["new"](this.value * val);
+      }
+      throw new mathJS.Errors.InvalidParametersError("Can't instatiate number from given '" + n + "'", "AbstractNumber.coffee", void 0, n);
     };
 
 
@@ -1372,7 +1455,11 @@
      */
 
     AbstractNumber.prototype.divide = function(n) {
-      return this.fromPool(this.value / this._getValueFromParam(n));
+      var val;
+      if ((val = this._getPrimitive(n)) != null) {
+        return mathJS.Number["new"](this.value / val);
+      }
+      throw new mathJS.Errors.InvalidParametersError("Can't instatiate number from given '" + n + "'", "AbstractNumber.coffee", void 0, n);
     };
 
 
@@ -1384,7 +1471,7 @@
      */
 
     AbstractNumber.prototype.square = function() {
-      return this.fromPool(this.value * this.value);
+      return mathJS.Number["new"](this.value * this.value);
     };
 
 
@@ -1396,7 +1483,7 @@
      */
 
     AbstractNumber.prototype.cube = function() {
-      return this.fromPool(this.value * this.value * this.value);
+      return mathJS.Number["new"](this.value * this.value * this.value);
     };
 
 
@@ -1408,7 +1495,7 @@
      */
 
     AbstractNumber.prototype.sqrt = function() {
-      return this.fromPool(mathJS.sqrt(this.value));
+      return mathJS.Number["new"](mathJS.sqrt(this.value));
     };
 
 
@@ -1420,47 +1507,86 @@
      */
 
     AbstractNumber.prototype.curt = function() {
-      return this.pow(1 / 3);
+      return this.pow(0.3333333333333333);
     };
 
 
     /**
     * This method calculates any root of this instance and returns a new one.
-    * @method plus
+    * @method root
     * @param {Number} exponent
     * @return {Number} Calculated Number.
     *
      */
 
-    AbstractNumber.prototype.root = function(exp) {};
+    AbstractNumber.prototype.root = function(exp) {
+      var val;
+      if ((val = this._getPrimitive(exp)) != null) {
+        return this.pow(1 / val);
+      }
+      throw new mathJS.Errors.InvalidParametersError("Can't instatiate number from given '" + exp + "'", "AbstractNumber.coffee", void 0, exp);
+    };
 
 
     /**
-    * This method adds 2 numbers and returns a new one.
-    * @method plus
-    * @param {Number} n
+    * This method returns the reciprocal (1/n) of this number.
+    * @method reciprocal
     * @return {Number} Calculated Number.
     *
      */
 
-    AbstractNumber.prototype.reciprocal = function() {};
+    AbstractNumber.prototype.reciprocal = function() {
+      return mathJS.Number["new"](1 / this.value);
+    };
 
 
     /**
-    * This method adds 2 numbers and returns a new one.
-    * @method plus
+    * This method returns this' value the the n-th power (this^n).
+    * @method pow
     * @param {Number} n
     * @return {Number} Calculated Number.
     *
      */
 
     AbstractNumber.prototype.pow = function(n) {
-      return this.fromPool(mathJS.pow(this.value, this._getValueFromParam(n)));
+      var val;
+      if ((val = this._getPrimitive(n)) != null) {
+        return mathJS.Number["new"](mathJS.pow(this.value, val));
+      }
+      throw new mathJS.Errors.InvalidParametersError("Can't instatiate number from given '" + n + "'", "AbstractNumber.coffee", void 0, n);
     };
 
-    AbstractNumber.prototype.sign = function() {};
 
-    AbstractNumber.prototype.negate = function() {};
+    /**
+    * This method returns the sign of this number (sign(this)).
+    * @method sign
+    * @param plain {Boolean}
+    * Indicates whether the return value is wrapped in a mathJS.Number or not (-> primitive value).
+    * @return {Number|mathJS.Number}
+    *
+     */
+
+    AbstractNumber.prototype.sign = function(plain) {
+      var val;
+      if (plain == null) {
+        plain = true;
+      }
+      val = this.value;
+      if (plain === true) {
+        if (val < 0) {
+          return -1;
+        }
+        return 1;
+      }
+      if (val < 0) {
+        return mathJS.Number["new"](-1);
+      }
+      return mathJS.Number["new"](1);
+    };
+
+    AbstractNumber.prototype.negate = function() {
+      return mathJS.Number["new"](-this.value);
+    };
 
     AbstractNumber.prototype.toInt = function() {};
 
@@ -1499,74 +1625,20 @@
   mathJS.Number = (function(superClass) {
     extend(Number, superClass);
 
-    Number.valueIsValid = function(value) {
-      return value instanceof mathJS.Number || mathJS.isNum(value);
-    };
-
-
-    /**
-    * This method gets the value from a parameter. The validity is determined by this.valueIsValid().
-    * @static
-    * @protected
-    * @method _getValueFromParam
-    * @param {Number} param
-    * @param {Boolean} skipCheck
-    * If `true` the given parameter is not (again) checked for validity. If the function that calls _getValueFromParam() has already checked the passed parameter this `skipCheck` should be set to true.
-    * @return {Number} The primitive value or null.
-    *
-     */
-
-    Number._getValueFromParam = function(param, skipCheck) {
-      var value;
-      if (!skipCheck && !this.valueIsValid(param)) {
-        return null;
+    Number._getPrimitive = function(param, skipCheck) {
+      if (skipCheck === true) {
+        return param;
       }
       if (param instanceof mathJS.Number) {
-        value = param.value;
-      } else if (param instanceof Number) {
-        value = param.valueOf();
-      } else if (mathJS.isNum(param)) {
-        value = param;
+        return param.value;
       }
-      return value;
-    };
-
-
-    /**
-    * @Override mathJS.Poolable
-    * @static
-    * @method fromPool
-    *
-     */
-
-    Number.fromPool = function(val) {
-      var number;
-      if (this._pool.length > 0) {
-        if (this.valueIsValid(val)) {
-          number = this._pool.pop();
-          number.value = val.value || val;
-          return number;
-        }
-        return null;
-      } else {
-        return new this(val);
+      if (param instanceof Number) {
+        return param.valueOf();
       }
-    };
-
-
-    /**
-    * @Override mathJS.Parseable
-    * @static
-    * @method parse
-    *
-     */
-
-    Number.parse = function(str) {
-      var parsed;
-      if (mathJS.isNum(parsed = parseFloat(str))) {
-        return this.fromPool(parsed);
+      if (mathJS.isNum(param)) {
+        return param;
       }
-      return parsed;
+      return null;
     };
 
     Number.random = function(max, min) {
@@ -1585,322 +1657,20 @@
     };
 
     function Number(value) {
+      var val;
+      this._value = null;
       Object.defineProperties(this, {
         value: {
           get: this._getValue,
           set: this._setValue
-        },
-        fromPool: {
-          value: this.constructor.fromPool.bind(this.constructor),
-          writable: false,
-          enumarable: false,
-          configurable: false
         }
       });
-      this.value = this._getValueFromParam(value, true);
-    }
-
-    Number.prototype._setValue = function(value) {
-      if (this.valueIsValid(value)) {
-        this._value = this._getValueFromParam(value, true);
+      if ((val = this._getPrimitive(value)) != null) {
+        this._value = val;
+      } else {
+        throw new mathJS.Errors.InvalidParametersError("Can't instatiate number from given '" + value + "'", "Number.coffee", void 0, value);
       }
-      return this;
-    };
-
-    Number.prototype._getValue = function() {
-      return this._value;
-    };
-
-    Number.prototype.valueIsValid = Number.valueIsValid;
-
-    Number.prototype._getValueFromParam = Number._getValueFromParam;
-
-
-    /**
-    * @Override mathJS.Comparable
-    * This method checks for mathmatical equality. This means new mathJS.Double(4.2).equals(4.2) is true.
-    * @method equals
-    * @param {Number} n
-    * @return {Boolean}
-    *
-     */
-
-    Number.prototype.equals = function(n) {
-      return this.value === this._getValueFromParam(n);
-    };
-
-
-    /**
-    * @Override mathJS.Orderable
-    * This method check for mathmatical "<". This means new mathJS.Double(4.2).lessThan(5.2) is true.
-    * @method lessThan
-    *
-     */
-
-    Number.prototype.lessThan = function(n) {
-      return this.value < this._getValueFromParam(n);
-    };
-
-
-    /**
-    * @Override mathJS.Orderable
-    * This method check for mathmatical ">". This means new mathJS.Double(4.2).greaterThan(3.2) is true.
-    * @method greaterThan
-    * @param {Number} n
-    * @return {Boolean}
-    *
-     */
-
-    Number.prototype.greaterThan = function(n) {
-      return this.value > this._getValueFromParam(n);
-    };
-
-
-    /**
-    * @Override mathJS.Orderable
-    * This method check for mathmatical equality. This means new mathJS.Double(4.2).lessThanOrEqualTo(3.2) is true.
-    * @method lessThanOrEqualTo
-    * @param {Number} n
-    * @return {Boolean}
-    *
-     */
-
-    Number.prototype.lessThanOrEqualTo = function(n) {
-      return this.value <= this._getValueFromParam(n);
-    };
-
-
-    /**
-    * This method check for mathmatical equality. This means new mathJS.Double(4.2).lessThanOrEqualTo(3.2) is true.
-    * @method greaterThanOrEqualTo
-    * @param {Number} n
-    * @return {Boolean}
-    *
-     */
-
-    Number.prototype.greaterThanOrEqualTo = function(n) {
-      return this.value >= this._getValueFromParam(n);
-    };
-
-
-    /**
-    * This method adds 2 numbers and returns a new one.
-    * @method plus
-    * @param {Number} n
-    * @return {Number} Calculated Number.
-    *
-     */
-
-    Number.prototype.plus = function(n) {
-      return this.fromPool(this.value + this._getValueFromParam(n));
-    };
-
-
-    /**
-    * This method adds the given number to this instance.
-    * @method increase
-    * @param {Number} n
-    * @return {Number} This instance.
-    *
-     */
-
-    Number.prototype.increase = function(n) {
-      this.value += this._getValueFromParam(n);
-      return this;
-    };
-
-
-    /**
-    * See increase().
-    * @method plusSelf
-    *
-     */
-
-    Number.prototype.plusSelf = Number.increase;
-
-
-    /**
-    * This method substracts 2 numbers and returns a new one.
-    * @method minus
-    * @param {Number} n
-    * @return {Number} Calculated Number.
-    *
-     */
-
-    Number.prototype.minus = function(n) {
-      return this.fromPool(this.value - n);
-    };
-
-    Number.prototype.decrease = function(n) {
-      this.value -= this._getValueFromParam(n);
-      return this;
-    };
-
-    Number.prototype.minusSelf = Number.decrease;
-
-
-    /**
-    * This method multiplies 2 numbers and returns a new one.
-    * @method times
-    * @param {Number} n
-    * @return {Number} Calculated Number.
-    *
-     */
-
-    Number.prototype.times = function(n) {
-      return this.fromPool(this.value * this._getValueFromParam(n));
-    };
-
-    Number.prototype.timesSelf = function(n) {
-      this.value *= this._getValueFromParam(n);
-      return this;
-    };
-
-
-    /**
-    * This method divides 2 numbers and returns a new one.
-    * @method divide
-    * @param {Number} n
-    * @return {Number} Calculated Number.
-    *
-     */
-
-    Number.prototype.divide = function(n) {
-      return this.fromPool(this.value / this._getValueFromParam(n));
-    };
-
-    Number.prototype.divideSelf = function(n) {
-      this.value /= this._getValueFromParam(n);
-      return this;
-    };
-
-
-    /**
-    * This method squares this instance and returns a new one.
-    * @method square
-    * @return {Number} Calculated Number.
-    *
-     */
-
-    Number.prototype.square = function() {
-      return this.fromPool(this.value * this.value);
-    };
-
-    Number.prototype.squareSelf = function() {
-      this.value *= this.value;
-      return this;
-    };
-
-
-    /**
-    * This method cubes this instance and returns a new one.
-    * @method cube
-    * @return {Number} Calculated Number.
-    *
-     */
-
-    Number.prototype.cube = function() {
-      return this.fromPool(this.value * this.value * this.value);
-    };
-
-    Number.prototype.cubeSelf = function() {
-      this.value *= this.value * this.value;
-      return this;
-    };
-
-
-    /**
-    * This method calculates the square root of this instance and returns a new one.
-    * @method sqrt
-    * @return {Number} Calculated Number.
-    *
-     */
-
-    Number.prototype.sqrt = function() {
-      return this.fromPool(mathJS.sqrt(this.value));
-    };
-
-    Number.prototype.sqrtSelf = function() {
-      this.value = mathJS.sqrt(this.value);
-      return this;
-    };
-
-
-    /**
-    * This method calculates the cubic root of this instance and returns a new one.
-    * @method curt
-    * @return {Number} Calculated Number.
-    *
-     */
-
-    Number.prototype.curt = function() {
-      return this.pow(1 / 3);
-    };
-
-    Number.prototype.curtSelf = function() {
-      return this.powSelf(1 / 3);
-    };
-
-
-    /**
-    * This method calculates any root of this instance and returns a new one.
-    * @method plus
-    * @param {Number} exponent
-    * @return {Number} Calculated Number.
-    *
-     */
-
-    Number.prototype.root = function(exp) {
-      return this.pow(1 / exp);
-    };
-
-    Number.prototype.rootSelf = function(exp) {
-      return this.powSelf(1 / exp);
-    };
-
-
-    /**
-    * This method adds 2 numbers and returns a new one.
-    * @method plus
-    * @param {Number} n
-    * @return {Number} Calculated Number.
-    *
-     */
-
-    Number.prototype.reciprocal = function() {
-      return this.fromPool(1 / this.value);
-    };
-
-    Number.prototype.reciprocalSelf = function() {
-      this.value = 1 / this.value;
-      return this;
-    };
-
-
-    /**
-    * This method adds 2 numbers and returns a new one.
-    * @method plus
-    * @param {Number} n
-    * @return {Number} Calculated Number.
-    *
-     */
-
-    Number.prototype.pow = function(n) {
-      return this.fromPool(mathJS.pow(this.value, this._getValueFromParam(n)));
-    };
-
-    Number.prototype.powSelf = function(n) {
-      this.value = mathJS.pow(this.value, this._getValueFromParam(n));
-      return this;
-    };
-
-    Number.prototype.sign = function() {
-      return mathJS.sign(this.value);
-    };
-
-    Number.prototype.negate = function() {
-      return this.fromPool(-this.value);
-    };
+    }
 
     Number.prototype.toInt = function() {
       return mathJS.Int.fromPool(mathJS.floor(this.value));
@@ -1959,17 +1729,9 @@
   mathJS.Int = (function(superClass) {
     extend(Int, superClass);
 
-    (function() {
-      var inherited;
-      inherited = Int._getValueFromParam.bind(Int);
-      return Int._getValueFromParam = function(value) {
-        return ~~inherited(value);
-      };
-    })();
-
     Int.parse = function(str) {
       var parsed;
-      if (mathJS.isNum(parsed = parseIn(str, 10))) {
+      if (mathJS.isNum(parsed = parseInt(str, 10))) {
         return this.fromPool(parsed);
       }
       return parsed;
@@ -3087,7 +2849,7 @@
       return AbstractSet.__super__.constructor.apply(this, arguments);
     }
 
-    AbstractSet.implement(_mathJS.Orderable, _mathJS.Poolable, _mathJS.Parseable);
+    AbstractSet["implements"](_mathJS.Orderable, _mathJS.Poolable, _mathJS.Parseable);
 
     AbstractSet.fromString = function(str) {};
 
@@ -4554,6 +4316,10 @@
 
     Domain.prototype.clone = function() {
       return this.constructor["new"]();
+    };
+
+    Domain.prototype.size = function() {
+      return Infinity;
     };
 
     Domain.prototype.equals = function(set) {

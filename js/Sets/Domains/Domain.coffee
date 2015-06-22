@@ -22,13 +22,16 @@ class _mathJS.Sets.Domain extends _mathJS.AbstractSet
         return null
 
     constructor: (name, rank, isCountable) ->
-        @isDomain = true
-        @name = name
-        @rank = rank
+        @isDomain   = true
+        @name       = name
+        @rank       = rank
         @isCountable = isCountable
 
     clone: () ->
         return @constructor.new()
+
+    size: () ->
+        return Infinity
 
     equals: (set) ->
         return set instanceof @constructor

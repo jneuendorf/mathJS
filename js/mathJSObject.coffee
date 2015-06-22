@@ -5,19 +5,21 @@
 *###
 class _mathJS.Object
 
-    @implements = []
+    @_implements    = []
+    @_implementedBy = []
 
-    @implement = (classes...) ->
+    @implements = (classes...) ->
         if classes.first instanceof Array
             classes = classes.first
 
         for clss in classes
-            # for statistical reasons make the class / interface know what classes implement it
-            if @ not in clss.implementedBy
-                clss.implementedBy.push @
+            # make the class / interface know what classes implement it
+            if @ not in clss._implementedBy
+                clss._implementedBy.push @
 
             # implement class / interface
-            clssPrototype = clss::
+            clssPrototype = clss.prototype
+            # "window." necessary because coffee creates an "Object" variable for this class
             prototypeKeys = window.Object.keys(clssPrototype)
             # static
             for name, method of clss when name not in prototypeKeys
@@ -25,8 +27,8 @@ class _mathJS.Object
             # non-static (from prototype)
             for name, method of clssPrototype
                 @::[name] = method
-            @implements.push clss
-            
+            @_implements.push clss
+
         return @
 
     isA: (clss) ->
@@ -36,12 +38,12 @@ class _mathJS.Object
         if @ instanceof clss
             return true
 
-        for c in @constructor.implements
+        for c in @constructor._implements
             # direct hit
             if c is clss
                 return true
 
-            # check super classes
+            # check super classes ("__superClass__" is set when coffee extends classes using macros...see macros.js)
             while (c = c.__superClass__)?
                 if c is clss
                     return true

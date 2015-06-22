@@ -10,15 +10,15 @@ class mathJS.Int extends mathJS.Number
     # STATIC
 
     # convert return value of inherited method to integer
-    do () =>
-        inherited = @_getValueFromParam.bind(@)
-        @_getValueFromParam = (value) ->
-            return ~~inherited(value)
+    # do () =>
+        # inherited = @_getValueFromParam.bind(@)
+        # @_getValueFromParam = (value) ->
+        #     return ~~inherited(value)
 
     # _pool, fromPool are inherited
 
     @parse: (str) ->
-        if mathJS.isNum(parsed = parseIn(str, 10))
+        if mathJS.isNum(parsed = parseInt(str, 10))
             return @fromPool parsed
         return parsed
 
