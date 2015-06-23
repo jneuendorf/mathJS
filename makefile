@@ -1,3 +1,8 @@
+JQUERY = "includes/jquery-2.1.1.min.js"
+NUMERAL = "includes/numeraljs/numeral.min.js"
+
+INCLUDES = $(JQUERY) $(NUMERAL)
+
 make:
 	./js/build
 	python3 py/macro_processing.py source.coffee macros.coffee
@@ -13,6 +18,10 @@ test: make
 
 production: make
 	uglifyjs source.js -o source.js -c drop_console=true -d DEBUG=false
+
+production_with_libs: production
+	cat $(INCLUDES) source.js > source.js.tmp
+	mv source.js.tmp source.js
 
 cs:
 	tar cfv coffee.tar *.coffee

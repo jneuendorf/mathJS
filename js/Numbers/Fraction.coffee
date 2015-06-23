@@ -3,9 +3,9 @@ class mathJS.Fraction extends mathJS.Number
     ###*
     * @Override mathJS.Number
     * @static
-    * @method fromPool
+    * @method _fromPool
     *###
-    @fromPool: (e, d) ->
+    @_fromPool: (e, d) ->
         if @_pool.length > 0
             if @valueIsValid val
                 frac = @_pool.pop()
@@ -44,7 +44,7 @@ class mathJS.Fraction extends mathJS.Number
     * @method new
     *###
     @new: (e, d) ->
-        return @fromPool e, d
+        return @_fromPool e, d
 
     ###########################################################################
     # CONSTRUCTOR

@@ -46,9 +46,9 @@
   };
 
   Array.prototype.unique = function() {
-    var elem, l, len, res;
+    var elem, l, len1, res;
     res = [];
-    for (l = 0, len = this.length; l < len; l++) {
+    for (l = 0, len1 = this.length; l < len1; l++) {
       elem = this[l];
       if (indexOf.call(res, elem) < 0) {
         res.push(elem);
@@ -86,9 +86,9 @@
   };
 
   Array.prototype.shuffle = function() {
-    var arr, elem, i, l, len;
+    var arr, elem, i, l, len1;
     arr = this.sample(this.length);
-    for (i = l = 0, len = arr.length; l < len; i = ++l) {
+    for (i = l = 0, len1 = arr.length; l < len1; i = ++l) {
       elem = arr[i];
       this[i] = elem;
     }
@@ -96,10 +96,10 @@
   };
 
   Array.prototype.average = function() {
-    var elem, elems, l, len, sum;
+    var elem, elems, l, len1, sum;
     sum = 0;
     elems = 0;
-    for (l = 0, len = this.length; l < len; l++) {
+    for (l = 0, len1 = this.length; l < len1; l++) {
       elem = this[l];
       if (!(Math.isNum(elem))) {
         continue;
@@ -114,6 +114,21 @@
 
   Array.prototype.clone = Array.prototype.slice;
 
+  Array.prototype.indexOfNative = Array.prototype.indexOf;
+
+  Array.prototype.indexOf = function(elem, fromIdx) {
+    var idx, len;
+    idx = fromIdx != null ? fromIdx : 0;
+    len = this.length;
+    while (idx < len) {
+      if (this[idx] === elem) {
+        return idx;
+      }
+      idx++;
+    }
+    return -1;
+  };
+
   Array.prototype.remove = function(elem) {
     var idx;
     idx = this.indexOf(elem);
@@ -124,11 +139,11 @@
   };
 
   Array.prototype.removeAll = function(elements) {
-    var elem, l, len;
+    var elem, l, len1;
     if (elements == null) {
       elements = [];
     }
-    for (l = 0, len = elements.length; l < len; l++) {
+    for (l = 0, len1 = elements.length; l < len1; l++) {
       elem = elements[l];
       this.remove(elem);
     }
@@ -198,7 +213,7 @@
    */
 
   Array.prototype.getMax = function(propertyGetter) {
-    var elem, l, len, max, res, val;
+    var elem, l, len1, max, res, val;
     max = null;
     res = [];
     if (propertyGetter == null) {
@@ -206,7 +221,7 @@
         return item;
       };
     }
-    for (l = 0, len = this.length; l < len; l++) {
+    for (l = 0, len1 = this.length; l < len1; l++) {
       elem = this[l];
       val = propertyGetter(elem);
       if (val > max || max === null) {
@@ -220,7 +235,7 @@
   };
 
   Array.prototype.getMin = function(propertyGetter) {
-    var elem, l, len, min, res, val;
+    var elem, l, len1, min, res, val;
     min = null;
     res = [];
     if (propertyGetter == null) {
@@ -228,7 +243,7 @@
         return item;
       };
     }
-    for (l = 0, len = this.length; l < len; l++) {
+    for (l = 0, len1 = this.length; l < len1; l++) {
       elem = this[l];
       val = propertyGetter(elem);
       if (val < min || min === null) {
@@ -313,9 +328,9 @@
   };
 
   String.prototype.snakeToCamelCase = function() {
-    var char, l, len, prevChar, res;
+    var char, l, len1, prevChar, res;
     res = "";
-    for (l = 0, len = this.length; l < len; l++) {
+    for (l = 0, len1 = this.length; l < len1; l++) {
       char = this[l];
       if (char !== "_") {
         if (prevChar !== "_") {
@@ -330,10 +345,10 @@
   };
 
   String.prototype.camelToSnakeCase = function() {
-    var char, l, len, prevChar, res;
+    var char, l, len1, prevChar, res;
     res = "";
     prevChar = null;
-    for (l = 0, len = this.length; l < len; l++) {
+    for (l = 0, len1 = this.length; l < len1; l++) {
       char = this[l];
       if (char === char.toLowerCase()) {
         res += char;
@@ -453,10 +468,10 @@
   Boolean.prototype.gte;
 
   Object.keysLike = function(obj, pattern) {
-    var key, l, len, ref, res;
+    var key, l, len1, ref, res;
     res = [];
     ref = Object.keys(obj);
-    for (l = 0, len = ref.length; l < len; l++) {
+    for (l = 0, len1 = ref.length; l < len1; l++) {
       key = ref[l];
       if (pattern.test(key)) {
         res.push(key);
@@ -693,19 +708,13 @@
    */
 
   mathJS.randInt = function(max, min) {
-    var temp;
     if (max == null) {
       max = 1;
     }
     if (min == null) {
       min = 0;
     }
-    if (min > max) {
-      temp = min;
-      min = max;
-      max = temp;
-    }
-    return Math.floor(Math.random() * (max + 1 - min)) + min;
+    return ~~mathJS.randNum(max, min);
   };
 
 
@@ -755,7 +764,7 @@
   };
 
   mathJS.min = function() {
-    var elems, item, l, len, min, propGetter, res;
+    var elems, item, l, len1, min, propGetter, res;
     elems = 1 <= arguments.length ? slice.call(arguments, 0) : [];
     if (elems.first instanceof Array) {
       elems = elems.first;
@@ -769,7 +778,7 @@
     }
     res = [];
     min = null;
-    for (l = 0, len = elems.length; l < len; l++) {
+    for (l = 0, len1 = elems.length; l < len1; l++) {
       item = elems[l];
       if (propGetter != null) {
         item = propGetter(item);
@@ -785,7 +794,7 @@
   };
 
   mathJS.max = function() {
-    var elems, item, l, len, max, propGetter, res;
+    var elems, item, l, len1, max, propGetter, res;
     elems = 1 <= arguments.length ? slice.call(arguments, 0) : [];
     if (elems.first instanceof Array) {
       elems = elems.first;
@@ -799,7 +808,7 @@
     }
     res = [];
     max = null;
-    for (l = 0, len = elems.length; l < len; l++) {
+    for (l = 0, len1 = elems.length; l < len1; l++) {
       item = elems[l];
       if (propGetter != null) {
         item = propGetter(item);
@@ -878,12 +887,12 @@
     Object._implementedBy = [];
 
     Object["implements"] = function() {
-      var classes, clss, clssPrototype, l, len, method, name, prototypeKeys;
+      var classes, clss, clssPrototype, l, len1, method, name, prototypeKeys;
       classes = 1 <= arguments.length ? slice.call(arguments, 0) : [];
       if (classes.first instanceof Array) {
         classes = classes.first;
       }
-      for (l = 0, len = classes.length; l < len; l++) {
+      for (l = 0, len1 = classes.length; l < len1; l++) {
         clss = classes[l];
         if (indexOf.call(clss._implementedBy, this) < 0) {
           clss._implementedBy.push(this);
@@ -906,7 +915,7 @@
     };
 
     Object.prototype.isA = function(clss) {
-      var c, l, len, ref;
+      var c, l, len1, ref;
       if ((clss == null) || !(clss instanceof Function)) {
         return false;
       }
@@ -914,7 +923,7 @@
         return true;
       }
       ref = this.constructor._implements;
-      for (l = 0, len = ref.length; l < len; l++) {
+      for (l = 0, len1 = ref.length; l < len1; l++) {
         c = ref[l];
         if (c === clss) {
           return true;
@@ -936,24 +945,6 @@
 
   })();
 
-  _mathJS.Errors.Error = (function(superClass) {
-    extend(Error, superClass);
-
-    function Error() {
-      var fileName, lineNumber, message, misc;
-      message = arguments[0], fileName = arguments[1], lineNumber = arguments[2], misc = 4 <= arguments.length ? slice.call(arguments, 3) : [];
-      Error.__super__.constructor.call(this, message, fileName, lineNumber);
-      this.misc = misc;
-    }
-
-    Error.prototype.toString = function() {
-      return (Error.__super__.toString.call(this)) + "\n more data: " + (this.misc.toString());
-    };
-
-    return Error;
-
-  })(Error);
-
   mathJS.Errors.CalculationExceedanceError = (function(superClass) {
     extend(CalculationExceedanceError, superClass);
 
@@ -963,7 +954,7 @@
 
     return CalculationExceedanceError;
 
-  })(_mathJS.Errors.Error);
+  })(Error);
 
   mathJS.Errors.InvalidVariableError = (function(superClass) {
     extend(InvalidVariableError, superClass);
@@ -974,7 +965,7 @@
 
     return InvalidVariableError;
 
-  })(_mathJS.Errors.Error);
+  })(Error);
 
   mathJS.Errors.InvalidParametersError = (function(superClass) {
     extend(InvalidParametersError, superClass);
@@ -985,7 +976,7 @@
 
     return InvalidParametersError;
 
-  })(_mathJS.Errors.Error);
+  })(Error);
 
   mathJS.Errors.InvalidArityError = (function(superClass) {
     extend(InvalidArityError, superClass);
@@ -996,7 +987,7 @@
 
     return InvalidArityError;
 
-  })(_mathJS.Errors.Error);
+  })(Error);
 
   mathJS.Errors.NotImplementedError = (function(superClass) {
     extend(NotImplementedError, superClass);
@@ -1007,7 +998,248 @@
 
     return NotImplementedError;
 
-  })(_mathJS.Errors.Error);
+  })(Error);
+
+  mathJS.Errors.CycleDetectedError = (function(superClass) {
+    extend(CycleDetectedError, superClass);
+
+    function CycleDetectedError() {
+      return CycleDetectedError.__super__.constructor.apply(this, arguments);
+    }
+
+    return CycleDetectedError;
+
+  })(Error);
+
+
+  /**
+   * This is an implementation of a dictionary/hash that does not convert its keys into Strings. Keys can therefore actually by anything!
+   * @class Hash
+   * @constructor
+  *
+   */
+
+  mathJS.Utils.Hash = (function() {
+
+    /**
+     * Creates a new Hash from a given JavaScript object.
+     * @static
+     * @method fromObject
+     * @param object {Object}
+    *
+     */
+    Hash.fromObject = function(obj) {
+      return new mathJS.Utils.Hash(obj);
+    };
+
+    Hash["new"] = function(obj) {
+      return new mathJS.Utils.Hash(obj);
+    };
+
+    function Hash(obj) {
+      var key, val;
+      this.keys = [];
+      this.values = [];
+      if (obj != null) {
+        for (key in obj) {
+          val = obj[key];
+          this.put(key, val);
+        }
+      }
+    }
+
+    Hash.prototype.clone = function() {
+      var res;
+      res = new mathJS.Utils.Hash();
+      res.keys = this.keys.clone();
+      res.values = this.values.clone();
+      return res;
+    };
+
+    Hash.prototype.invert = function() {
+      var res;
+      res = new mathJS.Utils.Hash();
+      res.keys = this.values.clone();
+      res.values = this.keys.clone();
+      return res;
+    };
+
+
+    /**
+     * Adds a new key-value pair or overwrites an existing one.
+     * @method put
+     * @param key {mixed}
+     * @param val {mixed}
+     * @return {Hash} This instance.
+     * @chainable
+    *
+     */
+
+    Hash.prototype.put = function(key, val) {
+      var idx;
+      idx = this.keys.indexOf(key);
+      if (idx < 0) {
+        this.keys.push(key);
+        this.values.push(val);
+      } else {
+        this.keys[idx] = key;
+        this.values[idx] = val;
+      }
+      return this;
+    };
+
+
+    /**
+     * Returns the value (or null) for the specified key.
+     * @method get
+     * @param key {mixed}
+     * @param [equalityFunction] {Function}
+     * This optional function can overwrite the test for equality between keys. This function expects the parameters: (the current key in the key iteration, 'key'). If this parameters is omitted '===' is used.
+     * @return {mixed}
+    *
+     */
+
+    Hash.prototype.get = function(key) {
+      var idx;
+      if ((idx = this.keys.indexOf(key)) >= 0) {
+        return this.values[idx];
+      }
+      return null;
+    };
+
+
+    /**
+     * Indicates whether the Hash has the specified key.
+     * @method hasKey
+     * @param key {mixed}
+     * @return {Boolean}
+    *
+     */
+
+    Hash.prototype.hasKey = function(key) {
+      return indexOf.call(this.keys, key) >= 0;
+    };
+
+    Hash.prototype.has = function(key) {
+      return this.hasKey(key);
+    };
+
+
+    /**
+     * Returns the number of entries in the Hash.
+     * @method size
+     * @return {Integer}
+    *
+     */
+
+    Hash.prototype.size = function() {
+      return this.keys.length;
+    };
+
+    Hash.prototype.empty = function() {
+      this.keys = [];
+      this.values = [];
+      return this;
+    };
+
+    Hash.prototype.remove = function(key) {
+      var idx;
+      if ((idx = this.keys.indexOf(key)) >= 0) {
+        this.keys.splice(idx, 1);
+        this.values.splice(idx, 1);
+      } else {
+        console.warn("Could not remove key '" + key + "'!");
+      }
+      return this;
+    };
+
+    Hash.prototype.each = function(callback) {
+      var i, key, l, len1, ref;
+      ref = this.keys;
+      for (i = l = 0, len1 = ref.length; l < len1; i = ++l) {
+        key = ref[i];
+        if (callback(key, this.values[i], i) === false) {
+          return this;
+        }
+      }
+      return this;
+    };
+
+    return Hash;
+
+  })();
+
+  mathJS.Utils.Dispatcher = (function(superClass) {
+    extend(Dispatcher, superClass);
+
+    Dispatcher.registeredDispatchers = mathJS.Utils.Hash["new"]();
+
+    Dispatcher.registerDispatcher = function(newReceiver, newTargets) {
+      var regReceivers, registrationPossible;
+      registrationPossible = true;
+      regReceivers = this.registeredDispatchers.keys;
+      this.registeredDispatchers.each(function(regReceiver, regTargets, idx) {
+        var l, len1, len2, newTarget, o, regTarget;
+        for (l = 0, len1 = regTargets.length; l < len1; l++) {
+          regTarget = regTargets[l];
+          if (regTarget === newReceiver) {
+            for (o = 0, len2 = newTargets.length; o < len2; o++) {
+              newTarget = newTargets[o];
+              if (!(regReceivers.indexOf(newTarget))) {
+                continue;
+              }
+              registrationPossible = false;
+              return false;
+            }
+          }
+        }
+        return true;
+      });
+      if (registrationPossible) {
+        this.registeredDispatchers.put(newReceiver, newTargets);
+        return this;
+      }
+      throw new mathJS.Errors.CycleDetectedError("Can't register '" + newReceiver + "' for dispatching - cycle detected!");
+    };
+
+    function Dispatcher(receiver, targets) {
+      if (targets == null) {
+        targets = [];
+      }
+      this.constructor.registerDispatcher(receiver, targets);
+      this.receiver = receiver;
+      this.targets = targets;
+    }
+
+    Dispatcher.prototype.dispatch = function() {
+      var dispatch, l, len1, method, params, ref, t, target;
+      target = arguments[0], method = arguments[1], params = 3 <= arguments.length ? slice.call(arguments, 2) : [];
+      dispatch = false;
+      if (this.targets.indexOf(target.constructor || target) >= 0) {
+        dispatch = true;
+      } else {
+        ref = this.targets;
+        for (l = 0, len1 = ref.length; l < len1; l++) {
+          t = ref[l];
+          if (!(typeof target === t)) {
+            continue;
+          }
+          dispatch = true;
+          break;
+        }
+      }
+      if (dispatch) {
+        if (target[method] instanceof Function) {
+          return target[method].apply(target, params);
+        }
+        throw new mathJS.Errors.NotImplementedError("Can't call '" + method + "' on target '" + target + "'", "Dispatcher.coffee", void 0, target);
+      }
+      return null;
+    };
+
+    return Dispatcher;
+
+  })(_mathJS.Object);
 
   _mathJS.Interface = (function(superClass) {
     extend(Interface, superClass);
@@ -1193,8 +1425,8 @@
 
     Poolable._pool = [];
 
-    Poolable.fromPool = function() {
-      throw new mathJS.Errors.NotImplementedError("static fromPool in " + this.name);
+    Poolable._fromPool = function() {
+      throw new mathJS.Errors.NotImplementedError("static _fromPool in " + this.name);
     };
 
 
@@ -1250,11 +1482,11 @@
     /**
     * @Override mathJS.Poolable
     * @static
-    * @method fromPool
+    * @method _fromPool
     *
      */
 
-    AbstractNumber.fromPool = function(value) {
+    AbstractNumber._fromPool = function(value) {
       var number, val;
       if (this._pool.length > 0) {
         if ((val = this._getPrimitive(value)) != null) {
@@ -1276,7 +1508,7 @@
      */
 
     AbstractNumber.parse = function(str) {
-      return this.fromPool(parseFloat(str));
+      return this._fromPool(parseFloat(str));
     };
 
     AbstractNumber.getSet = function() {
@@ -1284,8 +1516,14 @@
     };
 
     AbstractNumber["new"] = function(param) {
-      return this.fromPool(param);
+      return this._fromPool(param);
     };
+
+    AbstractNumber.random = function(max, min) {
+      return this._fromPool(mathJS.randNum(max, min));
+    };
+
+    AbstractNumber.dispatcher = new mathJS.Utils.Dispatcher(AbstractNumber, ["string"]);
 
 
     /**
@@ -1438,7 +1676,10 @@
      */
 
     AbstractNumber.prototype.times = function(n) {
-      var val;
+      var result, val;
+      if ((result = this.constructor.dispatcher.dispatch(n, "times", this)) != null) {
+        return result;
+      }
       if ((val = this._getPrimitive(n)) != null) {
         return mathJS.Number["new"](this.value * val);
       }
@@ -1588,13 +1829,24 @@
       return mathJS.Number["new"](-this.value);
     };
 
-    AbstractNumber.prototype.toInt = function() {};
+    AbstractNumber.prototype.toInt = function() {
+      return mathJS.Int["new"](this.value);
+    };
 
-    AbstractNumber.prototype.toDouble = function() {};
+    AbstractNumber.prototype.toNumber = function() {
+      return mathJS.Number["new"](this.value);
+    };
 
-    AbstractNumber.prototype.toString = function() {};
+    AbstractNumber.prototype.toString = function(format) {
+      if (format == null) {
+        return "" + this.value;
+      }
+      return numeral(this.value).format(format);
+    };
 
-    AbstractNumber.prototype.clone = function() {};
+    AbstractNumber.prototype.clone = function() {
+      return mathJS.Number["new"](this.value);
+    };
 
     AbstractNumber.prototype["eval"] = function(values) {
       return this;
@@ -1641,17 +1893,6 @@
       return null;
     };
 
-    Number.random = function(max, min) {
-      return this.fromPool(mathJS.randNum(max, min));
-    };
-
-    Number.toNumber = function(n) {
-      if (n instanceof mathJS.Number) {
-        return n;
-      }
-      return new mathJS.Number(n);
-    };
-
     Number.getSet = function() {
       return mathJS.Domains.R;
     };
@@ -1671,22 +1912,6 @@
         throw new mathJS.Errors.InvalidParametersError("Can't instatiate number from given '" + value + "'", "Number.coffee", void 0, value);
       }
     }
-
-    Number.prototype.toInt = function() {
-      return mathJS.Int.fromPool(mathJS.floor(this.value));
-    };
-
-    Number.prototype.toDouble = function() {
-      return mathJS.Double.fromPool(this.value);
-    };
-
-    Number.prototype.toString = function() {
-      return this.value.toString();
-    };
-
-    Number.prototype.clone = function() {
-      return this.fromPool(this.value);
-    };
 
     Number.prototype["eval"] = function(values) {
       return this;
@@ -1732,17 +1957,57 @@
     Int.parse = function(str) {
       var parsed;
       if (mathJS.isNum(parsed = parseInt(str, 10))) {
-        return this.fromPool(parsed);
+        return this._fromPool(parsed);
       }
       return parsed;
     };
 
     Int.random = function(max, min) {
-      return this.fromPool(mathJS.randInt(max, min));
+      return this._fromPool(mathJS.randInt(max, min));
     };
 
     Int.getSet = function() {
       return mathJS.Domains.N;
+    };
+
+
+    /**
+    * @Override mathJS.Poolable
+    * @static
+    * @method _fromPool
+    *
+     */
+
+    Int._fromPool = function(value) {
+      var number, val;
+      if (this._pool.length > 0) {
+        if ((val = this._getPrimitiveInt(value)) != null) {
+          number = this._pool.pop();
+          number.value = val.value || val;
+          return number;
+        }
+        throw new mathJS.Errors.InvalidParametersError("Can't instatiate number from given '" + value + "'", "Int.coffee", void 0, value);
+      }
+      return new this(value);
+    };
+
+    Int._getPrimitiveInt = function(param, skipCheck) {
+      if (skipCheck === true) {
+        return param;
+      }
+      if (param instanceof mathJS.Int) {
+        return param.value;
+      }
+      if (param instanceof mathJS.Number) {
+        return ~~param.value;
+      }
+      if (param instanceof Number) {
+        return ~~param.valueOf();
+      }
+      if (mathJS.isNum(param)) {
+        return ~~param;
+      }
+      return null;
     };
 
     function Int(value) {
@@ -1757,66 +2022,8 @@
       return modulo(this.value, 2) === 1;
     };
 
-    Int.prototype.plus = function(n) {
-      return this.constructor.fromPool(~~(this.value + this._getValueFromParam(n)));
-    };
-
-    Int.prototype.increase = function(n) {
-      this.value += ~~this._getValueFromParam(n);
-      return this;
-    };
-
-    Int.prototype.plusSelf = Int.increase;
-
-    Int.prototype.minus = function(n) {
-      return this.constructor.fromPool(~~(this.value - n));
-    };
-
-    Int.prototype.decrease = function(n) {
-      this.value = ~~(this.value - this._getValueFromParam(n));
-      return this;
-    };
-
-    Int.prototype.minusSelf = Int.decrease;
-
-    Int.prototype.times = function(n) {
-      return this.constructor.fromPool(~~(this.value * this._getValueFromParam(n)));
-    };
-
-    Int.prototype.timesSelf = function(n) {
-      this.value = ~~(this.value * this._getValueFromParam(n));
-      return this;
-    };
-
-    Int.prototype.divide = function(n) {
-      return this.constructor.fromPool(~~(this.value / this._getValueFromParam(n)));
-    };
-
-    Int.prototype.divideSelf = function(n) {
-      this.value = ~~(this.value / this._getValueFromParam(n));
-      return this;
-    };
-
-    Int.prototype.sqrt = function() {
-      return this.constructor.fromPool(~~(mathJS.sqrt(this.value)));
-    };
-
-    Int.prototype.sqrtSelf = function() {
-      this.value = ~~mathJS.sqrt(this.value);
-      return this;
-    };
-
-    Int.prototype.pow = function(n) {
-      return this.constructor.fromPool(mathJS.pow(this.value, this._getValueFromParam(n)));
-    };
-
-    Int.prototype.powSelf = function(n) {
-      this.value = mathJS.pow(this.value, this._getValueFromParam(n));
-      return this;
-    };
-
     Int.prototype.toInt = function() {
-      return mathJS.Int.fromPool(this.value);
+      return mathJS.Int._fromPool(this.value);
     };
 
     Int.prototype.getSet = function() {
@@ -1834,11 +2041,11 @@
     /**
     * @Override mathJS.Number
     * @static
-    * @method fromPool
+    * @method _fromPool
     *
      */
 
-    Fraction.fromPool = function(e, d) {
+    Fraction._fromPool = function(e, d) {
       var frac;
       if (this._pool.length > 0) {
         if (this.valueIsValid(val)) {
@@ -1892,7 +2099,7 @@
      */
 
     Fraction["new"] = function(e, d) {
-      return this.fromPool(e, d);
+      return this._fromPool(e, d);
     };
 
     function Fraction(enumerator, denominator) {
@@ -1963,7 +2170,7 @@
       return null;
     };
 
-    Complex.fromPool = function(real, img) {
+    Complex._fromPool = function(real, img) {
       var number;
       if (this._pool.length > 0) {
         if (this._valueIsValid(real) && this._valueIsValid(img)) {
@@ -1984,14 +2191,14 @@
       if (idx >= 0) {
         parts = str.substring(idx + PARSE_KEY.length).split(",");
         if (mathJS.isNum(real = parseFloat(parts[0])) && mathJS.isNum(img = parseFloat(parts[1]))) {
-          return this.fromPool(real, img);
+          return this._fromPool(real, img);
         }
       }
       return NaN;
     };
 
     Complex.random = function(max1, min1, max2, min2) {
-      return this.fromPool(mathJS.randNum(max1, min1), mathJS.randNum(max2, min2));
+      return this._fromPool(mathJS.randNum(max1, min1), mathJS.randNum(max2, min2));
     };
 
     function Complex(real, img) {
@@ -2006,8 +2213,8 @@
           get: this._getImg,
           set: this._setImg
         },
-        fromPool: {
-          value: this.constructor.fromPool.bind(this.constructor),
+        _fromPool: {
+          value: this.constructor._fromPool.bind(this.constructor),
           writable: false,
           enumarable: false,
           configurable: false
@@ -2063,7 +2270,7 @@
       var values;
       values = this._getValueFromParam(r, i);
       if (values != null) {
-        return this.fromPool(this.real + values.real, this.img + values.img);
+        return this._fromPool(this.real + values.real, this.img + values.img);
       }
       return NaN;
     };
@@ -2084,7 +2291,7 @@
       var values;
       values = this._getValueFromParam(r, i);
       if (values != null) {
-        return this.fromPool(this.real - values.real, this.img - values.img);
+        return this._fromPool(this.real - values.real, this.img - values.img);
       }
       return NaN;
     };
@@ -2105,7 +2312,7 @@
       var values;
       values = this._getValueFromParam(r, i);
       if (values != null) {
-        return this.fromPool(this.real * values.real, this.img * values.img);
+        return this._fromPool(this.real * values.real, this.img * values.img);
       }
       return NaN;
     };
@@ -2116,7 +2323,7 @@
     };
 
     Complex.prototype.divide = function(n) {
-      return this.fromPool(this.value / _getValueFromParam(n));
+      return this._fromPool(this.value / _getValueFromParam(n));
     };
 
     Complex.prototype.divideSelf = function(n) {
@@ -2125,7 +2332,7 @@
     };
 
     Complex.prototype.square = function() {
-      return this.fromPool(this.value * this.value);
+      return this._fromPool(this.value * this.value);
     };
 
     Complex.prototype.squareSelf = function() {
@@ -2134,7 +2341,7 @@
     };
 
     Complex.prototype.cube = function() {
-      return this.fromPool(this.value * this.value * this.value);
+      return this._fromPool(this.value * this.value * this.value);
     };
 
     Complex.prototype.squareSelf = function() {
@@ -2143,7 +2350,7 @@
     };
 
     Complex.prototype.sqrt = function() {
-      return this.fromPool(mathJS.sqrt(this.value));
+      return this._fromPool(mathJS.sqrt(this.value));
     };
 
     Complex.prototype.sqrtSelf = function() {
@@ -2152,7 +2359,7 @@
     };
 
     Complex.prototype.pow = function(n) {
-      return this.fromPool(mathJS.pow(this.value, _getValueFromParam(n)));
+      return this._fromPool(mathJS.pow(this.value, _getValueFromParam(n)));
     };
 
     Complex.prototype.powSelf = function(n) {
@@ -2165,11 +2372,11 @@
     };
 
     Complex.prototype.toInt = function() {
-      return mathJS.Int.fromPool(mathJS.floor(this.value));
+      return mathJS.Int._fromPool(mathJS.floor(this.value));
     };
 
     Complex.prototype.toDouble = function() {
-      return mathJS.Double.fromPool(this.value);
+      return mathJS.Double._fromPool(this.value);
     };
 
     Complex.prototype.toString = function() {
@@ -2177,7 +2384,7 @@
     };
 
     Complex.prototype.clone = function() {
-      return this.fromPool(this.value);
+      return this._fromPool(this.value);
     };
 
     Complex.prototype.release = function() {
@@ -2224,7 +2431,7 @@
     };
 
     ShuntingYard.prototype.toPostfix = function(str) {
-      var associativity, i, l, len, o1, o2, ops, postfix, precedence, prevToken, stack, token;
+      var associativity, i, l, len1, o1, o2, ops, postfix, precedence, prevToken, stack, token;
       str = str.replace(/\s+/g, "");
       str = str.replace(/(\d+|\w)(\w)/g, "$1*$2");
       stack = [];
@@ -2233,7 +2440,7 @@
       associativity = this.associativity;
       postfix = "";
       postfix.postfix = true;
-      for (i = l = 0, len = str.length; l < len; i = ++l) {
+      for (i = l = 0, len1 = str.length; l < len1; i = ++l) {
         token = str[i];
         if (indexOf.call(ops, token) >= 0) {
           o1 = token;
@@ -2269,7 +2476,7 @@
     };
 
     ShuntingYard.prototype.toExpression = function(str) {
-      var endIdx, exp, i, idxOffset, j, k, l, len, op, ops, param, params, postfix, ref, startIdx, token, v;
+      var endIdx, exp, i, idxOffset, j, k, l, len1, op, ops, param, params, postfix, ref, startIdx, token, v;
       if (str.postfix == null) {
         postfix = this.toPostfix(str);
       } else {
@@ -2297,7 +2504,7 @@
           }
           params = postfix.slice(startIdx, endIdx);
           startIdx += idxOffset;
-          for (j = l = 0, len = params.length; l < len; j = ++l) {
+          for (j = l = 0, len1 = params.length; l < len1; j = ++l) {
             param = params[j];
             if (typeof param === "string") {
               if (isOperand(param)) {
@@ -2582,7 +2789,7 @@
      */
 
     Expression.prototype.equals = function(expression) {
-      var doneExpressions, e1, e2, exp, i, j, l, len, len1, len2, o, q, ref, ref1, ref2, res, x;
+      var doneExpressions, e1, e2, exp, i, j, l, len1, len2, len3, o, q, ref, ref1, ref2, res, x;
       if (this.expressions.length !== expression.expressions.length) {
         return false;
       }
@@ -2592,11 +2799,11 @@
       if (this.operation.commutative === true) {
         doneExpressions = [];
         ref = this.expressions;
-        for (i = l = 0, len = ref.length; l < len; i = ++l) {
+        for (i = l = 0, len1 = ref.length; l < len1; i = ++l) {
           exp = ref[i];
           res = false;
           ref1 = expression.expressions;
-          for (j = o = 0, len1 = ref1.length; o < len1; j = ++o) {
+          for (j = o = 0, len2 = ref1.length; o < len2; j = ++o) {
             x = ref1[j];
             if (!(indexOf.call(doneExpressions, j) < 0 && x.equals(exp))) {
               continue;
@@ -2612,7 +2819,7 @@
         return true;
       } else {
         ref2 = this.expressions;
-        for (i = q = 0, len2 = ref2.length; q < len2; i = ++q) {
+        for (i = q = 0, len3 = ref2.length; q < len3; i = ++q) {
           e1 = ref2[i];
           e2 = expression.expressions[i];
           if (!e1.equals(e2)) {
@@ -2643,7 +2850,7 @@
      */
 
     Expression.prototype["eval"] = function(values) {
-      var args, expression, k, l, len, ref, v, value;
+      var args, expression, k, l, len1, ref, v, value;
       for (k in values) {
         v = values[k];
         if (mathJS.isPrimitive(v) && mathJS.Number.valueIsValid(v)) {
@@ -2655,7 +2862,7 @@
       }
       args = [];
       ref = this.expressions;
-      for (l = 0, len = ref.length; l < len; l++) {
+      for (l = 0, len1 = ref.length; l < len1; l++) {
         expression = ref[l];
         value = expression["eval"](values);
         if (value instanceof mathJS.Variable) {
@@ -2673,7 +2880,7 @@
     };
 
     Expression.prototype.getVariables = function() {
-      var expression, l, len, ref, res, val;
+      var expression, l, len1, ref, res, val;
       if (this.operation == null) {
         if ((val = this.expressions.first) instanceof mathJS.Variable) {
           return [val];
@@ -2682,7 +2889,7 @@
       }
       res = [];
       ref = this.expressions;
-      for (l = 0, len = ref.length; l < len; l++) {
+      for (l = 0, len1 = ref.length; l < len1; l++) {
         expression = ref[l];
         res = res.concat(expression.getVariables());
       }
@@ -2690,13 +2897,13 @@
     };
 
     Expression.prototype._getSet = function() {
-      var expression, l, len, ref, res;
+      var expression, l, len1, ref, res;
       if (this.operation == null) {
         return this.expressions.first._getSet();
       }
       res = null;
       ref = this.expressions;
-      for (l = 0, len = ref.length; l < len; l++) {
+      for (l = 0, len1 = ref.length; l < len1; l++) {
         expression = ref[l];
         if (res != null) {
           res = res[this.operation.setEquivalent](expression._getSet());
@@ -2814,9 +3021,9 @@
       if (!(variable instanceof mathJS.Variable)) {
         variables = left.getVariables().concat(right.getVariables());
         variable = ((function() {
-          var l, len, results;
+          var l, len1, results;
           results = [];
-          for (l = 0, len = variables.length; l < len; l++) {
+          for (l = 0, len1 = variables.length; l < len1; l++) {
             v = variables[l];
             if (v.name === variable) {
               results.push(v);
@@ -2919,7 +3126,7 @@
     };
 
     AbstractSet._makeAliases = function() {
-      var alias, aliases, aliasesData, l, len, orig;
+      var alias, aliases, aliasesData, l, len1, orig;
       aliasesData = {
         size: ["cardinality"],
         without: ["difference", "except", "minus"],
@@ -2931,7 +3138,7 @@
       };
       for (orig in aliasesData) {
         aliases = aliasesData[orig];
-        for (l = 0, len = aliases.length; l < len; l++) {
+        for (l = 0, len1 = aliases.length; l < len1; l++) {
           alias = aliases[l];
           this.prototype[alias] = this.prototype[orig];
         }
@@ -3141,13 +3348,13 @@
     extend(DiscreteSet, superClass);
 
     function DiscreteSet() {
-      var elem, elems, l, len;
+      var elem, elems, l, len1;
       elems = 1 <= arguments.length ? slice.call(arguments, 0) : [];
       if (elems.first instanceof Array) {
         elems = elems.first;
       }
       this.elems = [];
-      for (l = 0, len = elems.length; l < len; l++) {
+      for (l = 0, len1 = elems.length; l < len1; l++) {
         elem = elems[l];
         if (!this.contains(elem)) {
           if (!mathJS.isNum(elem)) {
@@ -3160,13 +3367,13 @@
     }
 
     DiscreteSet.prototype.cartesianProduct = function(set) {
-      var e, elements, l, len, len1, o, ref, ref1, x;
+      var e, elements, l, len1, len2, o, ref, ref1, x;
       elements = [];
       ref = this.elems;
-      for (l = 0, len = ref.length; l < len; l++) {
+      for (l = 0, len1 = ref.length; l < len1; l++) {
         e = ref[l];
         ref1 = set.elems;
-        for (o = 0, len1 = ref1.length; o < len1; o++) {
+        for (o = 0, len2 = ref1.length; o < len2; o++) {
           x = ref1[o];
           elements.push(new mathJS.Tuple(e, x));
         }
@@ -3179,9 +3386,9 @@
     };
 
     DiscreteSet.prototype.contains = function(elem) {
-      var e, l, len, ref;
+      var e, l, len1, ref;
       ref = this.elems;
-      for (l = 0, len = ref.length; l < len; l++) {
+      for (l = 0, len1 = ref.length; l < len1; l++) {
         e = ref[l];
         if (elem.equals(e)) {
           return true;
@@ -3191,16 +3398,16 @@
     };
 
     DiscreteSet.prototype.equals = function(set) {
-      var e, l, len, len1, o, ref, ref1;
+      var e, l, len1, len2, o, ref, ref1;
       ref = this.elems;
-      for (l = 0, len = ref.length; l < len; l++) {
+      for (l = 0, len1 = ref.length; l < len1; l++) {
         e = ref[l];
         if (!set.contains(e)) {
           return false;
         }
       }
       ref1 = set.elems;
-      for (o = 0, len1 = ref1.length; o < len1; o++) {
+      for (o = 0, len2 = ref1.length; o < len2; o++) {
         e = ref1[o];
         if (!this.contains(e)) {
           return false;
@@ -3226,13 +3433,13 @@
     };
 
     DiscreteSet.prototype.intersection = function(set) {
-      var elems, l, len, len1, o, ref, ref1, x, y;
+      var elems, l, len1, len2, o, ref, ref1, x, y;
       elems = [];
       ref = this.elems;
-      for (l = 0, len = ref.length; l < len; l++) {
+      for (l = 0, len1 = ref.length; l < len1; l++) {
         x = ref[l];
         ref1 = set.elems;
-        for (o = 0, len1 = ref1.length; o < len1; o++) {
+        for (o = 0, len2 = ref1.length; o < len2; o++) {
           y = ref1[o];
           if (x.equals(y)) {
             elems.push(x);
@@ -3243,9 +3450,9 @@
     };
 
     DiscreteSet.prototype.isSubsetOf = function(set) {
-      var e, l, len, ref;
+      var e, l, len1, ref;
       ref = this.elems;
-      for (l = 0, len = ref.length; l < len; l++) {
+      for (l = 0, len1 = ref.length; l < len1; l++) {
         e = ref[l];
         if (!set.contains(e)) {
           return false;
@@ -3265,10 +3472,10 @@
     DiscreteSet.prototype.without = function(set) {
       var elem;
       return (function() {
-        var l, len, ref, results;
+        var l, len1, ref, results;
         ref = this.elems;
         results = [];
-        for (l = 0, len = ref.length; l < len; l++) {
+        for (l = 0, len1 = ref.length; l < len1; l++) {
           elem = ref[l];
           if (!set.contains(elem)) {
             results.push(elem);
@@ -3337,9 +3544,9 @@
       var generators, ref, set, sets;
       sets = 1 <= arguments.length ? slice.call(arguments, 0) : [];
       generators = [this.generator].concat((function() {
-        var l, len, results;
+        var l, len1, results;
         results = [];
-        for (l = 0, len = sets.length; l < len; l++) {
+        for (l = 0, len1 = sets.length; l < len1; l++) {
           set = sets[l];
           results.push(set.generator);
         }
@@ -3415,13 +3622,13 @@
 
   mathJS.Tuple = (function() {
     function Tuple() {
-      var elem, elems, l, len, temp;
+      var elem, elems, l, len1, temp;
       elems = 1 <= arguments.length ? slice.call(arguments, 0) : [];
       if (elems.first instanceof Array) {
         elems = elems.first;
       }
       temp = [];
-      for (l = 0, len = elems.length; l < len; l++) {
+      for (l = 0, len1 = elems.length; l < len1; l++) {
         elem = elems[l];
         if (!mathJS.isNum(elem)) {
           temp.push(elem);
@@ -3467,9 +3674,9 @@
     };
 
     Tuple.prototype.contains = function(elem) {
-      var e, l, len, ref;
+      var e, l, len1, ref;
       ref = this.elems;
-      for (l = 0, len = ref.length; l < len; l++) {
+      for (l = 0, len1 = ref.length; l < len1; l++) {
         e = ref[l];
         if (e.equals(elem)) {
           return true;
@@ -3479,13 +3686,13 @@
     };
 
     Tuple.prototype.equals = function(tuple) {
-      var elem, elements, idx, l, len, ref;
+      var elem, elements, idx, l, len1, ref;
       if (this._size !== tuple._size) {
         return false;
       }
       elements = tuple.elems;
       ref = this.elems;
-      for (idx = l = 0, len = ref.length; l < len; idx = ++l) {
+      for (idx = l = 0, len1 = ref.length; l < len1; idx = ++l) {
         elem = ref[idx];
         if (!elem.equals(elements[idx])) {
           return false;
@@ -3506,10 +3713,10 @@
     Tuple.prototype["eval"] = function(values) {
       var elem, elems, i;
       elems = (function() {
-        var l, len, ref, results;
+        var l, len1, ref, results;
         ref = this.elems;
         results = [];
-        for (i = l = 0, len = ref.length; l < len; i = ++l) {
+        for (i = l = 0, len1 = ref.length; l < len1; i = ++l) {
           elem = ref[i];
           results.push(elem["eval"](values[i]));
         }
@@ -3530,11 +3737,11 @@
     };
 
     Tuple.prototype.insert = function() {
-      var elem, elements, elems, i, idx, l, len, ref;
+      var elem, elements, elems, i, idx, l, len1, ref;
       idx = arguments[0], elems = 2 <= arguments.length ? slice.call(arguments, 1) : [];
       elements = [];
       ref = this.elems;
-      for (i = l = 0, len = ref.length; l < len; i = ++l) {
+      for (i = l = 0, len1 = ref.length; l < len1; i = ++l) {
         elem = ref[i];
         if (i === idx) {
           elements = elements.concat(elems);
@@ -3555,12 +3762,12 @@
      */
 
     Tuple.prototype.remove = function() {
-      var e, elem, elements, elems, i, l, len, len1, o;
+      var e, elem, elements, elems, i, l, len1, len2, o;
       elems = 1 <= arguments.length ? slice.call(arguments, 0) : [];
       elements = this.elems.clone();
-      for (l = 0, len = elems.length; l < len; l++) {
+      for (l = 0, len1 = elems.length; l < len1; l++) {
         e = elems[l];
-        for (i = o = 0, len1 = elements.length; o < len1; i = ++o) {
+        for (i = o = 0, len2 = elements.length; o < len2; i = ++o) {
           elem = elements[i];
           if (!(elem.equals(e))) {
             continue;
@@ -3573,13 +3780,13 @@
     };
 
     Tuple.prototype.removeAt = function(idx, n) {
-      var elem, elems, i, l, len, ref;
+      var elem, elems, i, l, len1, ref;
       if (n == null) {
         n = 1;
       }
       elems = [];
       ref = this.elems;
-      for (i = l = 0, len = ref.length; l < len; i = ++l) {
+      for (i = l = 0, len1 = ref.length; l < len1; i = ++l) {
         elem = ref[i];
         if (i < idx || i >= idx + n) {
           elems.push(elem);
@@ -3668,11 +3875,11 @@
      */
 
     Function.prototype["eval"] = function() {
-      var i, l, len, tmp, val, value, values, varName;
+      var i, l, len1, tmp, val, value, values, varName;
       values = 1 <= arguments.length ? slice.call(arguments, 0) : [];
       tmp = {};
       if (values instanceof Array) {
-        for (i = l = 0, len = values.length; l < len; i = ++l) {
+        for (i = l = 0, len1 = values.length; l < len1; i = ++l) {
           value = values[i];
           tmp[this.variableNames[i]] = value;
         }
@@ -3773,10 +3980,10 @@
     };
 
     AbstractGenerator.prototype.hasNext = function() {
-      var g, i, l, len, ref;
+      var g, i, l, len1, ref;
       if (this.tuple != null) {
         ref = this.tuple.elems;
-        for (i = l = 0, len = ref.length; l < len; i = ++l) {
+        for (i = l = 0, len1 = ref.length; l < len1; i = ++l) {
           g = ref[i];
           if (g.hasNext()) {
             return true;
@@ -3802,10 +4009,10 @@
       var g, generator, i, maxI, res;
       if (this.tuple != null) {
         res = this["eval"]((function() {
-          var l, len, ref, results;
+          var l, len1, ref, results;
           ref = this.tuple.elems;
           results = [];
-          for (l = 0, len = ref.length; l < len; l++) {
+          for (l = 0, len1 = ref.length; l < len1; l++) {
             g = ref[l];
             results.push(g.x);
           }
@@ -3965,10 +4172,10 @@
     };
 
     DiscreteGenerator.prototype.hasNext = function() {
-      var g, i, l, len, ref;
+      var g, i, l, len1, ref;
       if (this.tuple != null) {
         ref = this.tuple.elems;
-        for (i = l = 0, len = ref.length; l < len; i = ++l) {
+        for (i = l = 0, len1 = ref.length; l < len1; i = ++l) {
           g = ref[i];
           if (g.hasNext()) {
             return true;
@@ -3994,10 +4201,10 @@
       var g, generator, i, maxI, res;
       if (this.tuple != null) {
         res = this["eval"]((function() {
-          var l, len, ref, results;
+          var l, len1, ref, results;
           ref = this.tuple.elems;
           results = [];
-          for (l = 0, len = ref.length; l < len; l++) {
+          for (l = 0, len1 = ref.length; l < len1; l++) {
             g = ref[l];
             results.push(g.x);
           }
@@ -4157,10 +4364,10 @@
     };
 
     ContinuousGenerator.prototype.hasNext = function() {
-      var g, i, l, len, ref;
+      var g, i, l, len1, ref;
       if (this.tuple != null) {
         ref = this.tuple.elems;
-        for (i = l = 0, len = ref.length; l < len; i = ++l) {
+        for (i = l = 0, len1 = ref.length; l < len1; i = ++l) {
           g = ref[i];
           if (g.hasNext()) {
             return true;
@@ -4186,10 +4393,10 @@
       var g, generator, i, maxI, res;
       if (this.tuple != null) {
         res = this["eval"]((function() {
-          var l, len, ref, results;
+          var l, len1, ref, results;
           ref = this.tuple.elems;
           results = [];
-          for (l = 0, len = ref.length; l < len; l++) {
+          for (l = 0, len1 = ref.length; l < len1; l++) {
             g = ref[l];
             results.push(g.x);
           }
@@ -4430,7 +4637,7 @@
     };
 
     N.prototype.intersect = function(set) {
-      var checker, commonElements, elem, f1, f1Elem, f1Elems, f2, f2Elem, f2Elems, found, i, l, len, len1, len2, m, o, ops, q, x, y1, y2;
+      var checker, commonElements, elem, f1, f1Elem, f1Elems, f2, f2Elem, f2Elems, found, i, l, len1, len2, len3, m, o, ops, q, x, y1, y2;
       checker = function(elem) {
         return self.checker(elem) && set.checker(elem);
       };
@@ -4446,7 +4653,7 @@
         y2 = f2(x);
         if (mathJS.gt(y1, y2)) {
           found = false;
-          for (i = l = 0, len = f1Elems.length; l < len; i = ++l) {
+          for (i = l = 0, len1 = f1Elems.length; l < len1; i = ++l) {
             f1Elem = f1Elems[i];
             if (!(mathJS.equals(y2, f1Elem))) {
               continue;
@@ -4464,7 +4671,7 @@
           }
         } else if (mathJS.lt(y1, y2)) {
           found = false;
-          for (i = o = 0, len1 = f2Elems.length; o < len1; i = ++o) {
+          for (i = o = 0, len2 = f2Elems.length; o < len2; i = ++o) {
             f2Elem = f2Elems[i];
             if (!(mathJS.equals(y1, f2Elem))) {
               continue;
@@ -4490,7 +4697,7 @@
       }
       console.log("x=" + x, "m=" + m, commonElements);
       ops = [];
-      for (q = 0, len2 = commonElements.length; q < len2; q++) {
+      for (q = 0, len3 = commonElements.length; q < len3; q++) {
         elem = commonElements[q];
         true;
       }
@@ -5084,10 +5291,10 @@
     Vector._isVectorLike = Vector.prototype._isVectorLike;
 
     function Vector(values) {
-      var l, len, val;
+      var l, len1, val;
       this.values = values;
       if (DEBUG) {
-        for (l = 0, len = values.length; l < len; l++) {
+        for (l = 0, len1 = values.length; l < len1; l++) {
           val = values[l];
           if (!mathJS.isMathJSNum(val)) {
             console.warn("invalid value:", val);
@@ -5097,12 +5304,12 @@
     }
 
     Vector.prototype.equals = function(v) {
-      var i, l, len, ref, vValue, val;
+      var i, l, len1, ref, vValue, val;
       if (!this._isVectorLike(v)) {
         return false;
       }
       ref = this.values;
-      for (i = l = 0, len = ref.length; l < len; i = ++l) {
+      for (i = l = 0, len1 = ref.length; l < len1; i = ++l) {
         val = ref[i];
         vValue = v.values[i];
         if (!(typeof val.equals === "function" ? val.equals(vValue) : void 0) && val !== vValue) {
@@ -5117,12 +5324,12 @@
     };
 
     Vector.prototype.move = function(v) {
-      var i, l, len, ref, vValue, val;
+      var i, l, len1, ref, vValue, val;
       if (!this._isVectorLike(v)) {
         return this;
       }
       ref = v.values;
-      for (i = l = 0, len = ref.length; l < len; i = ++l) {
+      for (i = l = 0, len1 = ref.length; l < len1; i = ++l) {
         val = ref[i];
         vValue = v.values[i];
         this.values[i] = (typeof vValue.plus === "function" ? vValue.plus(val) : void 0) || (typeof val.plus === "function" ? val.plus(vValue) : void 0) || (vValue + val);
@@ -5133,12 +5340,12 @@
     Vector.prototype.moveBy = Vector.move;
 
     Vector.prototype.moveTo = function(p) {
-      var i, l, len, ref, vValue, val;
+      var i, l, len1, ref, vValue, val;
       if (!this._isVectorLike(v)) {
         return this;
       }
       ref = v.values;
-      for (i = l = 0, len = ref.length; l < len; i = ++l) {
+      for (i = l = 0, len1 = ref.length; l < len1; i = ++l) {
         val = ref[i];
         vValue = v.values[i];
         this.values[i] = vValue.value || vValue;
@@ -5156,10 +5363,10 @@
     Vector.prototype.times = Vector.multiply;
 
     Vector.prototype.magnitude = function() {
-      var i, l, len, ref, sum, val;
+      var i, l, len1, ref, sum, val;
       sum = 0;
       ref = this.values;
-      for (i = l = 0, len = ref.length; l < len; i = ++l) {
+      for (i = l = 0, len1 = ref.length; l < len1; i = ++l) {
         val = ref[i];
         sum += val * val;
       }
@@ -5179,10 +5386,10 @@
      */
 
     Vector.prototype.distanceTo = function(v) {
-      var i, l, len, ref, sum, val;
+      var i, l, len1, ref, sum, val;
       sum = 0;
       ref = this.values;
-      for (i = l = 0, len = ref.length; l < len; i = ++l) {
+      for (i = l = 0, len1 = ref.length; l < len1; i = ++l) {
         val = ref[i];
         sum += (val - v.values[i]) * (val - v.values[i]);
       }
@@ -5190,13 +5397,13 @@
     };
 
     Vector.prototype.add = function(v) {
-      var i, l, len, ref, vValue, val, values;
+      var i, l, len1, ref, vValue, val, values;
       if (!this._isVectorLike(v)) {
         return null;
       }
       values = [];
       ref = v.values;
-      for (i = l = 0, len = ref.length; l < len; i = ++l) {
+      for (i = l = 0, len1 = ref.length; l < len1; i = ++l) {
         val = ref[i];
         vValue = v.values[i];
         values.push((typeof vValue.plus === "function" ? vValue.plus(val) : void 0) || (typeof val.plus === "function" ? val.plus(vValue) : void 0) || (vValue + val));

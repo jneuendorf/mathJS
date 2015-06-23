@@ -53,7 +53,7 @@ class mathJS.Complex extends mathJS.Number
         return null
 
 
-    @fromPool: (real, img) ->
+    @_fromPool: (real, img) ->
         if @_pool.length > 0
             if @_valueIsValid(real) and @_valueIsValid(img)
                 number = @_pool.pop()
@@ -69,12 +69,12 @@ class mathJS.Complex extends mathJS.Number
         if idx >= 0
             parts = str.substring(idx + PARSE_KEY.length).split ","
             if mathJS.isNum(real = parseFloat(parts[0])) and mathJS.isNum(img = parseFloat(parts[1]))
-                return @fromPool real, img
+                return @_fromPool real, img
 
         return NaN
 
     @random: (max1, min1, max2, min2) ->
-        return @fromPool mathJS.randNum(max1, min1), mathJS.randNum(max2, min2)
+        return @_fromPool mathJS.randNum(max1, min1), mathJS.randNum(max2, min2)
 
 
     ###########################################################################
@@ -93,8 +93,8 @@ class mathJS.Complex extends mathJS.Number
             img:
                 get: @_getImg
                 set: @_setImg
-            fromPool:
-                value: @constructor.fromPool.bind(@constructor)
+            _fromPool:
+                value: @constructor._fromPool.bind(@constructor)
                 writable: false
                 enumarable: false
                 configurable: false
@@ -145,7 +145,7 @@ class mathJS.Complex extends mathJS.Number
     plus: (r, i) ->
         values = @_getValueFromParam(r, i)
         if values?
-            return @fromPool(@real + values.real, @img + values.img)
+            return @_fromPool(@real + values.real, @img + values.img)
         return NaN
 
     increase: (r, i) ->
@@ -160,7 +160,7 @@ class mathJS.Complex extends mathJS.Number
     minus: (n) ->
         values = @_getValueFromParam(r, i)
         if values?
-            return @fromPool(@real - values.real, @img - values.img)
+            return @_fromPool(@real - values.real, @img - values.img)
         return NaN
 
     decrease: (n) ->
@@ -174,10 +174,10 @@ class mathJS.Complex extends mathJS.Number
 
     # TODO: adjust last functions for complex numbers
     times: (r, i) ->
-        # return @fromPool(@value * _getValueFromParam(n))
+        # return @_fromPool(@value * _getValueFromParam(n))
         values = @_getValueFromParam(r, i)
         if values?
-            return @fromPool(@real * values.real, @img * values.img)
+            return @_fromPool(@real * values.real, @img * values.img)
         return NaN
 
     timesSelf: (n) ->
@@ -185,35 +185,35 @@ class mathJS.Complex extends mathJS.Number
         return @
 
     divide: (n) ->
-        return @fromPool(@value / _getValueFromParam(n))
+        return @_fromPool(@value / _getValueFromParam(n))
 
     divideSelf: (n) ->
         @value /= _getValueFromParam(n)
         return @
 
     square: () ->
-        return @fromPool(@value * @value)
+        return @_fromPool(@value * @value)
 
     squareSelf: () ->
         @value *= @value
         return @
 
     cube: () ->
-        return @fromPool(@value * @value * @value)
+        return @_fromPool(@value * @value * @value)
 
     squareSelf: () ->
         @value *= @value * @value
         return @
 
     sqrt: () ->
-        return @fromPool(mathJS.sqrt @value)
+        return @_fromPool(mathJS.sqrt @value)
 
     sqrtSelf: () ->
         @value = mathJS.sqrt @value
         return @
 
     pow: (n) ->
-        return @fromPool(mathJS.pow @value, _getValueFromParam(n))
+        return @_fromPool(mathJS.pow @value, _getValueFromParam(n))
 
     powSelf: (n) ->
         @value = mathJS.pow @value, _getValueFromParam(n)
@@ -223,16 +223,16 @@ class mathJS.Complex extends mathJS.Number
         return mathJS.sign @value
 
     toInt: () ->
-        return mathJS.Int.fromPool mathJS.floor(@value)
+        return mathJS.Int._fromPool mathJS.floor(@value)
 
     toDouble: () ->
-        return mathJS.Double.fromPool @value
+        return mathJS.Double._fromPool @value
 
     toString: () ->
         return "#{PARSE_KEY}#{@real.toString()},#{@img.toString()}"
 
     clone: () ->
-        return @fromPool(@value)
+        return @_fromPool(@value)
 
     # add instance to pool
     release: () ->

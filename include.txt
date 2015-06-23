@@ -9,6 +9,9 @@ js/mathJSObject
 
 js/Errors/SimpleErrors
 
+js/Utils/Hash
+js/Utils/Dispatcher
+
 js/Interfaces/Interface
 js/Interfaces/Comparable
 js/Interfaces/Orderable

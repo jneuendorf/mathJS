@@ -11,11 +11,11 @@
     * @Override
     * see mathJS.Poolable
     * @static
-    * @method fromPool
+    * @method _fromPool
     *
      */
 
-    EmptySet.fromPool = function() {
+    EmptySet._fromPool = function() {
       if (this._pool.length > 0) {
         return this._pool.pop();
       }
@@ -23,7 +23,7 @@
     };
 
     EmptySet["new"] = function() {
-      return this.fromPool();
+      return this._fromPool();
     };
 
     function EmptySet() {}

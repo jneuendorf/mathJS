@@ -65,6 +65,17 @@ Array::clone = Array::slice
 #   return newArray;
 # }
 
+Array::indexOfNative = Array::indexOf
+
+Array::indexOf = (elem, fromIdx) ->
+    idx = if fromIdx? then fromIdx else 0
+    len = @length
+
+    while idx < len
+        if @[idx] is elem
+            return idx
+        idx++
+    return -1
 
 Array::remove = (elem) ->
     idx = @indexOf elem

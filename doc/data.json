@@ -13,6 +13,24 @@
             "fors": {},
             "namespaces": {}
         },
+        "doc_base/Formals/BooleanExpression.js": {
+            "name": "doc_base/Formals/BooleanExpression.js",
+            "modules": {},
+            "classes": {
+                "Expression.Boolean": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "doc_base/Formals/Expression.js": {
+            "name": "doc_base/Formals/Expression.js",
+            "modules": {},
+            "classes": {
+                "Expression": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
         "doc_base/Formals/Term.js": {
             "name": "doc_base/Formals/Term.js",
             "modules": {},
@@ -38,12 +56,26 @@
             "fors": {},
             "namespaces": {}
         },
+        "doc_base/Numbers/AbstractNumber.js": {
+            "name": "doc_base/Numbers/AbstractNumber.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
         "doc_base/Numbers/Complex.js": {
             "name": "doc_base/Numbers/Complex.js",
             "modules": {},
             "classes": {
                 "Complex": 1
             },
+            "fors": {},
+            "namespaces": {}
+        },
+        "doc_base/Numbers/Fraction.js": {
+            "name": "doc_base/Numbers/Fraction.js",
+            "modules": {},
+            "classes": {},
             "fors": {},
             "namespaces": {}
         },
@@ -82,9 +114,7 @@
         "doc_base/Set/DiscreteSet.js": {
             "name": "doc_base/Set/DiscreteSet.js",
             "modules": {},
-            "classes": {
-                "DiscreteSet": 1
-            },
+            "classes": {},
             "fors": {},
             "namespaces": {}
         },
@@ -107,9 +137,125 @@
         "doc_base/Set/Set.js": {
             "name": "doc_base/Set/Set.js",
             "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "doc_base/Sets/Domains/C.js": {
+            "name": "doc_base/Sets/Domains/C.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "doc_base/Sets/Domains/Domain.js": {
+            "name": "doc_base/Sets/Domains/Domain.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "doc_base/Sets/Domains/I.js": {
+            "name": "doc_base/Sets/Domains/I.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "doc_base/Sets/Domains/N.js": {
+            "name": "doc_base/Sets/Domains/N.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "doc_base/Sets/Domains/Q.js": {
+            "name": "doc_base/Sets/Domains/Q.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "doc_base/Sets/Domains/R.js": {
+            "name": "doc_base/Sets/Domains/R.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "doc_base/Sets/Domains/Z.js": {
+            "name": "doc_base/Sets/Domains/Z.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "doc_base/Sets/Generators/AbstractGenerator.js": {
+            "name": "doc_base/Sets/Generators/AbstractGenerator.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "doc_base/Sets/Generators/ContinuousGenerator.js": {
+            "name": "doc_base/Sets/Generators/ContinuousGenerator.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "doc_base/Sets/Generators/DiscreteGenerator.js": {
+            "name": "doc_base/Sets/Generators/DiscreteGenerator.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "doc_base/Sets/DiscreteSet.js": {
+            "name": "doc_base/Sets/DiscreteSet.js",
+            "modules": {},
+            "classes": {
+                "DiscreteSet": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "doc_base/Sets/Function.js": {
+            "name": "doc_base/Sets/Function.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "doc_base/Sets/Set.js": {
+            "name": "doc_base/Sets/Set.js",
+            "modules": {},
             "classes": {
                 "Set": 1
             },
+            "fors": {},
+            "namespaces": {}
+        },
+        "doc_base/Sets/Tuple.js": {
+            "name": "doc_base/Sets/Tuple.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "doc_base/Utils/Hash.js": {
+            "name": "doc_base/Utils/Hash.js",
+            "modules": {},
+            "classes": {
+                "Hash": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "doc_base/Utils/Tree.js": {
+            "name": "doc_base/Utils/Tree.js",
+            "modules": {},
+            "classes": {},
             "fors": {},
             "namespaces": {}
         },
@@ -122,6 +268,13 @@
         },
         "doc_base/interfaces/Orderable.js": {
             "name": "doc_base/interfaces/Orderable.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "doc_base/interfaces/Poolable.js": {
+            "name": "doc_base/interfaces/Poolable.js",
             "modules": {},
             "classes": {},
             "fors": {},
@@ -152,6 +305,15 @@
             "fors": {},
             "namespaces": {}
         },
+        "doc_base/mathJSObject.js": {
+            "name": "doc_base/mathJSObject.js",
+            "modules": {},
+            "classes": {
+                "Object": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
         "doc_base/prototyping.js": {
             "name": "doc_base/prototyping.js",
             "modules": {},
@@ -165,6 +327,8 @@
             "name": "mathJS",
             "submodules": {},
             "classes": {
+                "Expression.Boolean": 1,
+                "Expression": 1,
                 "Term": 1,
                 "Variable": 1,
                 "Complex": 1,
@@ -173,17 +337,71 @@
                 "DiscreteSet": 1,
                 "Interval": 1,
                 "Set": 1,
-                "CONSTANTS": 1
+                "Hash": 1,
+                "CONSTANTS": 1,
+                "Object": 1
             },
             "fors": {},
             "namespaces": {},
             "tag": "main",
-            "file": "doc_base/Constants.js",
+            "file": "doc_base/mathJSObject.js",
             "line": 3,
             "itemtype": "main"
         }
     },
     "classes": {
+        "Expression.Boolean": {
+            "name": "Expression.Boolean",
+            "shortname": "Expression.Boolean",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "mathJS",
+            "file": "doc_base/Formals/BooleanExpression.js",
+            "line": 3,
+            "description": "Same as a normal Expression with the constraint that only boolean Operations are used.",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "operation",
+                    "description": "",
+                    "type": "Operation|String"
+                },
+                {
+                    "name": "expressions...",
+                    "description": "",
+                    "type": "Expression"
+                }
+            ]
+        },
+        "Expression": {
+            "name": "Expression",
+            "shortname": "Expression",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "mathJS",
+            "file": "doc_base/Formals/Expression.js",
+            "line": 3,
+            "description": "Tree structure of expressions. It consists of 2 expression and 1 operation.",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "operation",
+                    "description": "",
+                    "type": "Operation|String"
+                },
+                {
+                    "name": "expressions...",
+                    "description": "",
+                    "type": "Expression"
+                }
+            ]
+        },
         "Term": {
             "name": "Term",
             "shortname": "Term",
@@ -211,19 +429,14 @@
             "is_constructor": 1,
             "params": [
                 {
-                    "name": "symbol\nThis",
+                    "name": "name\nThis",
                     "description": "is name name of the variable (mathematically)",
                     "type": "String"
                 },
                 {
                     "name": "type",
                     "description": "",
-                    "type": "Function|Class"
-                },
-                {
-                    "name": "value\nOptional.",
-                    "description": "This param is passed upon evaluation.",
-                    "type": "Object"
+                    "type": "mathJS.Set"
                 }
             ]
         },
@@ -306,7 +519,7 @@
             "plugin_for": [],
             "extension_for": [],
             "module": "mathJS",
-            "file": "doc_base/Set/DiscreteSet.js",
+            "file": "doc_base/Sets/DiscreteSet.js",
             "line": 3,
             "description": "This class is a Setof explicitely listed elements (with no needed logic).",
             "is_constructor": 1,
@@ -379,7 +592,7 @@
             "plugin_for": [],
             "extension_for": [],
             "module": "mathJS",
-            "file": "doc_base/Set/Set.js",
+            "file": "doc_base/Sets/Set.js",
             "line": 3,
             "is_constructor": 1,
             "params": [
@@ -400,6 +613,20 @@
                 }
             ]
         },
+        "Hash": {
+            "name": "Hash",
+            "shortname": "Hash",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "mathJS",
+            "file": "doc_base/Utils/Hash.js",
+            "line": 3,
+            "description": "This is an implementation of a dictionary/hash that does not convert its keys into Strings. Keys can therefore actually by anything!",
+            "is_constructor": 1
+        },
         "CONSTANTS": {
             "name": "CONSTANTS",
             "shortname": "CONSTANTS",
@@ -412,12 +639,26 @@
             "file": "doc_base/Constants.js",
             "line": 3,
             "description": "This is a class (not actually but logically) that contains all definitions of constants.\nThose constants can be con- or disjoined (see functions 'and' and 'or') but already con- or disjoined can't be con- or disjoined any further (so nesting is not supported)."
+        },
+        "Object": {
+            "name": "Object",
+            "shortname": "Object",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "mathJS",
+            "namespace": "",
+            "file": "doc_base/mathJSObject.js",
+            "line": 3,
+            "description": "This is the super class of all mathJS classes.\nTherefore all cross-class things are defined here."
         }
     },
     "classitems": [
         {
             "file": "doc_base/Calculus/Integral.js",
-            "line": 110,
+            "line": 112,
             "description": "For better calculation performance of the integral decrease delay and numBlocks.\nFor better overall performance increase them.",
             "access": "public",
             "tagname": "",
@@ -466,12 +707,51 @@
                     "type": "Number"
                 }
             ],
-            "class": "Term"
+            "class": "Expression.Boolean"
+        },
+        {
+            "file": "doc_base/Formals/Expression.js",
+            "line": 95,
+            "description": "This method tests for the equality of structure. So 2*3x does not equal 6x!\nFor that see mathEquals().",
+            "itemtype": "method",
+            "name": "equals",
+            "class": "Expression"
+        },
+        {
+            "file": "doc_base/Formals/Expression.js",
+            "line": 145,
+            "description": "This method tests for the logical/mathematical equality of 2 expressions.",
+            "class": "Expression"
+        },
+        {
+            "file": "doc_base/Formals/Expression.js",
+            "line": 155,
+            "itemtype": "method",
+            "name": "eval",
+            "params": [
+                {
+                    "name": "values",
+                    "description": "\nAn object of the form {varKey: varVal}.",
+                    "type": "Object"
+                }
+            ],
+            "return": {
+                "description": "The value of the expression (specified by the values)."
+            },
+            "class": "Expression"
+        },
+        {
+            "file": "doc_base/Formals/Expression.js",
+            "line": 229,
+            "description": "Get the \"range\" of the expression (the set of all possible results).",
+            "itemtype": "method",
+            "name": "getSet",
+            "class": "Expression"
         },
         {
             "file": "doc_base/LinearAlgebra/Vector.js",
-            "line": 97,
-            "description": "This method calculates the distance between 2 points.\nIt's a shortcut for substracting 2 vectors and getting that vector's magnitude (because no new object is created).\nFor that reason this method should be used for pure distance calculations.",
+            "line": 94,
+            "description": "This method calculates the distance between 2 points.\nIt\"s a shortcut for substracting 2 vectors and getting that vector\"s magnitude (because no new object is created).\nFor that reason this method should be used for pure distance calculations.",
             "itemtype": "method",
             "name": "distanceTo",
             "params": [
@@ -489,8 +769,8 @@
         },
         {
             "file": "doc_base/LinearAlgebra/Vector.js",
-            "line": 158,
-            "description": "Returns the angle of a vector. Beware that the angle is measured in counter clockwise direction beginning at 0˚ which equals the x axis in positive direction.\nSo on a computer grid the angle won't be what you expect! Use anglePC() in that case!",
+            "line": 155,
+            "description": "Returns the angle of a vector. Beware that the angle is measured in counter clockwise direction beginning at 0˚ which equals the x axis in positive direction.\nSo on a computer grid the angle won\"t be what you expect! Use anglePC() in that case!",
             "itemtype": "method",
             "name": "angle",
             "return": {
@@ -501,7 +781,7 @@
         },
         {
             "file": "doc_base/LinearAlgebra/Vector.js",
-            "line": 181,
+            "line": 178,
             "description": "Returns the angle of a vector. 0˚ means pointing to the top. Clockwise.",
             "itemtype": "method",
             "name": "anglePC",
@@ -513,7 +793,7 @@
         },
         {
             "file": "doc_base/LinearAlgebra/Vector.js",
-            "line": 203,
+            "line": 200,
             "description": "Returns a random Point within a given radius.",
             "itemtype": "method",
             "name": "randPointInRadius",
@@ -536,9 +816,329 @@
             "class": "Complex"
         },
         {
+            "file": "doc_base/Numbers/AbstractNumber.js",
+            "line": 16,
+            "override": "mathJS.Poolable",
+            "static": 1,
+            "itemtype": "method",
+            "name": "_fromPool",
+            "class": "Complex"
+        },
+        {
+            "file": "doc_base/Numbers/AbstractNumber.js",
+            "line": 37,
+            "override": "mathJS.Parseable",
+            "static": 1,
+            "itemtype": "method",
+            "name": "parse",
+            "class": "Complex"
+        },
+        {
+            "file": "doc_base/Numbers/AbstractNumber.js",
+            "line": 63,
+            "description": "This method is used to parse and check a parameter.\nEither a valid value is returned or null (for invalid parameters).",
+            "static": 1,
+            "itemtype": "method",
+            "name": "_getPrimitive",
+            "params": [
+                {
+                    "name": "param",
+                    "description": "",
+                    "type": "Object"
+                },
+                {
+                    "name": "skipCheck",
+                    "description": "",
+                    "type": "Boolean"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "mathJS.Number"
+            },
+            "class": "Complex"
+        },
+        {
+            "file": "doc_base/Numbers/AbstractNumber.js",
+            "line": 91,
+            "override": "mathJS.Comparable\nThis method checks for mathmatical equality. This means new mathJS.Double(4.2).equals(4.2) is true.",
+            "itemtype": "method",
+            "name": "equals",
+            "params": [
+                {
+                    "name": "n",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Boolean"
+            },
+            "class": "Complex"
+        },
+        {
+            "file": "doc_base/Numbers/AbstractNumber.js",
+            "line": 109,
+            "override": "mathJS.Orderable\nThis method checks for mathmatical \"<\". This means new mathJS.Double(4.2).lessThan(5.2) is true.",
+            "itemtype": "method",
+            "name": "lessThan",
+            "class": "Complex"
+        },
+        {
+            "file": "doc_base/Numbers/AbstractNumber.js",
+            "line": 125,
+            "override": "mathJS.Orderable\nThis method checks for mathmatical \">\". This means new mathJS.Double(4.2).greaterThan(3.2) is true.",
+            "itemtype": "method",
+            "name": "greaterThan",
+            "params": [
+                {
+                    "name": "n",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Boolean"
+            },
+            "class": "Complex"
+        },
+        {
+            "file": "doc_base/Numbers/AbstractNumber.js",
+            "line": 143,
+            "override": "mathJS.Orderable\nThis method checks for mathmatical \"<=\".",
+            "itemtype": "method",
+            "name": "lessThanOrEqualTo",
+            "params": [
+                {
+                    "name": "n",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Boolean"
+            },
+            "class": "Complex"
+        },
+        {
+            "file": "doc_base/Numbers/AbstractNumber.js",
+            "line": 157,
+            "description": "This method checks for mathmatical \">=\".",
+            "itemtype": "method",
+            "name": "greaterThanOrEqualTo",
+            "params": [
+                {
+                    "name": "n",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Boolean"
+            },
+            "class": "Complex"
+        },
+        {
+            "file": "doc_base/Numbers/AbstractNumber.js",
+            "line": 170,
+            "description": "This method adds 2 numbers and returns a new one.",
+            "itemtype": "method",
+            "name": "plus",
+            "params": [
+                {
+                    "name": "n",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "return": {
+                "description": "Calculated Number.",
+                "type": "mathJS.Number"
+            },
+            "class": "Complex"
+        },
+        {
+            "file": "doc_base/Numbers/AbstractNumber.js",
+            "line": 187,
+            "description": "This method substracts 2 numbers and returns a new one.",
+            "itemtype": "method",
+            "name": "minus",
+            "params": [
+                {
+                    "name": "n",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "return": {
+                "description": "Calculated Number.",
+                "type": "mathJS.Number"
+            },
+            "class": "Complex"
+        },
+        {
+            "file": "doc_base/Numbers/AbstractNumber.js",
+            "line": 204,
+            "description": "This method multiplies 2 numbers and returns a new one.",
+            "itemtype": "method",
+            "name": "times",
+            "params": [
+                {
+                    "name": "n",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "return": {
+                "description": "Calculated Number.",
+                "type": "mathJS.Number"
+            },
+            "class": "Complex"
+        },
+        {
+            "file": "doc_base/Numbers/AbstractNumber.js",
+            "line": 224,
+            "description": "This method divides 2 numbers and returns a new one.",
+            "itemtype": "method",
+            "name": "divide",
+            "params": [
+                {
+                    "name": "n",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "return": {
+                "description": "Calculated Number.",
+                "type": "Number"
+            },
+            "class": "Complex"
+        },
+        {
+            "file": "doc_base/Numbers/AbstractNumber.js",
+            "line": 241,
+            "description": "This method squares this instance and returns a new one.",
+            "itemtype": "method",
+            "name": "square",
+            "return": {
+                "description": "Calculated Number.",
+                "type": "Number"
+            },
+            "class": "Complex"
+        },
+        {
+            "file": "doc_base/Numbers/AbstractNumber.js",
+            "line": 253,
+            "description": "This method cubes this instance and returns a new one.",
+            "itemtype": "method",
+            "name": "cube",
+            "return": {
+                "description": "Calculated Number.",
+                "type": "Number"
+            },
+            "class": "Complex"
+        },
+        {
+            "file": "doc_base/Numbers/AbstractNumber.js",
+            "line": 265,
+            "description": "This method calculates the square root of this instance and returns a new one.",
+            "itemtype": "method",
+            "name": "sqrt",
+            "return": {
+                "description": "Calculated Number.",
+                "type": "Number"
+            },
+            "class": "Complex"
+        },
+        {
+            "file": "doc_base/Numbers/AbstractNumber.js",
+            "line": 277,
+            "description": "This method calculates the cubic root of this instance and returns a new one.",
+            "itemtype": "method",
+            "name": "curt",
+            "return": {
+                "description": "Calculated Number.",
+                "type": "Number"
+            },
+            "class": "Complex"
+        },
+        {
+            "file": "doc_base/Numbers/AbstractNumber.js",
+            "line": 289,
+            "description": "This method calculates any root of this instance and returns a new one.",
+            "itemtype": "method",
+            "name": "root",
+            "params": [
+                {
+                    "name": "exponent",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "return": {
+                "description": "Calculated Number.",
+                "type": "Number"
+            },
+            "class": "Complex"
+        },
+        {
+            "file": "doc_base/Numbers/AbstractNumber.js",
+            "line": 306,
+            "description": "This method returns the reciprocal (1/n) of this number.",
+            "itemtype": "method",
+            "name": "reciprocal",
+            "return": {
+                "description": "Calculated Number.",
+                "type": "Number"
+            },
+            "class": "Complex"
+        },
+        {
+            "file": "doc_base/Numbers/AbstractNumber.js",
+            "line": 318,
+            "description": "This method returns this' value the the n-th power (this^n).",
+            "itemtype": "method",
+            "name": "pow",
+            "params": [
+                {
+                    "name": "n",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "return": {
+                "description": "Calculated Number.",
+                "type": "Number"
+            },
+            "class": "Complex"
+        },
+        {
+            "file": "doc_base/Numbers/AbstractNumber.js",
+            "line": 335,
+            "description": "This method returns the sign of this number (sign(this)).",
+            "itemtype": "method",
+            "name": "sign",
+            "params": [
+                {
+                    "name": "plain",
+                    "description": "\nIndicates whether the return value is wrapped in a mathJS.Number or not (-> primitive value).",
+                    "type": "Boolean"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Number|mathJS.Number"
+            },
+            "class": "Complex"
+        },
+        {
             "file": "doc_base/Numbers/Complex.js",
             "line": 27,
-            "override": "This method creates an object with the keys 'real' and 'img' which have primitive numbers as their values.",
+            "override": "This method creates an object with the keys \"real\" and \"img\" which have primitive numbers as their values.",
             "static": 1,
             "itemtype": "method",
             "name": "_getValueFromParam",
@@ -562,7 +1162,7 @@
         },
         {
             "file": "doc_base/Numbers/Complex.js",
-            "line": 143,
+            "line": 139,
             "description": "This method check for mathmatical equality. This means new mathJS.Double(4.2).equals(4.2)",
             "itemtype": "method",
             "name": "equals",
@@ -580,341 +1180,49 @@
             "class": "Complex"
         },
         {
-            "file": "doc_base/Numbers/Number.js",
-            "line": 24,
-            "description": "This method gets the value from a parameter. The validity is determined by this._valueIsValid().",
-            "static": 1,
-            "access": "protected",
-            "tagname": "",
-            "itemtype": "method",
-            "name": "_getValueFromParam",
-            "params": [
-                {
-                    "name": "param",
-                    "description": "",
-                    "type": "Number"
-                },
-                {
-                    "name": "skipCheck\nIf",
-                    "description": "`true` the given parameter is not (again) checked for validity. If the function that calls _getValueFromParam() has already checked the passed parameter this `skipCheck` should be set to true.",
-                    "type": "Boolean"
-                }
-            ],
-            "return": {
-                "description": "The primitive value or null.",
-                "type": "Number"
-            },
-            "class": "Number"
-        },
-        {
-            "file": "doc_base/Numbers/Number.js",
-            "line": 50,
-            "override": "mathJS.Poolable",
+            "file": "doc_base/Numbers/Fraction.js",
+            "line": 11,
+            "override": "mathJS.Number",
             "static": 1,
             "itemtype": "method",
-            "name": "fromPool",
-            "class": "Number"
+            "name": "_fromPool",
+            "class": "Int"
         },
         {
-            "file": "doc_base/Numbers/Number.js",
-            "line": 72,
-            "override": "mathJS.Parseable",
+            "file": "doc_base/Numbers/Fraction.js",
+            "line": 34,
+            "override": "mathJS.Number",
             "static": 1,
             "itemtype": "method",
             "name": "parse",
-            "class": "Number"
+            "class": "Int"
         },
         {
-            "file": "doc_base/Numbers/Number.js",
-            "line": 135,
-            "override": "mathJS.Comparable\nThis method checks for mathmatical equality. This means new mathJS.Double(4.2).equals(4.2) is true.",
+            "file": "doc_base/Numbers/Fraction.js",
+            "line": 52,
+            "override": "mathJS.Number",
+            "static": 1,
             "itemtype": "method",
-            "name": "equals",
-            "params": [
-                {
-                    "name": "n",
-                    "description": "",
-                    "type": "Number"
-                }
-            ],
-            "return": {
-                "description": "",
-                "type": "Boolean"
-            },
-            "class": "Number"
+            "name": "getSet",
+            "class": "Int"
         },
         {
-            "file": "doc_base/Numbers/Number.js",
-            "line": 149,
-            "override": "mathJS.Orderable\nThis method check for mathmatical '<'. This means new mathJS.Double(4.2).lessThan(5.2) is true.",
+            "file": "doc_base/Numbers/Fraction.js",
+            "line": 64,
+            "override": "mathJS.Number",
+            "static": 1,
             "itemtype": "method",
-            "name": "lessThan",
-            "class": "Number"
+            "name": "new",
+            "class": "Int"
         },
         {
-            "file": "doc_base/Numbers/Number.js",
-            "line": 161,
-            "override": "mathJS.Orderable\nThis method check for mathmatical '>'. This means new mathJS.Double(4.2).greaterThan(3.2) is true.",
+            "file": "doc_base/Numbers/Int.js",
+            "line": 36,
+            "override": "mathJS.Poolable",
+            "static": 1,
             "itemtype": "method",
-            "name": "greaterThan",
-            "params": [
-                {
-                    "name": "n",
-                    "description": "",
-                    "type": "Number"
-                }
-            ],
-            "return": {
-                "description": "",
-                "type": "Boolean"
-            },
-            "class": "Number"
-        },
-        {
-            "file": "doc_base/Numbers/Number.js",
-            "line": 175,
-            "override": "mathJS.Orderable\nThis method check for mathmatical equality. This means new mathJS.Double(4.2).lessThanOrEqualTo(3.2) is true.",
-            "itemtype": "method",
-            "name": "lessThanOrEqualTo",
-            "params": [
-                {
-                    "name": "n",
-                    "description": "",
-                    "type": "Number"
-                }
-            ],
-            "return": {
-                "description": "",
-                "type": "Boolean"
-            },
-            "class": "Number"
-        },
-        {
-            "file": "doc_base/Numbers/Number.js",
-            "line": 189,
-            "description": "This method check for mathmatical equality. This means new mathJS.Double(4.2).lessThanOrEqualTo(3.2) is true.",
-            "itemtype": "method",
-            "name": "greaterThanOrEqualTo",
-            "params": [
-                {
-                    "name": "n",
-                    "description": "",
-                    "type": "Number"
-                }
-            ],
-            "return": {
-                "description": "",
-                "type": "Boolean"
-            },
-            "class": "Number"
-        },
-        {
-            "file": "doc_base/Numbers/Number.js",
-            "line": 202,
-            "description": "This method adds 2 numbers and returns a new one.",
-            "itemtype": "method",
-            "name": "plus",
-            "params": [
-                {
-                    "name": "n",
-                    "description": "",
-                    "type": "Number"
-                }
-            ],
-            "return": {
-                "description": "Calculated Number.",
-                "type": "Number"
-            },
-            "class": "Number"
-        },
-        {
-            "file": "doc_base/Numbers/Number.js",
-            "line": 215,
-            "description": "This method adds the given number to this instance.",
-            "itemtype": "method",
-            "name": "increase",
-            "params": [
-                {
-                    "name": "n",
-                    "description": "",
-                    "type": "Number"
-                }
-            ],
-            "return": {
-                "description": "This instance.",
-                "type": "Number"
-            },
-            "class": "Number"
-        },
-        {
-            "file": "doc_base/Numbers/Number.js",
-            "line": 229,
-            "description": "See increase().",
-            "itemtype": "method",
-            "name": "plusSelf",
-            "class": "Number"
-        },
-        {
-            "file": "doc_base/Numbers/Number.js",
-            "line": 238,
-            "description": "This method substracts 2 numbers and returns a new one.",
-            "itemtype": "method",
-            "name": "minus",
-            "params": [
-                {
-                    "name": "n",
-                    "description": "",
-                    "type": "Number"
-                }
-            ],
-            "return": {
-                "description": "Calculated Number.",
-                "type": "Number"
-            },
-            "class": "Number"
-        },
-        {
-            "file": "doc_base/Numbers/Number.js",
-            "line": 258,
-            "description": "This method multiplies 2 numbers and returns a new one.",
-            "itemtype": "method",
-            "name": "times",
-            "params": [
-                {
-                    "name": "n",
-                    "description": "",
-                    "type": "Number"
-                }
-            ],
-            "return": {
-                "description": "Calculated Number.",
-                "type": "Number"
-            },
-            "class": "Number"
-        },
-        {
-            "file": "doc_base/Numbers/Number.js",
-            "line": 276,
-            "description": "This method divides 2 numbers and returns a new one.",
-            "itemtype": "method",
-            "name": "divide",
-            "params": [
-                {
-                    "name": "n",
-                    "description": "",
-                    "type": "Number"
-                }
-            ],
-            "return": {
-                "description": "Calculated Number.",
-                "type": "Number"
-            },
-            "class": "Number"
-        },
-        {
-            "file": "doc_base/Numbers/Number.js",
-            "line": 294,
-            "description": "This method squares this instance and returns a new one.",
-            "itemtype": "method",
-            "name": "square",
-            "return": {
-                "description": "Calculated Number.",
-                "type": "Number"
-            },
-            "class": "Number"
-        },
-        {
-            "file": "doc_base/Numbers/Number.js",
-            "line": 311,
-            "description": "This method cubes this instance and returns a new one.",
-            "itemtype": "method",
-            "name": "cube",
-            "return": {
-                "description": "Calculated Number.",
-                "type": "Number"
-            },
-            "class": "Number"
-        },
-        {
-            "file": "doc_base/Numbers/Number.js",
-            "line": 328,
-            "description": "This method calculates the square root of this instance and returns a new one.",
-            "itemtype": "method",
-            "name": "sqrt",
-            "return": {
-                "description": "Calculated Number.",
-                "type": "Number"
-            },
-            "class": "Number"
-        },
-        {
-            "file": "doc_base/Numbers/Number.js",
-            "line": 345,
-            "description": "This method calculates the cubic root of this instance and returns a new one.",
-            "itemtype": "method",
-            "name": "curt",
-            "return": {
-                "description": "Calculated Number.",
-                "type": "Number"
-            },
-            "class": "Number"
-        },
-        {
-            "file": "doc_base/Numbers/Number.js",
-            "line": 361,
-            "description": "This method calculates any root of this instance and returns a new one.",
-            "itemtype": "method",
-            "name": "plus",
-            "params": [
-                {
-                    "name": "exponent",
-                    "description": "",
-                    "type": "Number"
-                }
-            ],
-            "return": {
-                "description": "Calculated Number.",
-                "type": "Number"
-            },
-            "class": "Number"
-        },
-        {
-            "file": "doc_base/Numbers/Number.js",
-            "line": 378,
-            "description": "This method adds 2 numbers and returns a new one.",
-            "itemtype": "method",
-            "name": "plus",
-            "params": [
-                {
-                    "name": "n",
-                    "description": "",
-                    "type": "Number"
-                }
-            ],
-            "return": {
-                "description": "Calculated Number.",
-                "type": "Number"
-            },
-            "class": "Number"
-        },
-        {
-            "file": "doc_base/Numbers/Number.js",
-            "line": 396,
-            "description": "This method adds 2 numbers and returns a new one.",
-            "itemtype": "method",
-            "name": "plus",
-            "params": [
-                {
-                    "name": "n",
-                    "description": "",
-                    "type": "Number"
-                }
-            ],
-            "return": {
-                "description": "Calculated Number.",
-                "type": "Number"
-            },
-            "class": "Number"
+            "name": "_fromPool",
+            "class": "Int"
         },
         {
             "file": "doc_base/Set/Domains/N.js",
@@ -952,7 +1260,7 @@
             "override": "see mathJS.Poolable",
             "static": 1,
             "itemtype": "method",
-            "name": "fromPool",
+            "name": "_fromPool",
             "class": "Interval"
         },
         {
@@ -976,8 +1284,437 @@
             "class": "Set"
         },
         {
+            "file": "doc_base/Sets/Domains/C.js",
+            "line": 26,
+            "description": "This method checks if `this` is a subset of the given set `set`. Since equality must be checked by checking an arbitrary number of values this method actually does the same as `this.equals()`. For `this.equals()` the number of compared elements is 10x bigger.",
+            "class": "DiscreteSet"
+        },
+        {
+            "file": "doc_base/Sets/Domains/C.js",
+            "line": 53,
+            "description": "a.without b => returns: removed all common elements from a",
+            "class": "DiscreteSet"
+        },
+        {
+            "file": "doc_base/Sets/Domains/Domain.js",
+            "line": 3,
+            "description": "Domain ranks are like so:\nN -> 0\nZ -> 1\nQ -> 2\nI -> 2\nR -> 3\nC -> 4\n==> union: take greater rank (if equal (and unequal names) take next greater rank)\n==> intersection: take smaller rank (if equal (and unequal names) take empty set)",
+            "class": "DiscreteSet"
+        },
+        {
+            "file": "doc_base/Sets/Domains/I.js",
+            "line": 26,
+            "description": "This method checks if `this` is a subset of the given set `set`. Since equality must be checked by checking an arbitrary number of values this method actually does the same as `this.equals()`. For `this.equals()` the number of compared elements is 10x bigger.",
+            "class": "DiscreteSet"
+        },
+        {
+            "file": "doc_base/Sets/Domains/I.js",
+            "line": 53,
+            "description": "a.without b => returns: removed all common elements from a",
+            "class": "DiscreteSet"
+        },
+        {
+            "file": "doc_base/Sets/Domains/N.js",
+            "line": 26,
+            "description": "This method checks if `this` is a subset of the given set `set`. Since equality must be checked by checking an arbitrary number of values this method actually does the same as `this.equals()`. For `this.equals()` the number of compared elements is 10x bigger.",
+            "class": "DiscreteSet"
+        },
+        {
+            "file": "doc_base/Sets/Domains/N.js",
+            "line": 154,
+            "description": "a.without b => returns: removed all common elements from a",
+            "class": "DiscreteSet"
+        },
+        {
+            "file": "doc_base/Sets/Domains/Q.js",
+            "line": 26,
+            "description": "This method checks if `this` is a subset of the given set `set`. Since equality must be checked by checking an arbitrary number of values this method actually does the same as `this.equals()`. For `this.equals()` the number of compared elements is 10x bigger.",
+            "class": "DiscreteSet"
+        },
+        {
+            "file": "doc_base/Sets/Domains/Q.js",
+            "line": 53,
+            "description": "a.without b => returns: removed all common elements from a",
+            "class": "DiscreteSet"
+        },
+        {
+            "file": "doc_base/Sets/Domains/R.js",
+            "line": 26,
+            "description": "This method checks if `this` is a subset of the given set `set`. Since equality must be checked by checking an arbitrary number of values this method actually does the same as `this.equals()`. For `this.equals()` the number of compared elements is 10x bigger.",
+            "class": "DiscreteSet"
+        },
+        {
+            "file": "doc_base/Sets/Domains/R.js",
+            "line": 53,
+            "description": "a.without b => returns: removed all common elements from a",
+            "class": "DiscreteSet"
+        },
+        {
+            "file": "doc_base/Sets/Domains/Z.js",
+            "line": 26,
+            "description": "This method checks if `this` is a subset of the given set `set`. Since equality must be checked by checking an arbitrary number of values this method actually does the same as `this.equals()`. For `this.equals()` the number of compared elements is 10x bigger.",
+            "class": "DiscreteSet"
+        },
+        {
+            "file": "doc_base/Sets/Domains/Z.js",
+            "line": 53,
+            "description": "a.without b => returns: removed all common elements from a",
+            "class": "DiscreteSet"
+        },
+        {
+            "file": "doc_base/Sets/Generators/AbstractGenerator.js",
+            "line": 58,
+            "description": "Indicates whether the set the generator creates contains the given value or not.",
+            "itemtype": "method",
+            "name": "generates",
+            "class": "DiscreteSet"
+        },
+        {
+            "file": "doc_base/Sets/Generators/ContinuousGenerator.js",
+            "line": 59,
+            "description": "Indicates whether the set the generator creates contains the given value or not.",
+            "itemtype": "method",
+            "name": "generates",
+            "class": "DiscreteSet"
+        },
+        {
+            "file": "doc_base/Sets/Generators/DiscreteGenerator.js",
+            "line": 59,
+            "description": "Indicates whether the set the generator creates contains the given value or not.",
+            "itemtype": "method",
+            "name": "generates",
+            "class": "DiscreteSet"
+        },
+        {
+            "file": "doc_base/Sets/DiscreteSet.js",
+            "line": 94,
+            "description": "Get the elements of the set.",
+            "itemtype": "method",
+            "name": "getElements",
+            "params": [
+                {
+                    "name": "sorted",
+                    "description": "\nOptional. If set to `true` returns the elements in ascending order.",
+                    "type": "Boolean"
+                }
+            ],
+            "class": "DiscreteSet"
+        },
+        {
+            "file": "doc_base/Sets/Function.js",
+            "line": 29,
+            "description": "Empty the cache or reset to given cache.",
+            "itemtype": "method",
+            "name": "clearCache",
+            "params": [
+                {
+                    "name": "cache",
+                    "description": "",
+                    "type": "Object"
+                }
+            ],
+            "return": {
+                "description": "mathJS.Function"
+            },
+            "chainable": 1,
+            "class": "Set"
+        },
+        {
+            "file": "doc_base/Sets/Function.js",
+            "line": 48,
+            "description": "Evaluate the function for given values.",
+            "itemtype": "method",
+            "name": "get",
+            "params": [
+                {
+                    "name": "values",
+                    "description": "\nIf an array the first value will be associated with the first variable name. Otherwise an object like {x: 42} is expected.",
+                    "type": "Array|Object"
+                }
+            ],
+            "return": {
+                "description": ""
+            },
+            "class": "Set"
+        },
+        {
+            "file": "doc_base/Sets/Set.js",
+            "line": 26,
+            "description": "Optionally the left and right configuration can be passed directly (each with an open- and value-property) or the Interval can be parsed from String (like \"(2, 6 ]\").",
+            "static": 1,
+            "itemtype": "method",
+            "name": "createInterval",
+            "params": [
+                {
+                    "name": "leftOpen",
+                    "description": "",
+                    "type": "Boolean"
+                },
+                {
+                    "name": "leftValue",
+                    "description": "",
+                    "type": "Number|mathJS.Number"
+                },
+                {
+                    "name": "rightValue",
+                    "description": "",
+                    "type": "Number|mathJS.Number"
+                },
+                {
+                    "name": "rightOpen",
+                    "description": "",
+                    "type": "Boolean"
+                }
+            ],
+            "class": "Set"
+        },
+        {
+            "file": "doc_base/Sets/Tuple.js",
+            "line": 87,
+            "description": "Evaluates the tuple.",
+            "params": [
+                {
+                    "name": "values",
+                    "description": "\n# TODO: also enables hash of vars\nA value for each tuple element.",
+                    "type": "Array"
+                }
+            ],
+            "class": "Hash"
+        },
+        {
+            "file": "doc_base/Sets/Tuple.js",
+            "line": 111,
+            "description": "Get the elements of the Tuple.",
+            "itemtype": "method",
+            "name": "getElements",
+            "class": "Hash"
+        },
+        {
+            "file": "doc_base/Sets/Tuple.js",
+            "line": 141,
+            "description": "Removes the first occurences of the given elements.",
+            "class": "Hash"
+        },
+        {
+            "file": "doc_base/Utils/Hash.js",
+            "line": 15,
+            "description": "Creates a new Hash from a given JavaScript object.",
+            "static": 1,
+            "itemtype": "method",
+            "name": "fromObject",
+            "params": [
+                {
+                    "name": "object",
+                    "description": "",
+                    "type": "Object"
+                }
+            ],
+            "class": "Hash"
+        },
+        {
+            "file": "doc_base/Utils/Hash.js",
+            "line": 59,
+            "description": "Adds a new key-value pair or overwrites an existing one.",
+            "itemtype": "method",
+            "name": "put",
+            "params": [
+                {
+                    "name": "key",
+                    "description": "",
+                    "type": "Mixed"
+                },
+                {
+                    "name": "val",
+                    "description": "",
+                    "type": "Mixed"
+                }
+            ],
+            "return": {
+                "description": "This instance.",
+                "type": "Hash"
+            },
+            "chainable": 1,
+            "class": "Hash"
+        },
+        {
+            "file": "doc_base/Utils/Hash.js",
+            "line": 83,
+            "description": "Returns the value (or null) for the specified key.",
+            "itemtype": "method",
+            "name": "get",
+            "params": [
+                {
+                    "name": "key",
+                    "description": "",
+                    "type": "Mixed"
+                },
+                {
+                    "name": "equalityFunction",
+                    "description": "\nThis optional function can overwrite the test for equality between keys. This function expects the parameters: (the current key in the key iteration, 'key'). If this parameters is omitted '===' is used.",
+                    "type": "Function",
+                    "optional": true
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Mixed"
+            },
+            "class": "Hash"
+        },
+        {
+            "file": "doc_base/Utils/Hash.js",
+            "line": 102,
+            "description": "Indicates whether the Hash has the specified key.",
+            "itemtype": "method",
+            "name": "hasKey",
+            "params": [
+                {
+                    "name": "key",
+                    "description": "",
+                    "type": "Mixed"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Boolean"
+            },
+            "class": "Hash"
+        },
+        {
+            "file": "doc_base/Utils/Hash.js",
+            "line": 119,
+            "description": "Returns the number of entries in the Hash.",
+            "itemtype": "method",
+            "name": "size",
+            "return": {
+                "description": "",
+                "type": "Integer"
+            },
+            "class": "Hash"
+        },
+        {
+            "file": "doc_base/Utils/Tree.js",
+            "line": 11,
+            "itemtype": "method",
+            "name": "new",
+            "static": 1,
+            "params": [
+                {
+                    "name": "node",
+                    "description": "",
+                    "type": "Object"
+                },
+                {
+                    "name": "options",
+                    "description": "\nOptional. Any given key will override the default. Here are the keys:\nadjustLevels: Boolean value that indicates whether the tree is supposed to do its aftermath. Only set this to false if you're doing the aftermath later!!\nafterInstatiate: Function to modify the node and/or the instance. Parameters are (1st) the node object and (2nd) the instance.\ngetChildren: Function that specifies how to retrieve the children from the node object.\ngetParent: Function that specifies how to retrieve the parent from the node object. getChildren is checked 1st so it doesn't make sense to pass getChildren AND getParent!\ninstantiate: Function that specifies how to create an instance from the node object. Parameter is the node object.",
+                    "type": "Object"
+                }
+            ],
+            "class": "CONSTANTS"
+        },
+        {
+            "file": "doc_base/Utils/Tree.js",
+            "line": 50,
+            "itemtype": "method",
+            "name": "new.byChildRef",
+            "static": 1,
+            "params": [
+                {
+                    "name": "node",
+                    "description": "",
+                    "type": "Object"
+                },
+                {
+                    "name": "options",
+                    "description": "\nOptional. Any given key will override the default. Here are the keys:\nadjustLevels: Boolean value that indicates whether the tree is supposed to do its aftermath. Only set this to false if you're doing the aftermath later!!\nafterInstatiate: Function to modify the node and/or the instance. Parameters are (1st) the node object and (2nd) the instance.\ngetChildren: Function that specifies how to retrieve the children from the node object.\ninstantiate: Function that specifies how to create an instance from the node object. Parameter is the node object.",
+                    "type": "Object"
+                }
+            ],
+            "class": "CONSTANTS"
+        },
+        {
+            "file": "doc_base/Utils/Tree.js",
+            "line": 95,
+            "itemtype": "method",
+            "name": "new.byParentRef",
+            "static": 1,
+            "params": [
+                {
+                    "name": "node",
+                    "description": "",
+                    "type": "Object"
+                },
+                {
+                    "name": "options",
+                    "description": "\nOptional. Any given key will override the default. Here are the keys:\nadjustLevels: Boolean value that indicates whether the tree is supposed to do its aftermath. Only set this to false if you're doing the aftermath later!!\nafterInstatiate: Function to modify the node and/or the instance. Parameters are (1st) the node object and (2nd) the instance.\ngetParent: Function that specifies how to retrieve the parent from the node object.\ninstantiate: Function that specifies how to create an instance from the node object. Parameter is the node object.",
+                    "type": "Object"
+                }
+            ],
+            "class": "CONSTANTS"
+        },
+        {
+            "file": "doc_base/Utils/Tree.js",
+            "line": 178,
+            "description": "Find (first occurence of) a node",
+            "itemtype": "method",
+            "name": "findNode",
+            "params": [
+                {
+                    "name": "nodeOrEqualsFunction",
+                    "description": "",
+                    "type": "Function|App.Tree"
+                }
+            ],
+            "class": "CONSTANTS"
+        },
+        {
+            "file": "doc_base/Utils/Tree.js",
+            "line": 195,
+            "description": "Find all occurences of a node.",
+            "itemtype": "method",
+            "name": "findNodes",
+            "params": [
+                {
+                    "name": "nodeOrEqualsFunction",
+                    "description": "",
+                    "type": "Function|App.Tree"
+                }
+            ],
+            "class": "CONSTANTS"
+        },
+        {
+            "file": "doc_base/Utils/Tree.js",
+            "line": 242,
+            "description": "Get number of nodes in (sub)tree",
+            "class": "CONSTANTS"
+        },
+        {
+            "file": "doc_base/Utils/Tree.js",
+            "line": 406,
+            "itemtype": "method",
+            "name": "traverse",
+            "params": [
+                {
+                    "name": "callback",
+                    "description": "\nGets the current node, the current level relative to the root of the current traversal, and iteration index as parameters.",
+                    "type": "Function"
+                },
+                {
+                    "name": "orderMode",
+                    "description": "\nOptional. Default is \"postorder\". Possible are \"postorder\", \"preorder\", \"inorder\", \"levelorder\".",
+                    "type": "String"
+                },
+                {
+                    "name": "searchMode",
+                    "description": "\nOptional. Default is \"depthFirst\". Posible are \"depthFirst\", \"breadthFirst\".",
+                    "type": "String"
+                }
+            ],
+            "class": "CONSTANTS"
+        },
+        {
             "file": "doc_base/interfaces/Comparable.js",
-            "line": 7,
+            "line": 14,
             "description": "This method checks for mathmatical equality. This means new mathJS.Double(4.2).equals(4.2) is true.",
             "itemtype": "method",
             "name": "equals",
@@ -997,7 +1734,7 @@
         {
             "file": "doc_base/interfaces/Orderable.js",
             "line": 14,
-            "description": "This method checks for mathmatical '<'. This means new mathJS.Double(4.2).lessThan(5.2) is true.",
+            "description": "This method checks for mathmatical \"<\". This means new mathJS.Double(4.2).lessThan(5.2) is true.",
             "itemtype": "method",
             "name": "lessThan",
             "params": [
@@ -1023,8 +1760,8 @@
         },
         {
             "file": "doc_base/interfaces/Orderable.js",
-            "line": 36,
-            "description": "This method checks for mathmatical '>'. This means new mathJS.Double(4.2).greaterThan(3.2) is true.",
+            "line": 38,
+            "description": "This method checks for mathmatical \">\". This means new mathJS.Double(4.2).greaterThan(3.2) is true.",
             "itemtype": "method",
             "name": "greaterThan",
             "params": [
@@ -1042,16 +1779,16 @@
         },
         {
             "file": "doc_base/interfaces/Orderable.js",
-            "line": 49,
+            "line": 51,
             "description": "Alias for `greaterThan`.",
             "itemtype": "method",
-            "name": "lt",
+            "name": "gt",
             "class": "CONSTANTS"
         },
         {
             "file": "doc_base/interfaces/Orderable.js",
-            "line": 58,
-            "description": "This method checks for mathmatical '<='. This means new mathJS.Double(4.2).lessThanOrEqualTo(5.2) is true.",
+            "line": 62,
+            "description": "This method checks for mathmatical \"<=\". This means new mathJS.Double(4.2).lessThanOrEqualTo(5.2) is true.",
             "itemtype": "method",
             "name": "lessThanOrEqualTo",
             "params": [
@@ -1069,16 +1806,16 @@
         },
         {
             "file": "doc_base/interfaces/Orderable.js",
-            "line": 71,
+            "line": 75,
             "description": "Alias for `lessThanOrEqualTo`.",
             "itemtype": "method",
-            "name": "lt",
+            "name": "lte",
             "class": "CONSTANTS"
         },
         {
             "file": "doc_base/interfaces/Orderable.js",
-            "line": 80,
-            "description": "This method checks for mathmatical '>='. This means new mathJS.Double(4.2).greaterThanOrEqualTo(3.2) is true.",
+            "line": 86,
+            "description": "This method checks for mathmatical \">=\". This means new mathJS.Double(4.2).greaterThanOrEqualTo(3.2) is true.",
             "itemtype": "method",
             "name": "greaterThanOrEqualTo",
             "params": [
@@ -1096,10 +1833,22 @@
         },
         {
             "file": "doc_base/interfaces/Orderable.js",
-            "line": 93,
+            "line": 99,
             "description": "Alias for `greaterThanOrEqualTo`.",
             "itemtype": "method",
-            "name": "lt",
+            "name": "gte",
+            "class": "CONSTANTS"
+        },
+        {
+            "file": "doc_base/interfaces/Poolable.js",
+            "line": 20,
+            "description": "Releases the instance to the pool of its class.",
+            "itemtype": "method",
+            "name": "release",
+            "return": {
+                "description": "This intance"
+            },
+            "chainable": 1,
             "class": "CONSTANTS"
         },
         {
@@ -1154,7 +1903,7 @@
         },
         {
             "file": "doc_base/mathJS.js",
-            "line": 180,
+            "line": 203,
             "description": "This function checks if a given parameter is a (plain) number.",
             "itemtype": "method",
             "name": "isNum",
@@ -1169,12 +1918,12 @@
                 "description": "Whether the given number is a Number (excluding +/-Infinity)",
                 "type": "Boolean"
             },
-            "class": "",
+            "class": "Object",
             "module": "mathJS"
         },
         {
             "file": "doc_base/mathJS.js",
-            "line": 201,
+            "line": 224,
             "description": "This function returns a random (plain) integer between max and min (both inclusive). If max is less than min the parameters are swapped.",
             "itemtype": "method",
             "name": "randInt",
@@ -1194,12 +1943,12 @@
                 "description": "Random integer.",
                 "type": "Number"
             },
-            "class": "",
+            "class": "Object",
             "module": "mathJS"
         },
         {
             "file": "doc_base/mathJS.js",
-            "line": 227,
+            "line": 244,
             "description": "This function returns a random number between max and min (both inclusive). If max is less than min the parameters are swapped.",
             "itemtype": "method",
             "name": "randNum",
@@ -1219,12 +1968,12 @@
                 "description": "Random number.",
                 "type": "Integer"
             },
-            "class": "",
+            "class": "Object",
             "module": "mathJS"
         },
         {
             "file": "doc_base/prototyping.js",
-            "line": 106,
+            "line": 174,
             "itemtype": "method",
             "name": "getMax",
             "params": [
@@ -1244,6 +1993,34 @@
     ],
     "warnings": [
         {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " doc_base/Formals/Expression.js:155"
+        },
+        {
+            "message": "unknown tag: override",
+            "line": " doc_base/Numbers/AbstractNumber.js:16"
+        },
+        {
+            "message": "unknown tag: override",
+            "line": " doc_base/Numbers/AbstractNumber.js:37"
+        },
+        {
+            "message": "unknown tag: override",
+            "line": " doc_base/Numbers/AbstractNumber.js:91"
+        },
+        {
+            "message": "unknown tag: override",
+            "line": " doc_base/Numbers/AbstractNumber.js:109"
+        },
+        {
+            "message": "unknown tag: override",
+            "line": " doc_base/Numbers/AbstractNumber.js:125"
+        },
+        {
+            "message": "unknown tag: override",
+            "line": " doc_base/Numbers/AbstractNumber.js:143"
+        },
+        {
             "message": "unknown tag: abstract",
             "line": " doc_base/Numbers/Complex.js:3"
         },
@@ -1252,32 +2029,28 @@
             "line": " doc_base/Numbers/Complex.js:27"
         },
         {
+            "message": "unknown tag: override",
+            "line": " doc_base/Numbers/Fraction.js:11"
+        },
+        {
+            "message": "unknown tag: override",
+            "line": " doc_base/Numbers/Fraction.js:34"
+        },
+        {
+            "message": "unknown tag: override",
+            "line": " doc_base/Numbers/Fraction.js:52"
+        },
+        {
+            "message": "unknown tag: override",
+            "line": " doc_base/Numbers/Fraction.js:64"
+        },
+        {
+            "message": "unknown tag: override",
+            "line": " doc_base/Numbers/Int.js:36"
+        },
+        {
             "message": "unknown tag: abstract",
             "line": " doc_base/Numbers/Number.js:3"
-        },
-        {
-            "message": "unknown tag: override",
-            "line": " doc_base/Numbers/Number.js:50"
-        },
-        {
-            "message": "unknown tag: override",
-            "line": " doc_base/Numbers/Number.js:72"
-        },
-        {
-            "message": "unknown tag: override",
-            "line": " doc_base/Numbers/Number.js:135"
-        },
-        {
-            "message": "unknown tag: override",
-            "line": " doc_base/Numbers/Number.js:149"
-        },
-        {
-            "message": "unknown tag: override",
-            "line": " doc_base/Numbers/Number.js:161"
-        },
-        {
-            "message": "unknown tag: override",
-            "line": " doc_base/Numbers/Number.js:175"
         },
         {
             "message": "unknown tag: override",
@@ -1290,6 +2063,10 @@
         {
             "message": "unknown tag: override",
             "line": " doc_base/Set/EmptySet.js:123"
+        },
+        {
+            "message": "Missing item type\nThis method tests for the logical/mathematical equality of 2 expressions.",
+            "line": " doc_base/Formals/Expression.js:145"
         },
         {
             "message": "Missing item type\nThis method checks if `this` is a subset of the given set `set`. Since equality must be checked by checking an arbitrary number of values this method actually does the same as `this.equals()`. For `this.equals()` the number of compared elements is 10x bigger.",
@@ -1318,6 +2095,70 @@
         {
             "message": "Missing item type\na.without b => returns: removed all common elements from a",
             "line": " doc_base/Set/Set.js:146"
+        },
+        {
+            "message": "Missing item type\nThis method checks if `this` is a subset of the given set `set`. Since equality must be checked by checking an arbitrary number of values this method actually does the same as `this.equals()`. For `this.equals()` the number of compared elements is 10x bigger.",
+            "line": " doc_base/Sets/Domains/C.js:26"
+        },
+        {
+            "message": "Missing item type\na.without b => returns: removed all common elements from a",
+            "line": " doc_base/Sets/Domains/C.js:53"
+        },
+        {
+            "message": "Missing item type\nDomain ranks are like so:\nN -> 0\nZ -> 1\nQ -> 2\nI -> 2\nR -> 3\nC -> 4\n==> union: take greater rank (if equal (and unequal names) take next greater rank)\n==> intersection: take smaller rank (if equal (and unequal names) take empty set)",
+            "line": " doc_base/Sets/Domains/Domain.js:3"
+        },
+        {
+            "message": "Missing item type\nThis method checks if `this` is a subset of the given set `set`. Since equality must be checked by checking an arbitrary number of values this method actually does the same as `this.equals()`. For `this.equals()` the number of compared elements is 10x bigger.",
+            "line": " doc_base/Sets/Domains/I.js:26"
+        },
+        {
+            "message": "Missing item type\na.without b => returns: removed all common elements from a",
+            "line": " doc_base/Sets/Domains/I.js:53"
+        },
+        {
+            "message": "Missing item type\nThis method checks if `this` is a subset of the given set `set`. Since equality must be checked by checking an arbitrary number of values this method actually does the same as `this.equals()`. For `this.equals()` the number of compared elements is 10x bigger.",
+            "line": " doc_base/Sets/Domains/N.js:26"
+        },
+        {
+            "message": "Missing item type\na.without b => returns: removed all common elements from a",
+            "line": " doc_base/Sets/Domains/N.js:154"
+        },
+        {
+            "message": "Missing item type\nThis method checks if `this` is a subset of the given set `set`. Since equality must be checked by checking an arbitrary number of values this method actually does the same as `this.equals()`. For `this.equals()` the number of compared elements is 10x bigger.",
+            "line": " doc_base/Sets/Domains/Q.js:26"
+        },
+        {
+            "message": "Missing item type\na.without b => returns: removed all common elements from a",
+            "line": " doc_base/Sets/Domains/Q.js:53"
+        },
+        {
+            "message": "Missing item type\nThis method checks if `this` is a subset of the given set `set`. Since equality must be checked by checking an arbitrary number of values this method actually does the same as `this.equals()`. For `this.equals()` the number of compared elements is 10x bigger.",
+            "line": " doc_base/Sets/Domains/R.js:26"
+        },
+        {
+            "message": "Missing item type\na.without b => returns: removed all common elements from a",
+            "line": " doc_base/Sets/Domains/R.js:53"
+        },
+        {
+            "message": "Missing item type\nThis method checks if `this` is a subset of the given set `set`. Since equality must be checked by checking an arbitrary number of values this method actually does the same as `this.equals()`. For `this.equals()` the number of compared elements is 10x bigger.",
+            "line": " doc_base/Sets/Domains/Z.js:26"
+        },
+        {
+            "message": "Missing item type\na.without b => returns: removed all common elements from a",
+            "line": " doc_base/Sets/Domains/Z.js:53"
+        },
+        {
+            "message": "Missing item type\nEvaluates the tuple.",
+            "line": " doc_base/Sets/Tuple.js:87"
+        },
+        {
+            "message": "Missing item type\nRemoves the first occurences of the given elements.",
+            "line": " doc_base/Sets/Tuple.js:141"
+        },
+        {
+            "message": "Missing item type\nGet number of nodes in (sub)tree",
+            "line": " doc_base/Utils/Tree.js:242"
         }
     ]
 }

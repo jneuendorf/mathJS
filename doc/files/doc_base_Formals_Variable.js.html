@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
-    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <link rel="icon" href="../assets/favicon.ico">
     <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
 </head>
 <body class="yui3-skin-sam">
@@ -14,9 +14,7 @@
 <div id="doc">
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
-            
                 <h1><img src="../../logo.png" title="mathJS API"></h1>
-            
         </div>
         <div class="yui3-u-1-4 version">
             <em>API Docs for: 0.0.1</em>
@@ -27,136 +25,146 @@
         <div class="yui3-u-1-4">
             <div id="docs-sidebar" class="sidebar apidocs">
                 <div id="api-list">
-    <h2 class="off-left">APIs</h2>
-    <div id="api-tabview" class="tabview">
-        <ul class="tabs">
-            <li><a href="#api-classes">Classes</a></li>
-            <li><a href="#api-modules">Modules</a></li>
-        </ul>
-
-        <div id="api-tabview-filter">
-            <input type="search" id="api-filter" placeholder="Type to filter APIs">
-        </div>
-
-        <div id="api-tabview-panel">
-            <ul id="api-classes" class="apis classes">
-            
-                <li><a href="../classes/Complex.html">Complex</a></li>
-            
-                <li><a href="../classes/CONSTANTS.html">CONSTANTS</a></li>
-            
-                <li><a href="../classes/DiscreteSet.html">DiscreteSet</a></li>
-            
-                <li><a href="../classes/Int.html">Int</a></li>
-            
-                <li><a href="../classes/Interval.html">Interval</a></li>
-            
-                <li><a href="../classes/Number.html">Number</a></li>
-            
-                <li><a href="../classes/Set.html">Set</a></li>
-            
-                <li><a href="../classes/Term.html">Term</a></li>
-            
-                <li><a href="../classes/Variable.html">Variable</a></li>
-            
-            </ul>
-
-            <ul id="api-modules" class="apis modules">
-            
-                <li><a href="../modules/mathJS.html">mathJS</a></li>
-            
-            </ul>
-        </div>
-    </div>
-</div>
-
+                    <h2 class="off-left">APIs</h2>
+                    <div id="api-tabview" class="tabview">
+                        <ul class="tabs">
+                            <li><a href="#api-classes">Classes</a></li>
+                            <li><a href="#api-modules">Modules</a></li>
+                        </ul>
+                
+                        <div id="api-tabview-filter">
+                            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+                        </div>
+                
+                        <div id="api-tabview-panel">
+                            <ul id="api-classes" class="apis classes">
+                                <li><a href="../classes/Complex.html">Complex</a></li>
+                                <li><a href="../classes/CONSTANTS.html">CONSTANTS</a></li>
+                                <li><a href="../classes/DiscreteSet.html">DiscreteSet</a></li>
+                                <li><a href="../classes/Expression.html">Expression</a></li>
+                                <li><a href="../classes/Expression.Boolean.html">Expression.Boolean</a></li>
+                                <li><a href="../classes/Hash.html">Hash</a></li>
+                                <li><a href="../classes/Int.html">Int</a></li>
+                                <li><a href="../classes/Interval.html">Interval</a></li>
+                                <li><a href="../classes/Number.html">Number</a></li>
+                                <li><a href="../classes/Object.html">Object</a></li>
+                                <li><a href="../classes/Set.html">Set</a></li>
+                                <li><a href="../classes/Term.html">Term</a></li>
+                                <li><a href="../classes/Variable.html">Variable</a></li>
+                            </ul>
+                
+                            <ul id="api-modules" class="apis modules">
+                                <li><a href="../modules/mathJS.html">mathJS</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="yui3-u-3-4">
                 <div id="api-options">
-        Show:
-        <label for="api-show-inherited">
-            <input type="checkbox" id="api-show-inherited" checked>
-            Inherited
-        </label>
-
-        <label for="api-show-protected">
-            <input type="checkbox" id="api-show-protected">
-            Protected
-        </label>
-
-        <label for="api-show-private">
-            <input type="checkbox" id="api-show-private">
-            Private
-        </label>
-        <label for="api-show-deprecated">
-            <input type="checkbox" id="api-show-deprecated">
-            Deprecated
-        </label>
-
-    </div>
-
-
+                    Show:
+                    <label for="api-show-inherited">
+                        <input type="checkbox" id="api-show-inherited" checked>
+                        Inherited
+                    </label>
+            
+                    <label for="api-show-protected">
+                        <input type="checkbox" id="api-show-protected">
+                        Protected
+                    </label>
+            
+                    <label for="api-show-private">
+                        <input type="checkbox" id="api-show-private">
+                        Private
+                    </label>
+                    <label for="api-show-deprecated">
+                        <input type="checkbox" id="api-show-deprecated">
+                        Deprecated
+                    </label>
+            
+                </div>
+            
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: doc_base/Formals/Variable.js</h1>
+<h1 class="file-heading">File: doc_base/Formals/Variable.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
-// Generated by CoffeeScript 1.8.0
+// Generated by CoffeeScript 1.9.3
 
 /**
 * @class Variable
 * @constructor
-* @param {String} symbol
+* @param {String} name
 * This is name name of the variable (mathematically)
-* @param {Function|Class} type
-* @param {Object} value
-* Optional. This param is passed upon evaluation.
+* @param {mathJS.Set} type
 *
  */
 
 (function() {
-  mathJS.Variable = (function() {
-    function Variable(symbol, type, value) {
-      if (type == null) {
-        type = mathJS.Number;
+  var extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+    hasProp = {}.hasOwnProperty;
+
+  mathJS.Variable = (function(superClass) {
+    extend(Variable, superClass);
+
+    function Variable(name, elementOf) {
+      if (elementOf == null) {
+        elementOf = mathJS.Domains.N;
       }
-      this.symbol = symbol;
-      this.type = type;
-      this.value = value;
+      this.name = name;
+      if (elementOf.getSet != null) {
+        this.elementOf = elementOf.getSet();
+      } else {
+        this.elementOf = elementOf;
+      }
     }
 
-    Variable.prototype.plus = function(x) {
-      var _base;
-      return (typeof (_base = this.value).plus === &quot;function&quot; ? _base.plus(x) : void 0) || null;
+    Variable.prototype._getSet = function() {
+      return this.elementOf;
     };
 
-    Variable.prototype.minus = function(x) {
-      var _base;
-      return (typeof (_base = this.value).minus === &quot;function&quot; ? _base.minus(x) : void 0) || null;
+    Variable.prototype.equals = function(variable) {
+      return this.name === variable.name &amp;&amp; this.elementOf.equals(variable.elementOf);
     };
 
-    Variable.prototype.times = function(x) {
-      var _base;
-      return (typeof (_base = this.value).times === &quot;function&quot; ? _base.times(x) : void 0) || null;
+    Variable.prototype.plus = function(n) {
+      return new mathJS.Expression(&quot;+&quot;, this, n);
     };
 
-    Variable.prototype.divide = function(x) {
-      var _base;
-      return (typeof (_base = this.value).divide === &quot;function&quot; ? _base.divide(x) : void 0) || null;
+    Variable.prototype.minus = function(n) {
+      return new mathJS.Expression(&quot;-&quot;, this, n);
+    };
+
+    Variable.prototype.times = function(n) {
+      return new mathJS.Expression(&quot;*&quot;, this, n);
+    };
+
+    Variable.prototype.divide = function(n) {
+      return new mathJS.Expression(&quot;/&quot;, this, n);
+    };
+
+    Variable.prototype[&quot;eval&quot;] = function(values) {
+      var val;
+      if ((values != null) &amp;&amp; ((val = values[this.name]) != null)) {
+        if (this.elementOf.contains(val)) {
+          return val;
+        }
+        console.warn(&quot;Given value \&quot;&quot; + val + &quot;\&quot; is not in the set \&quot;&quot; + this.elementOf.name + &quot;\&quot;.&quot;);
+      }
+      return this;
     };
 
     return Variable;
 
-  })();
+  })(mathJS.Expression);
 
 }).call(this);
 
     </pre>
 </div>
-
                     </div>
                 </div>
             </div>

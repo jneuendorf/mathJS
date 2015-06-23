@@ -4,9 +4,13 @@ YUI.add("yuidoc-meta", function(Y) {
         "CONSTANTS",
         "Complex",
         "DiscreteSet",
+        "Expression",
+        "Expression.Boolean",
+        "Hash",
         "Int",
         "Interval",
         "Number",
+        "Object",
         "Set",
         "Term",
         "Variable"

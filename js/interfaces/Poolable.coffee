@@ -2,12 +2,12 @@ class _mathJS.Poolable extends _mathJS.Interface
 
     @_pool = []
 
-    @fromPool: () ->
+    @_fromPool: () ->
         # implementation should be something like:
         # if @_pool.length > 0
         #     return @_pool.pop()
         # return new @()
-        throw new mathJS.Errors.NotImplementedError("static fromPool in #{@name}")
+        throw new mathJS.Errors.NotImplementedError("static _fromPool in #{@name}")
 
     ###*
     * Releases the instance to the pool of its class.

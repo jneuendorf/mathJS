@@ -6,9 +6,9 @@ class _mathJS.AbstractNumber extends _mathJS.Object
     ###*
     * @Override mathJS.Poolable
     * @static
-    * @method fromPool
+    * @method _fromPool
     *###
-    @fromPool: (value) ->
+    @_fromPool: (value) ->
         if @_pool.length > 0
             if (val = @_getPrimitive(value))?
                 number = @_pool.pop()
@@ -29,13 +29,21 @@ class _mathJS.AbstractNumber extends _mathJS.Object
     * @method parse
     *###
     @parse: (str) ->
-        return @fromPool(parseFloat(str))
+        return @_fromPool parseFloat(str)
 
     @getSet: () ->
         throw new mathJS.Errors.NotImplementedError("getSet in #{@name}")
 
     @new: (param) ->
-        return @fromPool param
+        return @_fromPool param
+
+    @random: (max, min) ->
+        return @_fromPool mathJS.randNum(max, min)
+
+    @dispatcher = new mathJS.Utils.Dispatcher(@, [
+        # mathJS.Matrix
+        "string"
+    ])
 
     ###*
     * This method is used to parse and check a parameter.
@@ -163,6 +171,10 @@ class _mathJS.AbstractNumber extends _mathJS.Object
     * @return {mathJS.Number} Calculated Number.
     *###
     times: (n) ->
+        if (result = @constructor.dispatcher.dispatch(n, "times", @))?
+            return result
+
+
         if (val = @_getPrimitive(n))?
             return mathJS.Number.new(@value * val)
 
@@ -286,12 +298,18 @@ class _mathJS.AbstractNumber extends _mathJS.Object
         return mathJS.Number.new(-@value)
 
     toInt: () ->
+        return mathJS.Int.new(@value)
 
-    toDouble: () ->
+    toNumber: () ->
+        return mathJS.Number.new(@value)
 
-    toString: () ->
+    toString: (format) ->
+        if not format?
+            return "#{@value}"
+        return numeral(@value).format(format)
 
     clone: () ->
+        return mathJS.Number.new(@value)
 
     # EVALUABLE INTERFACE
     eval: (values) ->
@@ -301,6 +319,6 @@ class _mathJS.AbstractNumber extends _mathJS.Object
         return new mathJS.Set(@)
 
     ############################################################################################
-    # PRE-IMPLEMENTED
+    # SETS...
     in: (set) ->
         return set.contains(@)

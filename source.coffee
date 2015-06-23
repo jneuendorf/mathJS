@@ -93,6 +93,17 @@ Array::clone = Array::slice
 #   return newArray;
 # }
 
+Array::indexOfNative = Array::indexOf
+
+Array::indexOf = (elem, fromIdx) ->
+    idx = if fromIdx? then fromIdx else 0
+    len = @length
+
+    while idx < len
+        if @[idx] is elem
+            return idx
+        idx++
+    return -1
 
 Array::remove = (elem) ->
     idx = @indexOf elem
@@ -610,11 +621,12 @@ mathJS.isInt = (r) ->
  * @return {Number} Random integer.
 *###
 mathJS.randInt = (max = 1, min = 0) ->
-    if min > max
-        temp = min
-        min = max
-        max = temp
-    return Math.floor(Math.random() * (max + 1 - min)) + min
+    # if min > max
+    #     temp = min
+    #     min = max
+    #     max = temp
+    # return Math.floor(Math.random() * (max + 1 - min)) + min
+    return ~~mathJS.randNum(max, min)
 
 ###*
  * This function returns a random number between max and min (both inclusive). If max is less than min the parameters are swapped.
@@ -791,28 +803,196 @@ class _mathJS.Object
 # end js/mathJSObject.coffee
 
 # from js/Errors/SimpleErrors.coffee
-class _mathJS.Errors.Error extends Error
+# class _mathJS.Errors.Error extends window.Error
+#
+#     constructor: (message, fileName, lineNumber, misc...) ->
+#         super(message, fileName, lineNumber)
+#         @misc = misc
+#
+#     toString: () ->
+#         return "#{super()}\n more data: #{@misc.toString()}"
 
-    constructor: (message, fileName, lineNumber, misc...) ->
-        super(message, fileName, lineNumber)
-        @misc = misc
+class mathJS.Errors.CalculationExceedanceError extends Error
 
-    toString: () ->
-        return "#{super()}\n more data: #{@misc.toString()}"
+class mathJS.Errors.InvalidVariableError extends Error
 
+class mathJS.Errors.InvalidParametersError extends Error
 
+class mathJS.Errors.InvalidArityError extends Error
 
+class mathJS.Errors.NotImplementedError extends Error
 
-class mathJS.Errors.CalculationExceedanceError extends _mathJS.Errors.Error
-
-class mathJS.Errors.InvalidVariableError extends _mathJS.Errors.Error
-
-class mathJS.Errors.InvalidParametersError extends _mathJS.Errors.Error
-
-class mathJS.Errors.InvalidArityError extends _mathJS.Errors.Error
-
-class mathJS.Errors.NotImplementedError extends _mathJS.Errors.Error
+class mathJS.Errors.CycleDetectedError extends Error
 # end js/Errors/SimpleErrors.coffee
+
+# from js/Utils/Hash.coffee
+###*
+ * This is an implementation of a dictionary/hash that does not convert its keys into Strings. Keys can therefore actually by anything!
+ * @class Hash
+ * @constructor
+*###
+class mathJS.Utils.Hash
+
+    ###*
+     * Creates a new Hash from a given JavaScript object.
+     * @static
+     * @method fromObject
+     * @param object {Object}
+    *###
+    @fromObject: (obj) ->
+        return new mathJS.Utils.Hash(obj)
+
+    @new: (obj) ->
+        return new mathJS.Utils.Hash(obj)
+
+    constructor: (obj) ->
+        @keys   = []
+        @values = []
+
+        if obj?
+            @put key, val for key, val of obj
+
+    clone: () ->
+        res         = new mathJS.Utils.Hash()
+        res.keys    = @keys.clone()
+        res.values  = @values.clone()
+        return res
+
+    invert: () ->
+        res         = new mathJS.Utils.Hash()
+        res.keys    = @values.clone()
+        res.values  = @keys.clone()
+        return res
+
+    ###*
+     * Adds a new key-value pair or overwrites an existing one.
+     * @method put
+     * @param key {mixed}
+     * @param val {mixed}
+     * @return {Hash} This instance.
+     * @chainable
+    *###
+    put: (key, val) ->
+        idx = @keys.indexOf key
+        # add new entry
+        if idx < 0
+            @keys.push key
+            @values.push val
+        # overwrite entry
+        else
+            @keys[idx] = key
+            @values[idx] = val
+
+        return @
+
+    ###*
+     * Returns the value (or null) for the specified key.
+     * @method get
+     * @param key {mixed}
+     * @param [equalityFunction] {Function}
+     * This optional function can overwrite the test for equality between keys. This function expects the parameters: (the current key in the key iteration, 'key'). If this parameters is omitted '===' is used.
+     * @return {mixed}
+    *###
+    get: (key) ->
+        if (idx = @keys.indexOf(key)) >= 0
+            return @values[idx]
+        return null
+
+    ###*
+     * Indicates whether the Hash has the specified key.
+     * @method hasKey
+     * @param key {mixed}
+     * @return {Boolean}
+    *###
+    hasKey: (key) ->
+        return key in @keys
+
+    has: (key) ->
+        return @hasKey(key)
+
+    ###*
+     * Returns the number of entries in the Hash.
+     * @method size
+     * @return {Integer}
+    *###
+    size: () ->
+        return @keys.length
+
+    empty: () ->
+        @keys   = []
+        @values = []
+        return @
+
+    remove: (key) ->
+        if (idx = @keys.indexOf(key)) >= 0
+            @keys.splice idx, 1
+            @values.splice idx, 1
+        else
+            console.warn "Could not remove key '#{key}'!"
+        return @
+
+    each: (callback) ->
+        for key, i in @keys when callback(key, @values[i], i) is false
+            return @
+        return @
+# end js/Utils/Hash.coffee
+
+# from js/Utils/Dispatcher.coffee
+class mathJS.Utils.Dispatcher extends _mathJS.Object
+
+    @registeredDispatchers = mathJS.Utils.Hash.new()
+
+    # try to detect cyclic dispatching
+    @registerDispatcher: (newReceiver, newTargets) ->
+        registrationPossible = true
+
+        regReceivers = @registeredDispatchers.keys
+        @registeredDispatchers.each (regReceiver, regTargets, idx) ->
+            for regTarget in regTargets when regTarget is newReceiver
+                for newTarget in newTargets when regReceivers.indexOf(newTarget)
+                    registrationPossible = false
+                    return false
+            return true
+
+        if registrationPossible
+            @registeredDispatchers.put(newReceiver, newTargets)
+            return @
+
+        throw new mathJS.Errors.CycleDetectedError("Can't register '#{newReceiver}' for dispatching - cycle detected!")
+
+    # CONSTRUCTOR
+    constructor: (receiver, targets=[]) ->
+        @constructor.registerDispatcher(receiver, targets)
+
+        @receiver = receiver
+        @targets = targets
+
+    # needsDispatching: (target) ->
+    #     return (target.constructor or target) in @targets
+
+    dispatch: (target, method, params...) ->
+        dispatch = false
+        # check instanceof and identity
+        if @targets.indexOf(target.constructor or target) >= 0
+            dispatch = true
+        # check typeof (for primitives)
+        else
+            for t in @targets when typeof target is t
+                dispatch = true
+                break
+
+        if dispatch
+            if target[method] instanceof Function
+                return target[method].apply(target, params)
+            throw new mathJS.Errors.NotImplementedError(
+                "Can't call '#{method}' on target '#{target}'"
+                "Dispatcher.coffee"
+                undefined
+                target
+            )
+
+        return null
+# end js/Utils/Dispatcher.coffee
 
 # from js/Interfaces/Interface.coffee
 class _mathJS.Interface extends _mathJS.Object
@@ -924,12 +1104,12 @@ class _mathJS.Poolable extends _mathJS.Interface
 
     @_pool = []
 
-    @fromPool: () ->
+    @_fromPool: () ->
         # implementation should be something like:
         # if @_pool.length > 0
         #     return @_pool.pop()
         # return new @()
-        throw new mathJS.Errors.NotImplementedError("static fromPool in #{@name}")
+        throw new mathJS.Errors.NotImplementedError("static _fromPool in #{@name}")
 
     ###*
     * Releases the instance to the pool of its class.
@@ -962,9 +1142,9 @@ class _mathJS.AbstractNumber extends _mathJS.Object
     ###*
     * @Override mathJS.Poolable
     * @static
-    * @method fromPool
+    * @method _fromPool
     *###
-    @fromPool: (value) ->
+    @_fromPool: (value) ->
         if @_pool.length > 0
             if (val = @_getPrimitive(value))?
                 number = @_pool.pop()
@@ -985,13 +1165,21 @@ class _mathJS.AbstractNumber extends _mathJS.Object
     * @method parse
     *###
     @parse: (str) ->
-        return @fromPool(parseFloat(str))
+        return @_fromPool parseFloat(str)
 
     @getSet: () ->
         throw new mathJS.Errors.NotImplementedError("getSet in #{@name}")
 
     @new: (param) ->
-        return @fromPool param
+        return @_fromPool param
+
+    @random: (max, min) ->
+        return @_fromPool mathJS.randNum(max, min)
+
+    @dispatcher = new mathJS.Utils.Dispatcher(@, [
+        # mathJS.Matrix
+        "string"
+    ])
 
     ###*
     * This method is used to parse and check a parameter.
@@ -1119,6 +1307,10 @@ class _mathJS.AbstractNumber extends _mathJS.Object
     * @return {mathJS.Number} Calculated Number.
     *###
     times: (n) ->
+        if (result = @constructor.dispatcher.dispatch(n, "times", @))?
+            return result
+
+
         if (val = @_getPrimitive(n))?
             return mathJS.Number.new(@value * val)
 
@@ -1242,12 +1434,18 @@ class _mathJS.AbstractNumber extends _mathJS.Object
         return mathJS.Number.new(-@value)
 
     toInt: () ->
+        return mathJS.Int.new(@value)
 
-    toDouble: () ->
+    toNumber: () ->
+        return mathJS.Number.new(@value)
 
-    toString: () ->
+    toString: (format) ->
+        if not format?
+            return "#{@value}"
+        return numeral(@value).format(format)
 
     clone: () ->
+        return mathJS.Number.new(@value)
 
     # EVALUABLE INTERFACE
     eval: (values) ->
@@ -1257,7 +1455,7 @@ class _mathJS.AbstractNumber extends _mathJS.Object
         return new mathJS.Set(@)
 
     ############################################################################################
-    # PRE-IMPLEMENTED
+    # SETS...
     in: (set) ->
         return set.contains(@)
 # end js/Numbers/AbstractNumber.coffee
@@ -1294,9 +1492,9 @@ class mathJS.Number extends _mathJS.AbstractNumber
     # ###*
     # * @Override mathJS.Poolable
     # * @static
-    # * @method fromPool
+    # * @method _fromPool
     # *###
-    # @fromPool: (val) ->
+    # @_fromPool: (val) ->
     #     if @_pool.length > 0
     #         if @valueIsValid val
     #             number = @_pool.pop()
@@ -1314,23 +1512,23 @@ class mathJS.Number extends _mathJS.AbstractNumber
     # *###
     # @parse: (str) ->
     #     if mathJS.isNum(parsed = parseFloat(str))
-    #         return @fromPool parsed
+    #         return @_fromPool parsed
     #     return parsed
 
-    @random: (max, min) ->
-        return @fromPool mathJS.randNum(max, min)
+    # @random: (max, min) ->
+    #     return @_fromPool mathJS.randNum(max, min)
 
-    @toNumber: (n) ->
-        if n instanceof mathJS.Number
-            return n
-        return new mathJS.Number(n)
+    # @toNumber: (n) ->
+    #     if n instanceof mathJS.Number
+    #         return n
+    #     return new mathJS.Number(n)
 
     @getSet: () ->
         return mathJS.Domains.R
 
     # moved to AbstractNumber
     # @new: (value) ->
-    #     return @fromPool value
+    #     return @_fromPool value
 
     ###########################################################################################
     # CONSTRUCTOR
@@ -1372,18 +1570,6 @@ class mathJS.Number extends _mathJS.AbstractNumber
     # see AbstractNumber
     # END - IMPLEMENTING BASIC OPERATIONS
 
-    toInt: () ->
-        return mathJS.Int.fromPool mathJS.floor(@value)
-
-    toDouble: () ->
-        return mathJS.Double.fromPool @value
-
-    toString: () ->
-        return @value.toString()
-
-    clone: () ->
-        return @fromPool @value
-
     # EVALUABLE INTERFACE
     eval: (values) ->
         return @
@@ -1422,18 +1608,56 @@ class mathJS.Int extends mathJS.Number
         # @_getValueFromParam = (value) ->
         #     return ~~inherited(value)
 
-    # _pool, fromPool are inherited
+    # _pool, _fromPool are inherited
 
     @parse: (str) ->
         if mathJS.isNum(parsed = parseInt(str, 10))
-            return @fromPool parsed
+            return @_fromPool parsed
         return parsed
 
     @random: (max, min) ->
-        return @fromPool mathJS.randInt(max, min)
+        return @_fromPool mathJS.randInt(max, min)
 
     @getSet: () ->
         return mathJS.Domains.N
+
+    ###*
+    * @Override mathJS.Poolable
+    * @static
+    * @method _fromPool
+    *###
+    @_fromPool: (value) ->
+        if @_pool.length > 0
+            if (val = @_getPrimitiveInt(value))?
+                number = @_pool.pop()
+                number.value = val.value or val
+                return number
+            throw new mathJS.Errors.InvalidParametersError(
+                "Can't instatiate number from given '#{value}'"
+                "Int.coffee"
+                undefined
+                value
+            )
+        # param check is done in constructor
+        return new @(value)
+
+    @_getPrimitiveInt: (param, skipCheck) ->
+        if skipCheck is true
+            return param
+
+        if param instanceof mathJS.Int
+            return param.value
+
+        if param instanceof mathJS.Number
+            return ~~param.value
+
+        if param instanceof Number
+            return ~~param.valueOf()
+
+        if mathJS.isNum(param)
+            return ~~param
+
+        return null
 
 
     ###########################################################################
@@ -1456,54 +1680,54 @@ class mathJS.Int extends mathJS.Number
         return @value %% 2 is 1
 
 
-    plus: (n) ->
-        return @constructor.fromPool ~~(@value + @_getValueFromParam(n))
-
-    increase: (n) ->
-        @value += ~~@_getValueFromParam(n)
-        return @
-
-    plusSelf: @increase
-
-    minus: (n) ->
-        return @constructor.fromPool ~~(@value - n)
-
-    decrease: (n) ->
-        @value = ~~(@value - @_getValueFromParam(n)) # when rounding is done matters when substracting (in contrary to addition)
-        return @
-
-    minusSelf: @decrease
-
-    times: (n) ->
-        return @constructor.fromPool ~~(@value * @_getValueFromParam(n))
-
-    timesSelf: (n) ->
-        @value = ~~(@value * @_getValueFromParam(n)) # same as substraction
-        return @
-
-    divide: (n) ->
-        return @constructor.fromPool ~~(@value / @_getValueFromParam(n))
-
-    divideSelf: (n) ->
-        @value = ~~(@value / @_getValueFromParam(n))
-        return @
-
-    sqrt: () ->
-        return @constructor.fromPool ~~(mathJS.sqrt @value)
-
-    sqrtSelf: () ->
-        @value = ~~mathJS.sqrt(@value)
-        return @
-
-    pow: (n) ->
-        return @constructor.fromPool(mathJS.pow @value, @_getValueFromParam(n))
-
-    powSelf: (n) ->
-        @value = mathJS.pow @value, @_getValueFromParam(n)
-        return @
+    # plus: (n) ->
+    #     return @constructor._fromPool ~~(@value + @_getValueFromParam(n))
+    #
+    # increase: (n) ->
+    #     @value += ~~@_getValueFromParam(n)
+    #     return @
+    #
+    # plusSelf: @increase
+    #
+    # minus: (n) ->
+    #     return @constructor._fromPool ~~(@value - n)
+    #
+    # decrease: (n) ->
+    #     @value = ~~(@value - @_getValueFromParam(n)) # when rounding is done matters when substracting (in contrary to addition)
+    #     return @
+    #
+    # minusSelf: @decrease
+    #
+    # times: (n) ->
+    #     return @constructor._fromPool ~~(@value * @_getValueFromParam(n))
+    #
+    # timesSelf: (n) ->
+    #     @value = ~~(@value * @_getValueFromParam(n)) # same as substraction
+    #     return @
+    #
+    # divide: (n) ->
+    #     return @constructor._fromPool ~~(@value / @_getValueFromParam(n))
+    #
+    # divideSelf: (n) ->
+    #     @value = ~~(@value / @_getValueFromParam(n))
+    #     return @
+    #
+    # sqrt: () ->
+    #     return @constructor._fromPool ~~(mathJS.sqrt @value)
+    #
+    # sqrtSelf: () ->
+    #     @value = ~~mathJS.sqrt(@value)
+    #     return @
+    #
+    # pow: (n) ->
+    #     return @constructor._fromPool(mathJS.pow @value, @_getValueFromParam(n))
+    #
+    # powSelf: (n) ->
+    #     @value = mathJS.pow @value, @_getValueFromParam(n)
+    #     return @
 
     toInt: () ->
-        return mathJS.Int.fromPool @value
+        return mathJS.Int._fromPool @value
 
     getSet: () ->
         return mathJS.Domains.N
@@ -1515,9 +1739,9 @@ class mathJS.Fraction extends mathJS.Number
     ###*
     * @Override mathJS.Number
     * @static
-    * @method fromPool
+    * @method _fromPool
     *###
-    @fromPool: (e, d) ->
+    @_fromPool: (e, d) ->
         if @_pool.length > 0
             if @valueIsValid val
                 frac = @_pool.pop()
@@ -1556,7 +1780,7 @@ class mathJS.Fraction extends mathJS.Number
     * @method new
     *###
     @new: (e, d) ->
-        return @fromPool e, d
+        return @_fromPool e, d
 
     ###########################################################################
     # CONSTRUCTOR
@@ -1627,7 +1851,7 @@ class mathJS.Complex extends mathJS.Number
         return null
 
 
-    @fromPool: (real, img) ->
+    @_fromPool: (real, img) ->
         if @_pool.length > 0
             if @_valueIsValid(real) and @_valueIsValid(img)
                 number = @_pool.pop()
@@ -1643,12 +1867,12 @@ class mathJS.Complex extends mathJS.Number
         if idx >= 0
             parts = str.substring(idx + PARSE_KEY.length).split ","
             if mathJS.isNum(real = parseFloat(parts[0])) and mathJS.isNum(img = parseFloat(parts[1]))
-                return @fromPool real, img
+                return @_fromPool real, img
 
         return NaN
 
     @random: (max1, min1, max2, min2) ->
-        return @fromPool mathJS.randNum(max1, min1), mathJS.randNum(max2, min2)
+        return @_fromPool mathJS.randNum(max1, min1), mathJS.randNum(max2, min2)
 
 
     ###########################################################################
@@ -1667,8 +1891,8 @@ class mathJS.Complex extends mathJS.Number
             img:
                 get: @_getImg
                 set: @_setImg
-            fromPool:
-                value: @constructor.fromPool.bind(@constructor)
+            _fromPool:
+                value: @constructor._fromPool.bind(@constructor)
                 writable: false
                 enumarable: false
                 configurable: false
@@ -1719,7 +1943,7 @@ class mathJS.Complex extends mathJS.Number
     plus: (r, i) ->
         values = @_getValueFromParam(r, i)
         if values?
-            return @fromPool(@real + values.real, @img + values.img)
+            return @_fromPool(@real + values.real, @img + values.img)
         return NaN
 
     increase: (r, i) ->
@@ -1734,7 +1958,7 @@ class mathJS.Complex extends mathJS.Number
     minus: (n) ->
         values = @_getValueFromParam(r, i)
         if values?
-            return @fromPool(@real - values.real, @img - values.img)
+            return @_fromPool(@real - values.real, @img - values.img)
         return NaN
 
     decrease: (n) ->
@@ -1748,10 +1972,10 @@ class mathJS.Complex extends mathJS.Number
 
     # TODO: adjust last functions for complex numbers
     times: (r, i) ->
-        # return @fromPool(@value * _getValueFromParam(n))
+        # return @_fromPool(@value * _getValueFromParam(n))
         values = @_getValueFromParam(r, i)
         if values?
-            return @fromPool(@real * values.real, @img * values.img)
+            return @_fromPool(@real * values.real, @img * values.img)
         return NaN
 
     timesSelf: (n) ->
@@ -1759,35 +1983,35 @@ class mathJS.Complex extends mathJS.Number
         return @
 
     divide: (n) ->
-        return @fromPool(@value / _getValueFromParam(n))
+        return @_fromPool(@value / _getValueFromParam(n))
 
     divideSelf: (n) ->
         @value /= _getValueFromParam(n)
         return @
 
     square: () ->
-        return @fromPool(@value * @value)
+        return @_fromPool(@value * @value)
 
     squareSelf: () ->
         @value *= @value
         return @
 
     cube: () ->
-        return @fromPool(@value * @value * @value)
+        return @_fromPool(@value * @value * @value)
 
     squareSelf: () ->
         @value *= @value * @value
         return @
 
     sqrt: () ->
-        return @fromPool(mathJS.sqrt @value)
+        return @_fromPool(mathJS.sqrt @value)
 
     sqrtSelf: () ->
         @value = mathJS.sqrt @value
         return @
 
     pow: (n) ->
-        return @fromPool(mathJS.pow @value, _getValueFromParam(n))
+        return @_fromPool(mathJS.pow @value, _getValueFromParam(n))
 
     powSelf: (n) ->
         @value = mathJS.pow @value, _getValueFromParam(n)
@@ -1797,16 +2021,16 @@ class mathJS.Complex extends mathJS.Number
         return mathJS.sign @value
 
     toInt: () ->
-        return mathJS.Int.fromPool mathJS.floor(@value)
+        return mathJS.Int._fromPool mathJS.floor(@value)
 
     toDouble: () ->
-        return mathJS.Double.fromPool @value
+        return mathJS.Double._fromPool @value
 
     toString: () ->
         return "#{PARSE_KEY}#{@real.toString()},#{@img.toString()}"
 
     clone: () ->
-        return @fromPool(@value)
+        return @_fromPool(@value)
 
     # add instance to pool
     release: () ->

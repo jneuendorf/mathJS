@@ -1,10 +1,10 @@
 class mathJS.Matrix
 
     constructor: (values) ->
-        if values?
-            if values instanceof Array
-
-            else if values instanceof Object
+        # if values?
+        #     if values instanceof Array
+        #
+        #     else if values instanceof Object
 
 
     dimensions: () ->

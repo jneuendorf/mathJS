@@ -29,9 +29,9 @@ class mathJS.Number extends _mathJS.AbstractNumber
     # ###*
     # * @Override mathJS.Poolable
     # * @static
-    # * @method fromPool
+    # * @method _fromPool
     # *###
-    # @fromPool: (val) ->
+    # @_fromPool: (val) ->
     #     if @_pool.length > 0
     #         if @valueIsValid val
     #             number = @_pool.pop()
@@ -49,23 +49,23 @@ class mathJS.Number extends _mathJS.AbstractNumber
     # *###
     # @parse: (str) ->
     #     if mathJS.isNum(parsed = parseFloat(str))
-    #         return @fromPool parsed
+    #         return @_fromPool parsed
     #     return parsed
 
-    @random: (max, min) ->
-        return @fromPool mathJS.randNum(max, min)
+    # @random: (max, min) ->
+    #     return @_fromPool mathJS.randNum(max, min)
 
-    @toNumber: (n) ->
-        if n instanceof mathJS.Number
-            return n
-        return new mathJS.Number(n)
+    # @toNumber: (n) ->
+    #     if n instanceof mathJS.Number
+    #         return n
+    #     return new mathJS.Number(n)
 
     @getSet: () ->
         return mathJS.Domains.R
 
     # moved to AbstractNumber
     # @new: (value) ->
-    #     return @fromPool value
+    #     return @_fromPool value
 
     ###########################################################################################
     # CONSTRUCTOR
@@ -106,18 +106,6 @@ class mathJS.Number extends _mathJS.AbstractNumber
     # IMPLEMENTING BASIC OPERATIONS
     # see AbstractNumber
     # END - IMPLEMENTING BASIC OPERATIONS
-
-    toInt: () ->
-        return mathJS.Int.fromPool mathJS.floor(@value)
-
-    toDouble: () ->
-        return mathJS.Double.fromPool @value
-
-    toString: () ->
-        return @value.toString()
-
-    clone: () ->
-        return @fromPool @value
 
     # EVALUABLE INTERFACE
     eval: (values) ->

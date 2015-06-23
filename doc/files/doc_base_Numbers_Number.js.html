@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
-    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <link rel="icon" href="../assets/favicon.ico">
     <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
 </head>
 <body class="yui3-skin-sam">
@@ -14,9 +14,7 @@
 <div id="doc">
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
-            
                 <h1><img src="../../logo.png" title="mathJS API"></h1>
-            
         </div>
         <div class="yui3-u-1-4 version">
             <em>API Docs for: 0.0.1</em>
@@ -27,84 +25,74 @@
         <div class="yui3-u-1-4">
             <div id="docs-sidebar" class="sidebar apidocs">
                 <div id="api-list">
-    <h2 class="off-left">APIs</h2>
-    <div id="api-tabview" class="tabview">
-        <ul class="tabs">
-            <li><a href="#api-classes">Classes</a></li>
-            <li><a href="#api-modules">Modules</a></li>
-        </ul>
-
-        <div id="api-tabview-filter">
-            <input type="search" id="api-filter" placeholder="Type to filter APIs">
-        </div>
-
-        <div id="api-tabview-panel">
-            <ul id="api-classes" class="apis classes">
-            
-                <li><a href="../classes/Complex.html">Complex</a></li>
-            
-                <li><a href="../classes/CONSTANTS.html">CONSTANTS</a></li>
-            
-                <li><a href="../classes/DiscreteSet.html">DiscreteSet</a></li>
-            
-                <li><a href="../classes/Int.html">Int</a></li>
-            
-                <li><a href="../classes/Interval.html">Interval</a></li>
-            
-                <li><a href="../classes/Number.html">Number</a></li>
-            
-                <li><a href="../classes/Set.html">Set</a></li>
-            
-                <li><a href="../classes/Term.html">Term</a></li>
-            
-                <li><a href="../classes/Variable.html">Variable</a></li>
-            
-            </ul>
-
-            <ul id="api-modules" class="apis modules">
-            
-                <li><a href="../modules/mathJS.html">mathJS</a></li>
-            
-            </ul>
-        </div>
-    </div>
-</div>
-
+                    <h2 class="off-left">APIs</h2>
+                    <div id="api-tabview" class="tabview">
+                        <ul class="tabs">
+                            <li><a href="#api-classes">Classes</a></li>
+                            <li><a href="#api-modules">Modules</a></li>
+                        </ul>
+                
+                        <div id="api-tabview-filter">
+                            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+                        </div>
+                
+                        <div id="api-tabview-panel">
+                            <ul id="api-classes" class="apis classes">
+                                <li><a href="../classes/Complex.html">Complex</a></li>
+                                <li><a href="../classes/CONSTANTS.html">CONSTANTS</a></li>
+                                <li><a href="../classes/DiscreteSet.html">DiscreteSet</a></li>
+                                <li><a href="../classes/Expression.html">Expression</a></li>
+                                <li><a href="../classes/Expression.Boolean.html">Expression.Boolean</a></li>
+                                <li><a href="../classes/Hash.html">Hash</a></li>
+                                <li><a href="../classes/Int.html">Int</a></li>
+                                <li><a href="../classes/Interval.html">Interval</a></li>
+                                <li><a href="../classes/Number.html">Number</a></li>
+                                <li><a href="../classes/Object.html">Object</a></li>
+                                <li><a href="../classes/Set.html">Set</a></li>
+                                <li><a href="../classes/Term.html">Term</a></li>
+                                <li><a href="../classes/Variable.html">Variable</a></li>
+                            </ul>
+                
+                            <ul id="api-modules" class="apis modules">
+                                <li><a href="../modules/mathJS.html">mathJS</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="yui3-u-3-4">
                 <div id="api-options">
-        Show:
-        <label for="api-show-inherited">
-            <input type="checkbox" id="api-show-inherited" checked>
-            Inherited
-        </label>
-
-        <label for="api-show-protected">
-            <input type="checkbox" id="api-show-protected">
-            Protected
-        </label>
-
-        <label for="api-show-private">
-            <input type="checkbox" id="api-show-private">
-            Private
-        </label>
-        <label for="api-show-deprecated">
-            <input type="checkbox" id="api-show-deprecated">
-            Deprecated
-        </label>
-
-    </div>
-
-
+                    Show:
+                    <label for="api-show-inherited">
+                        <input type="checkbox" id="api-show-inherited" checked>
+                        Inherited
+                    </label>
+            
+                    <label for="api-show-protected">
+                        <input type="checkbox" id="api-show-protected">
+                        Protected
+                    </label>
+            
+                    <label for="api-show-private">
+                        <input type="checkbox" id="api-show-private">
+                        Private
+                    </label>
+                    <label for="api-show-deprecated">
+                        <input type="checkbox" id="api-show-deprecated">
+                        Deprecated
+                    </label>
+            
+                </div>
+            
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: doc_base/Numbers/Number.js</h1>
+<h1 class="file-heading">File: doc_base/Numbers/Number.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
-// Generated by CoffeeScript 1.8.0
+// Generated by CoffeeScript 1.9.3
 
 /**
  * @abstract
@@ -116,440 +104,70 @@
  */
 
 (function() {
-  var __hasProp = {}.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+  var extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+    hasProp = {}.hasOwnProperty;
 
-  mathJS.Number = (function(_super) {
-    __extends(Number, _super);
+  mathJS.Number = (function(superClass) {
+    extend(Number, superClass);
 
-    Number._valueIsValid = function(value) {
-      return value instanceof mathJS.Number || mathJS.isNum(value);
-    };
-
-
-    /**
-    * This method gets the value from a parameter. The validity is determined by this._valueIsValid().
-    * @static
-    * @protected
-    * @method _getValueFromParam
-    * @param {Number} param
-    * @param {Boolean} skipCheck
-    * If &#x60;true&#x60; the given parameter is not (again) checked for validity. If the function that calls _getValueFromParam() has already checked the passed parameter this &#x60;skipCheck&#x60; should be set to true.
-    * @return {Number} The primitive value or null.
-    *
-     */
-
-    Number._getValueFromParam = function(param, skipCheck) {
-      var value;
-      if (!skipCheck &amp;&amp; !this._valueIsValid(param)) {
-        return null;
+    Number._getPrimitive = function(param, skipCheck) {
+      if (skipCheck === true) {
+        return param;
       }
       if (param instanceof mathJS.Number) {
-        value = param.value;
-      } else if (mathJS.isNum(param)) {
-        value = param;
+        return param.value;
       }
-      return value;
+      if (param instanceof Number) {
+        return param.valueOf();
+      }
+      if (mathJS.isNum(param)) {
+        return param;
+      }
+      return null;
     };
 
-
-    /**
-    * @Override mathJS.Poolable
-    * @static
-    * @method fromPool
-    *
-     */
-
-    Number.fromPool = function(val) {
-      var number;
-      if (this._pool.length &gt; 0) {
-        if (this._valueIsValid(val)) {
-          number = this._pool.pop();
-          number.value = val;
-          return number;
-        }
-        return null;
-      } else {
-        return new this(val);
-      }
-    };
-
-
-    /**
-    * @Override mathJS.Parseable
-    * @static
-    * @method parse
-    *
-     */
-
-    Number.parse = function(str) {
-      var parsed;
-      if (mathJS.isNum(parsed = parseFloat(str))) {
-        return this.fromPool(parsed);
-      }
-      return parsed;
-    };
-
-    Number.random = function(max, min) {
-      return this.fromPool(mathJS.randNum(max, min));
-    };
-
-    Number.toNumber = function(n) {
-      if (n instanceof mathJS.Number) {
-        return n;
-      }
-      return new mathJS.Number(n);
+    Number.getSet = function() {
+      return mathJS.Domains.R;
     };
 
     function Number(value) {
-      var fStr;
-      if (!this._valueIsValid(value)) {
-        fStr = arguments.callee.caller.toString();
-        throw new Error(&quot;mathJS: Expected plain number! Given &quot; + value + &quot; in &#x27;&quot; + (fStr.substring(0, fStr.indexOf(&quot;)&quot;) + 1)) + &quot;&#x27;&quot;);
-      }
+      var val;
+      this._value = null;
       Object.defineProperties(this, {
         value: {
           get: this._getValue,
           set: this._setValue
-        },
-        fromPool: {
-          value: this.constructor.fromPool.bind(this.constructor),
-          writable: false,
-          enumarable: false,
-          configurable: false
         }
       });
-      this.value = this._getValueFromParam(value, true);
+      if ((val = this._getPrimitive(value)) != null) {
+        this._value = val;
+      } else {
+        throw new mathJS.Errors.InvalidParametersError(&quot;Can&#x27;t instatiate number from given &#x27;&quot; + value + &quot;&#x27;&quot;, &quot;Number.coffee&quot;, void 0, value);
+      }
     }
 
-    Number.prototype._setValue = function(value) {
-      if (this._valueIsValid(value)) {
-        this._value = this._getValueFromParam(value, true);
-      }
+    Number.prototype[&quot;eval&quot;] = function(values) {
       return this;
     };
 
-    Number.prototype._getValue = function() {
-      return this._value;
+    Number.prototype._getSet = function() {
+      return new mathJS.Set(this);
     };
 
-    Number.prototype._valueIsValid = Number._valueIsValid;
-
-    Number.prototype._getValueFromParam = Number._getValueFromParam;
-
-
-    /**
-    * @Override mathJS.Comparable
-    * This method checks for mathmatical equality. This means new mathJS.Double(4.2).equals(4.2) is true.
-    * @method equals
-    * @param {Number} n
-    * @return {Boolean}
-    *
-     */
-
-    Number.prototype.equals = function(n) {
-      return this.value === this._getValueFromParam(n);
+    Number.prototype[&quot;in&quot;] = function(set) {
+      return set.contains(this);
     };
 
-
-    /**
-    * @Override mathJS.Orderable
-    * This method check for mathmatical &#x27;&lt;&#x27;. This means new mathJS.Double(4.2).lessThan(5.2) is true.
-    * @method lessThan
-    *
-     */
-
-    Number.prototype.lessThan = function(n) {
-      return this.value &lt; this._getValueFromParam(n);
-    };
-
-
-    /**
-    * @Override mathJS.Orderable
-    * This method check for mathmatical &#x27;&gt;&#x27;. This means new mathJS.Double(4.2).greaterThan(3.2) is true.
-    * @method greaterThan
-    * @param {Number} n
-    * @return {Boolean}
-    *
-     */
-
-    Number.prototype.greaterThan = function(n) {
-      return this.value &gt; this._getValueFromParam(n);
-    };
-
-
-    /**
-    * @Override mathJS.Orderable
-    * This method check for mathmatical equality. This means new mathJS.Double(4.2).lessThanOrEqualTo(3.2) is true.
-    * @method lessThanOrEqualTo
-    * @param {Number} n
-    * @return {Boolean}
-    *
-     */
-
-    Number.prototype.lessThanOrEqualTo = function(n) {
-      return this.value &lt;= this._getValueFromParam(n);
-    };
-
-
-    /**
-    * This method check for mathmatical equality. This means new mathJS.Double(4.2).lessThanOrEqualTo(3.2) is true.
-    * @method greaterThanOrEqualTo
-    * @param {Number} n
-    * @return {Boolean}
-    *
-     */
-
-    Number.prototype.greaterThanOrEqualTo = function(n) {
-      return this.value &gt;= this._getValueFromParam(n);
-    };
-
-
-    /**
-    * This method adds 2 numbers and returns a new one.
-    * @method plus
-    * @param {Number} n
-    * @return {Number} Calculated Number.
-    *
-     */
-
-    Number.prototype.plus = function(n) {
-      return this.fromPool(this.value + this._getValueFromParam(n));
-    };
-
-
-    /**
-    * This method adds the given number to this instance.
-    * @method increase
-    * @param {Number} n
-    * @return {Number} This instance.
-    *
-     */
-
-    Number.prototype.increase = function(n) {
-      this.value += this._getValueFromParam(n);
-      return this;
-    };
-
-
-    /**
-    * See increase().
-    * @method plusSelf
-    *
-     */
-
-    Number.prototype.plusSelf = Number.increase;
-
-
-    /**
-    * This method substracts 2 numbers and returns a new one.
-    * @method minus
-    * @param {Number} n
-    * @return {Number} Calculated Number.
-    *
-     */
-
-    Number.prototype.minus = function(n) {
-      return this.fromPool(this.value - n);
-    };
-
-    Number.prototype.decrease = function(n) {
-      this.value -= this._getValueFromParam(n);
-      return this;
-    };
-
-    Number.prototype.minusSelf = Number.decrease;
-
-
-    /**
-    * This method multiplies 2 numbers and returns a new one.
-    * @method times
-    * @param {Number} n
-    * @return {Number} Calculated Number.
-    *
-     */
-
-    Number.prototype.times = function(n) {
-      return this.fromPool(this.value * this._getValueFromParam(n));
-    };
-
-    Number.prototype.timesSelf = function(n) {
-      this.value *= this._getValueFromParam(n);
-      return this;
-    };
-
-
-    /**
-    * This method divides 2 numbers and returns a new one.
-    * @method divide
-    * @param {Number} n
-    * @return {Number} Calculated Number.
-    *
-     */
-
-    Number.prototype.divide = function(n) {
-      return this.fromPool(this.value / this._getValueFromParam(n));
-    };
-
-    Number.prototype.divideSelf = function(n) {
-      this.value /= this._getValueFromParam(n);
-      return this;
-    };
-
-
-    /**
-    * This method squares this instance and returns a new one.
-    * @method square
-    * @return {Number} Calculated Number.
-    *
-     */
-
-    Number.prototype.square = function() {
-      return this.fromPool(this.value * this.value);
-    };
-
-    Number.prototype.squareSelf = function() {
-      this.value *= this.value;
-      return this;
-    };
-
-
-    /**
-    * This method cubes this instance and returns a new one.
-    * @method cube
-    * @return {Number} Calculated Number.
-    *
-     */
-
-    Number.prototype.cube = function() {
-      return this.fromPool(this.value * this.value * this.value);
-    };
-
-    Number.prototype.cubeSelf = function() {
-      this.value *= this.value * this.value;
-      return this;
-    };
-
-
-    /**
-    * This method calculates the square root of this instance and returns a new one.
-    * @method sqrt
-    * @return {Number} Calculated Number.
-    *
-     */
-
-    Number.prototype.sqrt = function() {
-      return this.fromPool(mathJS.sqrt(this.value));
-    };
-
-    Number.prototype.sqrtSelf = function() {
-      this.value = mathJS.sqrt(this.value);
-      return this;
-    };
-
-
-    /**
-    * This method calculates the cubic root of this instance and returns a new one.
-    * @method curt
-    * @return {Number} Calculated Number.
-    *
-     */
-
-    Number.prototype.curt = function() {
-      return this.pow(1 / 3);
-    };
-
-    Number.prototype.curtSelf = function() {
-      return this.powSelf(1 / 3);
-    };
-
-
-    /**
-    * This method calculates any root of this instance and returns a new one.
-    * @method plus
-    * @param {Number} exponent
-    * @return {Number} Calculated Number.
-    *
-     */
-
-    Number.prototype.root = function(exp) {
-      return this.pow(1 / exp);
-    };
-
-    Number.prototype.rootSelf = function(exp) {
-      return this.powSelf(1 / exp);
-    };
-
-
-    /**
-    * This method adds 2 numbers and returns a new one.
-    * @method plus
-    * @param {Number} n
-    * @return {Number} Calculated Number.
-    *
-     */
-
-    Number.prototype.reciprocal = function() {
-      return this.fromPool(1 / this.value);
-    };
-
-    Number.prototype.reciprocalSelf = function() {
-      this.value = 1 / this.value;
-      return this;
-    };
-
-
-    /**
-    * This method adds 2 numbers and returns a new one.
-    * @method plus
-    * @param {Number} n
-    * @return {Number} Calculated Number.
-    *
-     */
-
-    Number.prototype.pow = function(n) {
-      return this.fromPool(mathJS.pow(this.value, this._getValueFromParam(n)));
-    };
-
-    Number.prototype.powSelf = function(n) {
-      this.value = mathJS.pow(this.value, this._getValueFromParam(n));
-      return this;
-    };
-
-    Number.prototype.sign = function() {
-      return mathJS.sign(this.value);
-    };
-
-    Number.prototype.toInt = function() {
-      return mathJS.Int.fromPool(mathJS.floor(this.value));
-    };
-
-    Number.prototype.toDouble = function() {
-      return mathJS.Double.fromPool(this.value);
-    };
-
-    Number.prototype.toString = function() {
-      return this.value.toString();
-    };
-
-    Number.prototype.clone = function() {
-      return this.fromPool(this.value);
-    };
-
-    Number.prototype.release = function() {
-      this.constructor._pool.push(this);
-      return this.constructor;
-    };
+    Number.prototype.valueOf = Number.prototype._getValue;
 
     return Number;
 
-  })(mixOf(mathJS.Orderable, mathJS.Poolable, mathJS.Parseable));
+  })(_mathJS.AbstractNumber);
 
 }).call(this);
 
     </pre>
 </div>
-
                     </div>
                 </div>
             </div>

@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
-    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <link rel="icon" href="../assets/favicon.ico">
     <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
 </head>
 <body class="yui3-skin-sam">
@@ -14,9 +14,7 @@
 <div id="doc">
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
-            
                 <h1><img src="../../logo.png" title="mathJS API"></h1>
-            
         </div>
         <div class="yui3-u-1-4 version">
             <em>API Docs for: 0.0.1</em>
@@ -27,91 +25,95 @@
         <div class="yui3-u-1-4">
             <div id="docs-sidebar" class="sidebar apidocs">
                 <div id="api-list">
-    <h2 class="off-left">APIs</h2>
-    <div id="api-tabview" class="tabview">
-        <ul class="tabs">
-            <li><a href="#api-classes">Classes</a></li>
-            <li><a href="#api-modules">Modules</a></li>
-        </ul>
-
-        <div id="api-tabview-filter">
-            <input type="search" id="api-filter" placeholder="Type to filter APIs">
-        </div>
-
-        <div id="api-tabview-panel">
-            <ul id="api-classes" class="apis classes">
-            
-                <li><a href="../classes/Complex.html">Complex</a></li>
-            
-                <li><a href="../classes/CONSTANTS.html">CONSTANTS</a></li>
-            
-                <li><a href="../classes/DiscreteSet.html">DiscreteSet</a></li>
-            
-                <li><a href="../classes/Int.html">Int</a></li>
-            
-                <li><a href="../classes/Interval.html">Interval</a></li>
-            
-                <li><a href="../classes/Number.html">Number</a></li>
-            
-                <li><a href="../classes/Set.html">Set</a></li>
-            
-                <li><a href="../classes/Term.html">Term</a></li>
-            
-                <li><a href="../classes/Variable.html">Variable</a></li>
-            
-            </ul>
-
-            <ul id="api-modules" class="apis modules">
-            
-                <li><a href="../modules/mathJS.html">mathJS</a></li>
-            
-            </ul>
-        </div>
-    </div>
-</div>
-
+                    <h2 class="off-left">APIs</h2>
+                    <div id="api-tabview" class="tabview">
+                        <ul class="tabs">
+                            <li><a href="#api-classes">Classes</a></li>
+                            <li><a href="#api-modules">Modules</a></li>
+                        </ul>
+                
+                        <div id="api-tabview-filter">
+                            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+                        </div>
+                
+                        <div id="api-tabview-panel">
+                            <ul id="api-classes" class="apis classes">
+                                <li><a href="../classes/Complex.html">Complex</a></li>
+                                <li><a href="../classes/CONSTANTS.html">CONSTANTS</a></li>
+                                <li><a href="../classes/DiscreteSet.html">DiscreteSet</a></li>
+                                <li><a href="../classes/Expression.html">Expression</a></li>
+                                <li><a href="../classes/Expression.Boolean.html">Expression.Boolean</a></li>
+                                <li><a href="../classes/Hash.html">Hash</a></li>
+                                <li><a href="../classes/Int.html">Int</a></li>
+                                <li><a href="../classes/Interval.html">Interval</a></li>
+                                <li><a href="../classes/Number.html">Number</a></li>
+                                <li><a href="../classes/Object.html">Object</a></li>
+                                <li><a href="../classes/Set.html">Set</a></li>
+                                <li><a href="../classes/Term.html">Term</a></li>
+                                <li><a href="../classes/Variable.html">Variable</a></li>
+                            </ul>
+                
+                            <ul id="api-modules" class="apis modules">
+                                <li><a href="../modules/mathJS.html">mathJS</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="yui3-u-3-4">
                 <div id="api-options">
-        Show:
-        <label for="api-show-inherited">
-            <input type="checkbox" id="api-show-inherited" checked>
-            Inherited
-        </label>
-
-        <label for="api-show-protected">
-            <input type="checkbox" id="api-show-protected">
-            Protected
-        </label>
-
-        <label for="api-show-private">
-            <input type="checkbox" id="api-show-private">
-            Private
-        </label>
-        <label for="api-show-deprecated">
-            <input type="checkbox" id="api-show-deprecated">
-            Deprecated
-        </label>
-
-    </div>
-
-
+                    Show:
+                    <label for="api-show-inherited">
+                        <input type="checkbox" id="api-show-inherited" checked>
+                        Inherited
+                    </label>
+            
+                    <label for="api-show-protected">
+                        <input type="checkbox" id="api-show-protected">
+                        Protected
+                    </label>
+            
+                    <label for="api-show-private">
+                        <input type="checkbox" id="api-show-private">
+                        Private
+                    </label>
+                    <label for="api-show-deprecated">
+                        <input type="checkbox" id="api-show-deprecated">
+                        Deprecated
+                    </label>
+            
+                </div>
+            
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: doc_base/prototyping.js</h1>
+<h1 class="file-heading">File: doc_base/prototyping.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
-// Generated by CoffeeScript 1.8.0
+// Generated by CoffeeScript 1.9.3
 (function() {
+  var indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i &lt; l; i++) { if (i in this &amp;&amp; this[i] === item) return i; } return -1; };
+
   Array.prototype.reverseCopy = function() {
-    var item, res, _i;
+    var item, j, res;
     res = [];
-    for (_i = this.length - 1; _i &gt;= 0; _i += -1) {
-      item = this[_i];
+    for (j = this.length - 1; j &gt;= 0; j += -1) {
+      item = this[j];
       res.push(item);
+    }
+    return res;
+  };
+
+  Array.prototype.unique = function() {
+    var elem, j, len1, res;
+    res = [];
+    for (j = 0, len1 = this.length; j &lt; len1; j++) {
+      elem = this[j];
+      if (indexOf.call(res, elem) &lt; 0) {
+        res.push(elem);
+      }
     }
     return res;
   };
@@ -137,7 +139,6 @@
     res = [];
     arr = this.clone();
     while (i++ &lt; n) {
-      console.log(arr);
       elem = arr.sample(1);
       res.push(elem);
       arr.remove(elem);
@@ -146,29 +147,21 @@
   };
 
   Array.prototype.shuffle = function() {
-    var arr, elem, i, _i, _len;
+    var arr, elem, i, j, len1;
     arr = this.sample(this.length);
-    for (i = _i = 0, _len = arr.length; _i &lt; _len; i = ++_i) {
+    for (i = j = 0, len1 = arr.length; j &lt; len1; i = ++j) {
       elem = arr[i];
       this[i] = elem;
     }
     return this;
   };
 
-  Array.prototype.first = function() {
-    return this[0];
-  };
-
-  Array.prototype.last = function() {
-    return this[this.length - 1];
-  };
-
   Array.prototype.average = function() {
-    var elem, elems, sum, _i, _len;
+    var elem, elems, j, len1, sum;
     sum = 0;
     elems = 0;
-    for (_i = 0, _len = this.length; _i &lt; _len; _i++) {
-      elem = this[_i];
+    for (j = 0, len1 = this.length; j &lt; len1; j++) {
+      elem = this[j];
       if (!(Math.isNum(elem))) {
         continue;
       }
@@ -182,6 +175,21 @@
 
   Array.prototype.clone = Array.prototype.slice;
 
+  Array.prototype.indexOfNative = Array.prototype.indexOf;
+
+  Array.prototype.indexOf = function(elem, fromIdx) {
+    var idx, len;
+    idx = fromIdx != null ? fromIdx : 0;
+    len = this.length;
+    while (idx &lt; len) {
+      if (this[idx] === elem) {
+        return idx;
+      }
+      idx++;
+    }
+    return -1;
+  };
+
   Array.prototype.remove = function(elem) {
     var idx;
     idx = this.indexOf(elem);
@@ -192,12 +200,12 @@
   };
 
   Array.prototype.removeAll = function(elements) {
-    var elem, _i, _len;
+    var elem, j, len1;
     if (elements == null) {
       elements = [];
     }
-    for (_i = 0, _len = elements.length; _i &lt; _len; _i++) {
-      elem = elements[_i];
+    for (j = 0, len1 = elements.length; j &lt; len1; j++) {
+      elem = elements[j];
       this.remove(elem);
     }
     return this;
@@ -207,6 +215,54 @@
     this.splice(idx, 1);
     return this;
   };
+
+  Object.defineProperties(Array.prototype, {
+    first: {
+      get: function() {
+        return this[0];
+      },
+      set: function(val) {
+        this[0] = val;
+        return this;
+      }
+    },
+    second: {
+      get: function() {
+        return this[1];
+      },
+      set: function(val) {
+        this[1] = val;
+        return this;
+      }
+    },
+    third: {
+      get: function() {
+        return this[2];
+      },
+      set: function(val) {
+        this[2] = val;
+        return this;
+      }
+    },
+    fourth: {
+      get: function() {
+        return this[3];
+      },
+      set: function(val) {
+        this[3] = val;
+        return this;
+      }
+    },
+    last: {
+      get: function() {
+        return this[this.length - 1];
+      },
+      set: function(val) {
+        this[this.length - 1] = val;
+        return this;
+      }
+    }
+  });
 
 
   /**
@@ -218,7 +274,7 @@
    */
 
   Array.prototype.getMax = function(propertyGetter) {
-    var elem, max, res, val, _i, _len;
+    var elem, j, len1, max, res, val;
     max = null;
     res = [];
     if (propertyGetter == null) {
@@ -226,8 +282,8 @@
         return item;
       };
     }
-    for (_i = 0, _len = this.length; _i &lt; _len; _i++) {
-      elem = this[_i];
+    for (j = 0, len1 = this.length; j &lt; len1; j++) {
+      elem = this[j];
       val = propertyGetter(elem);
       if (val &gt; max || max === null) {
         max = val;
@@ -240,7 +296,7 @@
   };
 
   Array.prototype.getMin = function(propertyGetter) {
-    var elem, min, res, val, _i, _len;
+    var elem, j, len1, min, res, val;
     min = null;
     res = [];
     if (propertyGetter == null) {
@@ -248,8 +304,8 @@
         return item;
       };
     }
-    for (_i = 0, _len = this.length; _i &lt; _len; _i++) {
-      elem = this[_i];
+    for (j = 0, len1 = this.length; j &lt; len1; j++) {
+      elem = this[j];
       val = propertyGetter(elem);
       if (val &lt; min || min === null) {
         min = val;
@@ -300,15 +356,15 @@
   };
 
   String.prototype.camel = function(spaces) {
-    var i, str, _i, _ref;
+    var i, j, ref, str;
     if (spaces == null) {
       spaces = false;
     }
     str = this.toLowerCase();
     if (spaces) {
       str = str.split(&quot; &quot;);
-      for (i = _i = 1, _ref = str.length; 1 &lt;= _ref ? _i &lt; _ref : _i &gt; _ref; i = 1 &lt;= _ref ? ++_i : --_i) {
-        str[i] = str[i].charAt(0).toUpperCase() + str[i].substr(1);
+      for (i = j = 1, ref = str.length; 1 &lt;= ref ? j &lt; ref : j &gt; ref; i = 1 &lt;= ref ? ++j : --j) {
+        str[i] = str[i].charAt(0).toUpperCase() + str[i].substring(1);
       }
       str = str.join(&quot;&quot;);
     }
@@ -316,9 +372,9 @@
   };
 
   String.prototype.antiCamel = function() {
-    var i, res, temp, _i, _ref;
+    var i, j, ref, res, temp;
     res = this.charAt(0);
-    for (i = _i = 1, _ref = this.length; 1 &lt;= _ref ? _i &lt; _ref : _i &gt; _ref; i = 1 &lt;= _ref ? ++_i : --_i) {
+    for (i = j = 1, ref = this.length; 1 &lt;= ref ? j &lt; ref : j &gt; ref; i = 1 &lt;= ref ? ++j : --j) {
       temp = this.charAt(i);
       if (temp === temp.toUpperCase()) {
         res += &quot; &quot;;
@@ -333,10 +389,10 @@
   };
 
   String.prototype.snakeToCamelCase = function() {
-    var char, prevChar, res, _i, _len;
+    var char, j, len1, prevChar, res;
     res = &quot;&quot;;
-    for (_i = 0, _len = this.length; _i &lt; _len; _i++) {
-      char = this[_i];
+    for (j = 0, len1 = this.length; j &lt; len1; j++) {
+      char = this[j];
       if (char !== &quot;_&quot;) {
         if (prevChar !== &quot;_&quot;) {
           res += char;
@@ -350,11 +406,11 @@
   };
 
   String.prototype.camelToSnakeCase = function() {
-    var char, prevChar, res, _i, _len;
+    var char, j, len1, prevChar, res;
     res = &quot;&quot;;
     prevChar = null;
-    for (_i = 0, _len = this.length; _i &lt; _len; _i++) {
-      char = this[_i];
+    for (j = 0, len1 = this.length; j &lt; len1; j++) {
+      char = this[j];
       if (char === char.toLowerCase()) {
         res += char;
       } else {
@@ -369,11 +425,126 @@
     return res;
   };
 
+  String.prototype.lower = String.prototype.toLowerCase;
+
+  String.prototype.upper = String.prototype.toUpperCase;
+
+  Object.defineProperties(String.prototype, {
+    first: {
+      get: function() {
+        return this[0];
+      },
+      set: function(val) {
+        return this;
+      }
+    },
+    second: {
+      get: function() {
+        return this[1];
+      },
+      set: function(val) {
+        return this;
+      }
+    },
+    third: {
+      get: function() {
+        return this[2];
+      },
+      set: function(val) {
+        return this;
+      }
+    },
+    fourth: {
+      get: function() {
+        return this[3];
+      },
+      set: function(val) {
+        return this;
+      }
+    },
+    last: {
+      get: function() {
+        return this[this.length - 1];
+      },
+      set: function(val) {
+        return this;
+      }
+    }
+  });
+
+  String.prototype.equals = function(str) {
+    return this.valueOf() === str.valueOf();
+  };
+
+  String.prototype.lessThan = function(str) {
+    return this.valueOf() &lt; str.valueOf();
+  };
+
+  String.prototype.lt = String.prototype.lessThan;
+
+  String.prototype.greaterThan = function(str) {
+    return this.valueOf() &gt; str.valueOf();
+  };
+
+  String.prototype.gt = String.prototype.greaterThan;
+
+  String.prototype.lessThanOrEqualTo = function(str) {
+    return this.valueOf() &lt;= str.valueOf();
+  };
+
+  String.prototype.lte = String.prototype.lessThanOrEqualTo;
+
+  String.prototype.greaterThanOrEqualTo = function(str) {
+    return this.valueOf() &gt;= str.valueOf();
+  };
+
+  String.prototype.gte;
+
+  Boolean.prototype.equals = function(bool) {
+    return this.valueOf() === bool.valueOf();
+  };
+
+  Boolean.prototype.lessThan = function(bool) {
+    return this.valueOf() &lt; bool.valueOf();
+  };
+
+  Boolean.prototype.lt = Boolean.prototype.lessThan;
+
+  Boolean.prototype.greaterThan = function(bool) {
+    return this.valueOf() &gt; bool.valueOf();
+  };
+
+  Boolean.prototype.gt = Boolean.prototype.greaterThan;
+
+  Boolean.prototype.lessThanOrEqualTo = function(bool) {
+    return this.valueOf() &lt;= bool.valueOf();
+  };
+
+  Boolean.prototype.lte = Boolean.prototype.lessThanOrEqualTo;
+
+  Boolean.prototype.greaterThanOrEqualTo = function(bool) {
+    return this.valueOf() &gt;= str.valueOf();
+  };
+
+  Boolean.prototype.gte;
+
+  Object.keysLike = function(obj, pattern) {
+    var j, key, len1, ref, res;
+    res = [];
+    ref = Object.keys(obj);
+    for (j = 0, len1 = ref.length; j &lt; len1; j++) {
+      key = ref[j];
+      if (pattern.test(key)) {
+        res.push(key);
+      }
+    }
+    return res;
+  };
+
 }).call(this);
 
     </pre>
 </div>
-
                     </div>
                 </div>
             </div>

@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
-    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <link rel="icon" href="../assets/favicon.ico">
     <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
 </head>
 <body class="yui3-skin-sam">
@@ -14,9 +14,7 @@
 <div id="doc">
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
-            
                 <h1><img src="../../logo.png" title="mathJS API"></h1>
-            
         </div>
         <div class="yui3-u-1-4 version">
             <em>API Docs for: 0.0.1</em>
@@ -27,101 +25,88 @@
         <div class="yui3-u-1-4">
             <div id="docs-sidebar" class="sidebar apidocs">
                 <div id="api-list">
-    <h2 class="off-left">APIs</h2>
-    <div id="api-tabview" class="tabview">
-        <ul class="tabs">
-            <li><a href="#api-classes">Classes</a></li>
-            <li><a href="#api-modules">Modules</a></li>
-        </ul>
-
-        <div id="api-tabview-filter">
-            <input type="search" id="api-filter" placeholder="Type to filter APIs">
-        </div>
-
-        <div id="api-tabview-panel">
-            <ul id="api-classes" class="apis classes">
-            
-                <li><a href="../classes/Complex.html">Complex</a></li>
-            
-                <li><a href="../classes/CONSTANTS.html">CONSTANTS</a></li>
-            
-                <li><a href="../classes/DiscreteSet.html">DiscreteSet</a></li>
-            
-                <li><a href="../classes/Int.html">Int</a></li>
-            
-                <li><a href="../classes/Interval.html">Interval</a></li>
-            
-                <li><a href="../classes/Number.html">Number</a></li>
-            
-                <li><a href="../classes/Set.html">Set</a></li>
-            
-                <li><a href="../classes/Term.html">Term</a></li>
-            
-                <li><a href="../classes/Variable.html">Variable</a></li>
-            
-            </ul>
-
-            <ul id="api-modules" class="apis modules">
-            
-                <li><a href="../modules/mathJS.html">mathJS</a></li>
-            
-            </ul>
-        </div>
-    </div>
-</div>
-
+                    <h2 class="off-left">APIs</h2>
+                    <div id="api-tabview" class="tabview">
+                        <ul class="tabs">
+                            <li><a href="#api-classes">Classes</a></li>
+                            <li><a href="#api-modules">Modules</a></li>
+                        </ul>
+                
+                        <div id="api-tabview-filter">
+                            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+                        </div>
+                
+                        <div id="api-tabview-panel">
+                            <ul id="api-classes" class="apis classes">
+                                <li><a href="../classes/Complex.html">Complex</a></li>
+                                <li><a href="../classes/CONSTANTS.html">CONSTANTS</a></li>
+                                <li><a href="../classes/DiscreteSet.html">DiscreteSet</a></li>
+                                <li><a href="../classes/Expression.html">Expression</a></li>
+                                <li><a href="../classes/Expression.Boolean.html">Expression.Boolean</a></li>
+                                <li><a href="../classes/Hash.html">Hash</a></li>
+                                <li><a href="../classes/Int.html">Int</a></li>
+                                <li><a href="../classes/Interval.html">Interval</a></li>
+                                <li><a href="../classes/Number.html">Number</a></li>
+                                <li><a href="../classes/Object.html">Object</a></li>
+                                <li><a href="../classes/Set.html">Set</a></li>
+                                <li><a href="../classes/Term.html">Term</a></li>
+                                <li><a href="../classes/Variable.html">Variable</a></li>
+                            </ul>
+                
+                            <ul id="api-modules" class="apis modules">
+                                <li><a href="../modules/mathJS.html">mathJS</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="yui3-u-3-4">
                 <div id="api-options">
-        Show:
-        <label for="api-show-inherited">
-            <input type="checkbox" id="api-show-inherited" checked>
-            Inherited
-        </label>
-
-        <label for="api-show-protected">
-            <input type="checkbox" id="api-show-protected">
-            Protected
-        </label>
-
-        <label for="api-show-private">
-            <input type="checkbox" id="api-show-private">
-            Private
-        </label>
-        <label for="api-show-deprecated">
-            <input type="checkbox" id="api-show-deprecated">
-            Deprecated
-        </label>
-
-    </div>
-
-
+                    Show:
+                    <label for="api-show-inherited">
+                        <input type="checkbox" id="api-show-inherited" checked>
+                        Inherited
+                    </label>
+            
+                    <label for="api-show-protected">
+                        <input type="checkbox" id="api-show-protected">
+                        Protected
+                    </label>
+            
+                    <label for="api-show-private">
+                        <input type="checkbox" id="api-show-private">
+                        Private
+                    </label>
+                    <label for="api-show-deprecated">
+                        <input type="checkbox" id="api-show-deprecated">
+                        Deprecated
+                    </label>
+            
+                </div>
+            
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: doc_base/LinearAlgebra/Vector.js</h1>
+<h1 class="file-heading">File: doc_base/LinearAlgebra/Vector.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
-// Generated by CoffeeScript 1.8.0
+// Generated by CoffeeScript 1.9.3
 (function() {
-  var __hasProp = {}.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-
   mathJS.Vector = (function() {
     Vector.prototype._isVectorLike = function(v) {
-      return v instanceof mathJS.Vector || (typeof v[&quot;instanceof&quot;] === &quot;function&quot; ? v[&quot;instanceof&quot;](mathJS.Vector) : void 0) || v instanceof mathJS.Tuple || (typeof v[&quot;instanceof&quot;] === &quot;function&quot; ? v[&quot;instanceof&quot;](mathJS.Tuple) : void 0);
+      return v instanceof mathJS.Vector || (typeof v[&quot;instanceof&quot;] === &quot;function&quot; ? v[&quot;instanceof&quot;](mathJS.Vector) : void 0);
     };
 
     Vector._isVectorLike = Vector.prototype._isVectorLike;
 
     function Vector(values) {
-      var val, _i, _len;
+      var j, len, val;
       this.values = values;
       if (DEBUG) {
-        for (_i = 0, _len = values.length; _i &lt; _len; _i++) {
-          val = values[_i];
+        for (j = 0, len = values.length; j &lt; len; j++) {
+          val = values[j];
           if (!mathJS.isMathJSNum(val)) {
             console.warn(&quot;invalid value:&quot;, val);
           }
@@ -130,13 +115,13 @@
     }
 
     Vector.prototype.equals = function(v) {
-      var i, vValue, val, _i, _len, _ref;
+      var i, j, len, ref, vValue, val;
       if (!this._isVectorLike(v)) {
         return false;
       }
-      _ref = this.values;
-      for (i = _i = 0, _len = _ref.length; _i &lt; _len; i = ++_i) {
-        val = _ref[i];
+      ref = this.values;
+      for (i = j = 0, len = ref.length; j &lt; len; i = ++j) {
+        val = ref[i];
         vValue = v.values[i];
         if (!(typeof val.equals === &quot;function&quot; ? val.equals(vValue) : void 0) &amp;&amp; val !== vValue) {
           return false;
@@ -150,13 +135,13 @@
     };
 
     Vector.prototype.move = function(v) {
-      var i, vValue, val, _i, _len, _ref;
+      var i, j, len, ref, vValue, val;
       if (!this._isVectorLike(v)) {
         return this;
       }
-      _ref = v.values;
-      for (i = _i = 0, _len = _ref.length; _i &lt; _len; i = ++_i) {
-        val = _ref[i];
+      ref = v.values;
+      for (i = j = 0, len = ref.length; j &lt; len; i = ++j) {
+        val = ref[i];
         vValue = v.values[i];
         this.values[i] = (typeof vValue.plus === &quot;function&quot; ? vValue.plus(val) : void 0) || (typeof val.plus === &quot;function&quot; ? val.plus(vValue) : void 0) || (vValue + val);
       }
@@ -166,13 +151,13 @@
     Vector.prototype.moveBy = Vector.move;
 
     Vector.prototype.moveTo = function(p) {
-      var i, vValue, val, _i, _len, _ref;
+      var i, j, len, ref, vValue, val;
       if (!this._isVectorLike(v)) {
         return this;
       }
-      _ref = v.values;
-      for (i = _i = 0, _len = _ref.length; _i &lt; _len; i = ++_i) {
-        val = _ref[i];
+      ref = v.values;
+      for (i = j = 0, len = ref.length; j &lt; len; i = ++j) {
+        val = ref[i];
         vValue = v.values[i];
         this.values[i] = vValue.value || vValue;
       }
@@ -189,11 +174,11 @@
     Vector.prototype.times = Vector.multiply;
 
     Vector.prototype.magnitude = function() {
-      var i, sum, val, _i, _len, _ref;
+      var i, j, len, ref, sum, val;
       sum = 0;
-      _ref = this.values;
-      for (i = _i = 0, _len = _ref.length; _i &lt; _len; i = ++_i) {
-        val = _ref[i];
+      ref = this.values;
+      for (i = j = 0, len = ref.length; j &lt; len; i = ++j) {
+        val = ref[i];
         sum += val * val;
       }
       return Math.sqrt(sum);
@@ -202,7 +187,7 @@
 
     /**
      * This method calculates the distance between 2 points.
-     * It&#x27;s a shortcut for substracting 2 vectors and getting that vector&#x27;s magnitude (because no new object is created).
+     * It&quot;s a shortcut for substracting 2 vectors and getting that vector&quot;s magnitude (because no new object is created).
      * For that reason this method should be used for pure distance calculations.
      *
      * @method distanceTo
@@ -212,25 +197,25 @@
      */
 
     Vector.prototype.distanceTo = function(v) {
-      var i, sum, val, _i, _len, _ref;
+      var i, j, len, ref, sum, val;
       sum = 0;
-      _ref = this.values;
-      for (i = _i = 0, _len = _ref.length; _i &lt; _len; i = ++_i) {
-        val = _ref[i];
+      ref = this.values;
+      for (i = j = 0, len = ref.length; j &lt; len; i = ++j) {
+        val = ref[i];
         sum += (val - v.values[i]) * (val - v.values[i]);
       }
       return Math.sqrt(sum);
     };
 
     Vector.prototype.add = function(v) {
-      var i, vValue, val, values, _i, _len, _ref;
+      var i, j, len, ref, vValue, val, values;
       if (!this._isVectorLike(v)) {
         return null;
       }
       values = [];
-      _ref = v.values;
-      for (i = _i = 0, _len = _ref.length; _i &lt; _len; i = ++_i) {
-        val = _ref[i];
+      ref = v.values;
+      for (i = j = 0, len = ref.length; j &lt; len; i = ++j) {
+        val = ref[i];
         vValue = v.values[i];
         values.push((typeof vValue.plus === &quot;function&quot; ? vValue.plus(val) : void 0) || (typeof val.plus === &quot;function&quot; ? val.plus(vValue) : void 0) || (vValue + val));
       }
@@ -263,7 +248,7 @@
 
     /**
      * Returns the angle of a vector. Beware that the angle is measured in counter clockwise direction beginning at 0˚ which equals the x axis in positive direction.
-     * So on a computer grid the angle won&#x27;t be what you expect! Use anglePC() in that case!
+     * So on a computer grid the angle won&quot;t be what you expect! Use anglePC() in that case!
      *
      * @method angle
      * @return {Number} Angle of the vector in degrees. 0 degrees means pointing to the right.
@@ -339,22 +324,10 @@
 
   })();
 
-  mathJS.Tuple = (function(_super) {
-    __extends(Tuple, _super);
-
-    function Tuple() {
-      return Tuple.__super__.constructor.apply(this, arguments);
-    }
-
-    return Tuple;
-
-  })(mathJS.Vector);
-
 }).call(this);
 
     </pre>
 </div>
-
                     </div>
                 </div>
             </div>

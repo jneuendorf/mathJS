@@ -235,11 +235,12 @@ mathJS.isInt = (r) ->
  * @return {Number} Random integer.
 *###
 mathJS.randInt = (max = 1, min = 0) ->
-    if min > max
-        temp = min
-        min = max
-        max = temp
-    return Math.floor(Math.random() * (max + 1 - min)) + min
+    # if min > max
+    #     temp = min
+    #     min = max
+    #     max = temp
+    # return Math.floor(Math.random() * (max + 1 - min)) + min
+    return ~~mathJS.randNum(max, min)
 
 ###*
  * This function returns a random number between max and min (both inclusive). If max is less than min the parameters are swapped.
