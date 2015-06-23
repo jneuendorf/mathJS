@@ -39,7 +39,7 @@ class _mathJS.Orderable extends _mathJS.Comparable
     * @return {Boolean}
     *###
     lessThanOrEqualTo: (n) ->
-        throw new mathJS.Errors.NotImplementedError("lessThanOrEqualTo in #{@contructor.name}")
+        return @lessThan(n) or @equals(n)
 
     ###*
     * Alias for `lessThanOrEqualTo`.
@@ -55,7 +55,7 @@ class _mathJS.Orderable extends _mathJS.Comparable
     * @return {Boolean}
     *###
     greaterThanOrEqualTo: (n) ->
-        throw new mathJS.Errors.NotImplementedError("greaterThanOrEqualTo in #{@contructor.name}")
+        return @greaterThan(n) or @equals(n)
 
     ###*
     * Alias for `greaterThanOrEqualTo`.

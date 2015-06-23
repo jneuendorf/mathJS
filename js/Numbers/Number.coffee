@@ -6,9 +6,8 @@
  * @param {Number} value
  * @extends Object
 *###
-# TODO: make number extend expression
-# class mathJS.Number extends mixOf mathJS.Orderable, mathJS.Poolable, mathJS.Parseable
 class mathJS.Number extends _mathJS.AbstractNumber
+
     ###########################################################################################
     # STATIC
     @_getPrimitive: (param, skipCheck) ->
@@ -25,40 +24,6 @@ class mathJS.Number extends _mathJS.AbstractNumber
             return param
 
         return null
-
-    # ###*
-    # * @Override mathJS.Poolable
-    # * @static
-    # * @method _fromPool
-    # *###
-    # @_fromPool: (val) ->
-    #     if @_pool.length > 0
-    #         if @valueIsValid val
-    #             number = @_pool.pop()
-    #             number.value = val.value or val
-    #             return number
-    #         return null
-    #     else
-    #         # param check is done in constructor
-    #         return new @(val)
-
-    # ###*
-    # * @Override mathJS.Parseable
-    # * @static
-    # * @method parse
-    # *###
-    # @parse: (str) ->
-    #     if mathJS.isNum(parsed = parseFloat(str))
-    #         return @_fromPool parsed
-    #     return parsed
-
-    # @random: (max, min) ->
-    #     return @_fromPool mathJS.randNum(max, min)
-
-    # @toNumber: (n) ->
-    #     if n instanceof mathJS.Number
-    #         return n
-    #     return new mathJS.Number(n)
 
     @getSet: () ->
         return mathJS.Domains.R
@@ -84,8 +49,6 @@ class mathJS.Number extends _mathJS.AbstractNumber
             throw new mathJS.Errors.InvalidParametersError(
                 "Can't instatiate number from given '#{value}'"
                 "Number.coffee"
-                undefined
-                value
             )
 
     ###########################################################################################

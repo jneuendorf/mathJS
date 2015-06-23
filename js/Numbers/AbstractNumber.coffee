@@ -1,4 +1,5 @@
 # This file defines the Number interface.
+# TODO: make number extend expression
 class _mathJS.AbstractNumber extends _mathJS.Object
 
     @implements _mathJS.Orderable, _mathJS.Poolable, _mathJS.Parseable
@@ -12,13 +13,11 @@ class _mathJS.AbstractNumber extends _mathJS.Object
         if @_pool.length > 0
             if (val = @_getPrimitive(value))?
                 number = @_pool.pop()
-                number.value = val.value or val
+                number.value = val
                 return number
             throw new mathJS.Errors.InvalidParametersError(
                 "Can't instatiate number from given '#{value}'"
                 "AbstractNumber.coffee"
-                undefined
-                value
             )
         # param check is done in constructor
         return new @(value)
@@ -42,7 +41,7 @@ class _mathJS.AbstractNumber extends _mathJS.Object
 
     @dispatcher = new mathJS.Utils.Dispatcher(@, [
         # mathJS.Matrix
-        "string"
+        mathJS.Fraction
     ])
 
     ###*
@@ -60,8 +59,6 @@ class _mathJS.AbstractNumber extends _mathJS.Object
     ############################################################################################
     # PROTECTED METHODS
     _setValue: (value) ->
-        # if (val = @_getPrimitive(value))?
-        #     @_value = val
         return @
 
     _getValue: () ->
@@ -83,16 +80,26 @@ class _mathJS.AbstractNumber extends _mathJS.Object
     * @return {Boolean}
     *###
     equals: (n) ->
+        if (result = @constructor.dispatcher.dispatch(n, "equals", @))?
+            return result
+
         if (val = @_getPrimitive(n))?
             return @value is val
         return false
+    # END - IMPLEMENTING COMPARABLE
+    ############################################################################################
 
+    ############################################################################################
+    # ORDERABLE INTERFACE
     ###*
     * @Override mathJS.Orderable
     * This method checks for mathmatical "<". This means new mathJS.Double(4.2).lessThan(5.2) is true.
     * @method lessThan
     *###
     lessThan: (n) ->
+        if (result = @constructor.dispatcher.dispatch(n, "lessThan", @))?
+            return result
+
         if (val = @_getPrimitive(n))?
             return @value < val
         return false
@@ -105,29 +112,13 @@ class _mathJS.AbstractNumber extends _mathJS.Object
     * @return {Boolean}
     *###
     greaterThan: (n) ->
+        if (result = @constructor.dispatcher.dispatch(n, "greaterThan", @))?
+            return result
+
         if (val = @_getPrimitive(n))?
             return @value > val
         return false
-
-    ###*
-    * @Override mathJS.Orderable
-    * This method checks for mathmatical "<=".
-    * @method lessThanOrEqualTo
-    * @param {Number} n
-    * @return {Boolean}
-    *###
-    lessThanOrEqualTo: (n) ->
-        return @lessThan(n) or @equals(n)
-
-    ###*
-    * This method checks for mathmatical ">=".
-    * @method greaterThanOrEqualTo
-    * @param {Number} n
-    * @return {Boolean}
-    *###
-    greaterThanOrEqualTo: (n) ->
-        return @greaterThan(n) or @equals(n)
-    # END - IMPLEMENTING COMPARABLE
+    # END - IMPLEMENTING ORDERABLE
     ############################################################################################
 
     ###*
@@ -137,14 +128,15 @@ class _mathJS.AbstractNumber extends _mathJS.Object
     * @return {mathJS.Number} Calculated Number.
     *###
     plus: (n) ->
+        if (result = @constructor.dispatcher.dispatch(n, "plus", @))?
+            return result
+
         if (val = @_getPrimitive(n))?
             return mathJS.Number.new(@value + val)
 
         throw new mathJS.Errors.InvalidParametersError(
             "Can't instatiate number from given '#{n}'"
             "AbstractNumber.coffee"
-            undefined
-            n
         )
 
     ###*
@@ -154,14 +146,15 @@ class _mathJS.AbstractNumber extends _mathJS.Object
     * @return {mathJS.Number} Calculated Number.
     *###
     minus: (n) ->
+        if (result = @constructor.dispatcher.dispatch(n, "minus", @))?
+            return result
+
         if (val = @_getPrimitive(n))?
             return mathJS.Number.new(@value - val)
 
         throw new mathJS.Errors.InvalidParametersError(
             "Can't instatiate number from given '#{n}'"
             "AbstractNumber.coffee"
-            undefined
-            n
         )
 
     ###*
@@ -174,15 +167,12 @@ class _mathJS.AbstractNumber extends _mathJS.Object
         if (result = @constructor.dispatcher.dispatch(n, "times", @))?
             return result
 
-
         if (val = @_getPrimitive(n))?
             return mathJS.Number.new(@value * val)
 
         throw new mathJS.Errors.InvalidParametersError(
             "Can't instatiate number from given '#{n}'"
             "AbstractNumber.coffee"
-            undefined
-            n
         )
 
     ###*
@@ -192,14 +182,15 @@ class _mathJS.AbstractNumber extends _mathJS.Object
     * @return {Number} Calculated Number.
     *###
     divide: (n) ->
+        if (result = @constructor.dispatcher.dispatch(n, "divide", @))?
+            return result
+
         if (val = @_getPrimitive(n))?
             return mathJS.Number.new(@value / val)
 
         throw new mathJS.Errors.InvalidParametersError(
             "Can't instatiate number from given '#{n}'"
             "AbstractNumber.coffee"
-            undefined
-            n
         )
 
     ###*
@@ -247,8 +238,6 @@ class _mathJS.AbstractNumber extends _mathJS.Object
         throw new mathJS.Errors.InvalidParametersError(
             "Can't instatiate number from given '#{exp}'"
             "AbstractNumber.coffee"
-            undefined
-            exp
         )
 
     ###*
@@ -272,8 +261,6 @@ class _mathJS.AbstractNumber extends _mathJS.Object
         throw new mathJS.Errors.InvalidParametersError(
             "Can't instatiate number from given '#{n}'"
             "AbstractNumber.coffee"
-            undefined
-            n
         )
 
     ###*

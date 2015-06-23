@@ -1,18 +1,24 @@
 class mathJS.Utils.Dispatcher extends _mathJS.Object
 
+    # map: receiver -> list of dispatchers
     @registeredDispatchers = mathJS.Utils.Hash.new()
 
     # try to detect cyclic dispatching
     @registerDispatcher: (newReceiver, newTargets) ->
-        registrationPossible = true
+        registrationPossible = newTargets.indexOf(newReceiver) is -1
 
-        regReceivers = @registeredDispatchers.keys
-        @registeredDispatchers.each (regReceiver, regTargets, idx) ->
-            for regTarget in regTargets when regTarget is newReceiver
-                for newTarget in newTargets when regReceivers.indexOf(newTarget)
-                    registrationPossible = false
-                    return false
-            return true
+        if registrationPossible
+            regReceivers = @registeredDispatchers.keys
+            # IF
+            # 1. the new receiver is in any of the lists and
+            # 2. any of the registered receivers is in the new-targets list
+            # THEN a cycle would be created
+            @registeredDispatchers.each (regReceiver, regTargets, idx) ->
+                for regTarget in regTargets when regTarget is newReceiver
+                    for newTarget in newTargets when regReceivers.indexOf(newTarget)
+                        registrationPossible = false
+                        return false
+                return true
 
         if registrationPossible
             @registeredDispatchers.put(newReceiver, newTargets)
@@ -20,15 +26,19 @@ class mathJS.Utils.Dispatcher extends _mathJS.Object
 
         throw new mathJS.Errors.CycleDetectedError("Can't register '#{newReceiver}' for dispatching - cycle detected!")
 
+
+
     # CONSTRUCTOR
+    # NOTE: super classes are ignored
     constructor: (receiver, targets=[]) ->
         @constructor.registerDispatcher(receiver, targets)
 
         @receiver = receiver
         @targets = targets
 
-    # needsDispatching: (target) ->
-    #     return (target.constructor or target) in @targets
+        console.log "dispatcher created!"
+
+
 
     dispatch: (target, method, params...) ->
         dispatch = false
@@ -47,8 +57,6 @@ class mathJS.Utils.Dispatcher extends _mathJS.Object
             throw new mathJS.Errors.NotImplementedError(
                 "Can't call '#{method}' on target '#{target}'"
                 "Dispatcher.coffee"
-                undefined
-                target
             )
 
         return null

@@ -321,7 +321,7 @@ mathJS.max = (elems...) ->
 
     return res
 
-mathJS.log = (n, base = 10) ->
+mathJS.log = (n, base=10) ->
     return Math.log(n) / Math.log(base)
 
 mathJS.logBase = mathJS.log

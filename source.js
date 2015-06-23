@@ -956,25 +956,25 @@
 
   })(Error);
 
-  mathJS.Errors.InvalidVariableError = (function(superClass) {
-    extend(InvalidVariableError, superClass);
+  mathJS.Errors.CycleDetectedError = (function(superClass) {
+    extend(CycleDetectedError, superClass);
 
-    function InvalidVariableError() {
-      return InvalidVariableError.__super__.constructor.apply(this, arguments);
+    function CycleDetectedError() {
+      return CycleDetectedError.__super__.constructor.apply(this, arguments);
     }
 
-    return InvalidVariableError;
+    return CycleDetectedError;
 
   })(Error);
 
-  mathJS.Errors.InvalidParametersError = (function(superClass) {
-    extend(InvalidParametersError, superClass);
+  mathJS.Errors.DivisionByZeroError = (function(superClass) {
+    extend(DivisionByZeroError, superClass);
 
-    function InvalidParametersError() {
-      return InvalidParametersError.__super__.constructor.apply(this, arguments);
+    function DivisionByZeroError() {
+      return DivisionByZeroError.__super__.constructor.apply(this, arguments);
     }
 
-    return InvalidParametersError;
+    return DivisionByZeroError;
 
   })(Error);
 
@@ -989,6 +989,28 @@
 
   })(Error);
 
+  mathJS.Errors.InvalidParametersError = (function(superClass) {
+    extend(InvalidParametersError, superClass);
+
+    function InvalidParametersError() {
+      return InvalidParametersError.__super__.constructor.apply(this, arguments);
+    }
+
+    return InvalidParametersError;
+
+  })(Error);
+
+  mathJS.Errors.InvalidVariableError = (function(superClass) {
+    extend(InvalidVariableError, superClass);
+
+    function InvalidVariableError() {
+      return InvalidVariableError.__super__.constructor.apply(this, arguments);
+    }
+
+    return InvalidVariableError;
+
+  })(Error);
+
   mathJS.Errors.NotImplementedError = (function(superClass) {
     extend(NotImplementedError, superClass);
 
@@ -1000,14 +1022,14 @@
 
   })(Error);
 
-  mathJS.Errors.CycleDetectedError = (function(superClass) {
-    extend(CycleDetectedError, superClass);
+  mathJS.Errors.NotParseableError = (function(superClass) {
+    extend(NotParseableError, superClass);
 
-    function CycleDetectedError() {
-      return CycleDetectedError.__super__.constructor.apply(this, arguments);
+    function NotParseableError() {
+      return NotParseableError.__super__.constructor.apply(this, arguments);
     }
 
-    return CycleDetectedError;
+    return NotParseableError;
 
   })(Error);
 
@@ -1176,25 +1198,27 @@
 
     Dispatcher.registerDispatcher = function(newReceiver, newTargets) {
       var regReceivers, registrationPossible;
-      registrationPossible = true;
-      regReceivers = this.registeredDispatchers.keys;
-      this.registeredDispatchers.each(function(regReceiver, regTargets, idx) {
-        var l, len1, len2, newTarget, o, regTarget;
-        for (l = 0, len1 = regTargets.length; l < len1; l++) {
-          regTarget = regTargets[l];
-          if (regTarget === newReceiver) {
-            for (o = 0, len2 = newTargets.length; o < len2; o++) {
-              newTarget = newTargets[o];
-              if (!(regReceivers.indexOf(newTarget))) {
-                continue;
+      registrationPossible = newTargets.indexOf(newReceiver) === -1;
+      if (registrationPossible) {
+        regReceivers = this.registeredDispatchers.keys;
+        this.registeredDispatchers.each(function(regReceiver, regTargets, idx) {
+          var l, len1, len2, newTarget, o, regTarget;
+          for (l = 0, len1 = regTargets.length; l < len1; l++) {
+            regTarget = regTargets[l];
+            if (regTarget === newReceiver) {
+              for (o = 0, len2 = newTargets.length; o < len2; o++) {
+                newTarget = newTargets[o];
+                if (!(regReceivers.indexOf(newTarget))) {
+                  continue;
+                }
+                registrationPossible = false;
+                return false;
               }
-              registrationPossible = false;
-              return false;
             }
           }
-        }
-        return true;
-      });
+          return true;
+        });
+      }
       if (registrationPossible) {
         this.registeredDispatchers.put(newReceiver, newTargets);
         return this;
@@ -1209,6 +1233,7 @@
       this.constructor.registerDispatcher(receiver, targets);
       this.receiver = receiver;
       this.targets = targets;
+      console.log("dispatcher created!");
     }
 
     Dispatcher.prototype.dispatch = function() {
@@ -1232,7 +1257,7 @@
         if (target[method] instanceof Function) {
           return target[method].apply(target, params);
         }
-        throw new mathJS.Errors.NotImplementedError("Can't call '" + method + "' on target '" + target + "'", "Dispatcher.coffee", void 0, target);
+        throw new mathJS.Errors.NotImplementedError("Can't call '" + method + "' on target '" + target + "'", "Dispatcher.coffee");
       }
       return null;
     };
@@ -1351,7 +1376,7 @@
      */
 
     Orderable.prototype.lessThanOrEqualTo = function(n) {
-      throw new mathJS.Errors.NotImplementedError("lessThanOrEqualTo in " + this.contructor.name);
+      return this.lessThan(n) || this.equals(n);
     };
 
 
@@ -1375,7 +1400,7 @@
      */
 
     Orderable.prototype.greaterThanOrEqualTo = function(n) {
-      throw new mathJS.Errors.NotImplementedError("greaterThanOrEqualTo in " + this.contructor.name);
+      return this.greaterThan(n) || this.equals(n);
     };
 
 
@@ -1491,10 +1516,10 @@
       if (this._pool.length > 0) {
         if ((val = this._getPrimitive(value)) != null) {
           number = this._pool.pop();
-          number.value = val.value || val;
+          number.value = val;
           return number;
         }
-        throw new mathJS.Errors.InvalidParametersError("Can't instatiate number from given '" + value + "'", "AbstractNumber.coffee", void 0, value);
+        throw new mathJS.Errors.InvalidParametersError("Can't instatiate number from given '" + value + "'", "AbstractNumber.coffee");
       }
       return new this(value);
     };
@@ -1523,7 +1548,7 @@
       return this._fromPool(mathJS.randNum(max, min));
     };
 
-    AbstractNumber.dispatcher = new mathJS.Utils.Dispatcher(AbstractNumber, ["string"]);
+    AbstractNumber.dispatcher = new mathJS.Utils.Dispatcher(AbstractNumber, [mathJS.Fraction]);
 
 
     /**
@@ -1564,7 +1589,10 @@
      */
 
     AbstractNumber.prototype.equals = function(n) {
-      var val;
+      var result, val;
+      if ((result = this.constructor.dispatcher.dispatch(n, "equals", this)) != null) {
+        return result;
+      }
       if ((val = this._getPrimitive(n)) != null) {
         return this.value === val;
       }
@@ -1580,7 +1608,10 @@
      */
 
     AbstractNumber.prototype.lessThan = function(n) {
-      var val;
+      var result, val;
+      if ((result = this.constructor.dispatcher.dispatch(n, "lessThan", this)) != null) {
+        return result;
+      }
       if ((val = this._getPrimitive(n)) != null) {
         return this.value < val;
       }
@@ -1598,38 +1629,14 @@
      */
 
     AbstractNumber.prototype.greaterThan = function(n) {
-      var val;
+      var result, val;
+      if ((result = this.constructor.dispatcher.dispatch(n, "greaterThan", this)) != null) {
+        return result;
+      }
       if ((val = this._getPrimitive(n)) != null) {
         return this.value > val;
       }
       return false;
-    };
-
-
-    /**
-    * @Override mathJS.Orderable
-    * This method checks for mathmatical "<=".
-    * @method lessThanOrEqualTo
-    * @param {Number} n
-    * @return {Boolean}
-    *
-     */
-
-    AbstractNumber.prototype.lessThanOrEqualTo = function(n) {
-      return this.lessThan(n) || this.equals(n);
-    };
-
-
-    /**
-    * This method checks for mathmatical ">=".
-    * @method greaterThanOrEqualTo
-    * @param {Number} n
-    * @return {Boolean}
-    *
-     */
-
-    AbstractNumber.prototype.greaterThanOrEqualTo = function(n) {
-      return this.greaterThan(n) || this.equals(n);
     };
 
 
@@ -1642,11 +1649,14 @@
      */
 
     AbstractNumber.prototype.plus = function(n) {
-      var val;
+      var result, val;
+      if ((result = this.constructor.dispatcher.dispatch(n, "plus", this)) != null) {
+        return result;
+      }
       if ((val = this._getPrimitive(n)) != null) {
         return mathJS.Number["new"](this.value + val);
       }
-      throw new mathJS.Errors.InvalidParametersError("Can't instatiate number from given '" + n + "'", "AbstractNumber.coffee", void 0, n);
+      throw new mathJS.Errors.InvalidParametersError("Can't instatiate number from given '" + n + "'", "AbstractNumber.coffee");
     };
 
 
@@ -1659,11 +1669,14 @@
      */
 
     AbstractNumber.prototype.minus = function(n) {
-      var val;
+      var result, val;
+      if ((result = this.constructor.dispatcher.dispatch(n, "minus", this)) != null) {
+        return result;
+      }
       if ((val = this._getPrimitive(n)) != null) {
         return mathJS.Number["new"](this.value - val);
       }
-      throw new mathJS.Errors.InvalidParametersError("Can't instatiate number from given '" + n + "'", "AbstractNumber.coffee", void 0, n);
+      throw new mathJS.Errors.InvalidParametersError("Can't instatiate number from given '" + n + "'", "AbstractNumber.coffee");
     };
 
 
@@ -1683,7 +1696,7 @@
       if ((val = this._getPrimitive(n)) != null) {
         return mathJS.Number["new"](this.value * val);
       }
-      throw new mathJS.Errors.InvalidParametersError("Can't instatiate number from given '" + n + "'", "AbstractNumber.coffee", void 0, n);
+      throw new mathJS.Errors.InvalidParametersError("Can't instatiate number from given '" + n + "'", "AbstractNumber.coffee");
     };
 
 
@@ -1696,11 +1709,14 @@
      */
 
     AbstractNumber.prototype.divide = function(n) {
-      var val;
+      var result, val;
+      if ((result = this.constructor.dispatcher.dispatch(n, "divide", this)) != null) {
+        return result;
+      }
       if ((val = this._getPrimitive(n)) != null) {
         return mathJS.Number["new"](this.value / val);
       }
-      throw new mathJS.Errors.InvalidParametersError("Can't instatiate number from given '" + n + "'", "AbstractNumber.coffee", void 0, n);
+      throw new mathJS.Errors.InvalidParametersError("Can't instatiate number from given '" + n + "'", "AbstractNumber.coffee");
     };
 
 
@@ -1765,7 +1781,7 @@
       if ((val = this._getPrimitive(exp)) != null) {
         return this.pow(1 / val);
       }
-      throw new mathJS.Errors.InvalidParametersError("Can't instatiate number from given '" + exp + "'", "AbstractNumber.coffee", void 0, exp);
+      throw new mathJS.Errors.InvalidParametersError("Can't instatiate number from given '" + exp + "'", "AbstractNumber.coffee");
     };
 
 
@@ -1794,7 +1810,7 @@
       if ((val = this._getPrimitive(n)) != null) {
         return mathJS.Number["new"](mathJS.pow(this.value, val));
       }
-      throw new mathJS.Errors.InvalidParametersError("Can't instatiate number from given '" + n + "'", "AbstractNumber.coffee", void 0, n);
+      throw new mathJS.Errors.InvalidParametersError("Can't instatiate number from given '" + n + "'", "AbstractNumber.coffee");
     };
 
 
@@ -1909,7 +1925,7 @@
       if ((val = this._getPrimitive(value)) != null) {
         this._value = val;
       } else {
-        throw new mathJS.Errors.InvalidParametersError("Can't instatiate number from given '" + value + "'", "Number.coffee", void 0, value);
+        throw new mathJS.Errors.InvalidParametersError("Can't instatiate number from given '" + value + "'", "Number.coffee");
       }
     }
 
@@ -1974,6 +1990,7 @@
     /**
     * @Override mathJS.Poolable
     * @static
+    * @protected
     * @method _fromPool
     *
      */
@@ -2011,8 +2028,18 @@
     };
 
     function Int(value) {
-      Int.__super__.constructor.apply(this, arguments);
+      var val;
+      Int.__super__.constructor.call(this, value);
+      if ((val = this._getPrimitiveInt(value)) != null) {
+        this._value = val;
+      } else {
+        throw new mathJS.Errors.InvalidParametersError("Can't instatiate integer from given '" + value + "'", "Int.coffee");
+      }
     }
+
+    Int.prototype._getPrimitiveInt = function(param) {
+      return this.constructor._getPrimitiveInt(param);
+    };
 
     Int.prototype.isEven = function() {
       return modulo(this.value, 2) === 0;
@@ -2045,23 +2072,24 @@
     *
      */
 
-    Fraction._fromPool = function(e, d) {
-      var frac;
+    Fraction._fromPool = function(numerator, denominator) {
+      var d, e, frac;
       if (this._pool.length > 0) {
-        if (this.valueIsValid(val)) {
+        if (((e = this._getPrimitiveFrac(numerator)) != null) && ((d = this._getPrimitiveFrac(denominator)) != null)) {
           frac = this._pool.pop();
-          frac.enumerator = e.value || e;
-          frac.denominator = d.value || d;
+          frac.numerator = e;
+          frac.denominator = d;
           return frac;
         }
-        return null;
+        throw new mathJS.Errors.InvalidParametersError("Can't instatiate fraction from given '" + numerator + ", " + denominator + "'", "Fraction.coffee");
       } else {
-        return new this(e, d);
+        return new this(numerator, denominator);
       }
     };
 
 
     /**
+    * This method parses strings of the form "x / y" or "x : y".
     * @Override mathJS.Number
     * @static
     * @method parse
@@ -2069,13 +2097,22 @@
      */
 
     Fraction.parse = function(str) {
-      var parts;
+      var denominator, num, numerator, parts;
       if (indexOf.call(str, "/") >= 0) {
         parts = str.split("/");
-      } else if (indexOf.call(str, ":") >= 0) {
-        parts = str.slit(":");
+        return this["new"](parts.first, parts.second);
       }
-      return this["new"](parts.first, parts.second);
+      num = parseFloat(str);
+      if (!isNaN(num)) {
+        numerator = num;
+        denominator = 1;
+        while (numerator % 1 !== 0) {
+          numerator *= 10;
+          denominator *= 10;
+        }
+        return this["new"](numerator, denominator);
+      }
+      throw new mathJS.Errors.NotParseableError("Can't parse '" + str + "' as fraction!");
     };
 
 
@@ -2102,15 +2139,42 @@
       return this._fromPool(e, d);
     };
 
-    function Fraction(enumerator, denominator) {
-      if (enumerator instanceof mathJS.Number && denominator instanceof mathJS.Number) {
-        this.enumerator = enumerator.toInt();
-        this.denominator = denominator.toInt();
+    Fraction._getPrimitiveFrac = function(param, skipCheck) {
+      return mathJS.Int._getPrimitiveInt(param, skipCheck);
+    };
+
+    function Fraction(numerator, denominator) {
+      var d, e;
+      this._numerator = null;
+      this._denominator = null;
+      Object.defineProperties(this, {
+        numerator: {
+          get: function() {
+            return this._numerator;
+          },
+          set: this._setValue
+        },
+        denominator: {
+          get: function() {
+            return this._denominator;
+          },
+          set: this._setValue
+        }
+      });
+      if (((e = this._getPrimitiveFrac(numerator)) != null) && ((d = this._getPrimitiveFrac(denominator)) != null)) {
+        if (d === 0) {
+          throw new mathJS.Error.DivisionByZeroError("Denominator is 0 (when creating fraction)!");
+        }
+        this._numerator = e;
+        this._denominator = d;
       } else {
-        this.enumerator = ~~enumerator;
-        this.denominator = ~~denominator;
+        throw new mathJS.Errors.InvalidParametersError("Can't instatiate fraction from given '" + numerator + ", " + denominator + "'", "Fraction.coffee");
       }
     }
+
+    Fraction.prototype._getPrimitiveFrac = function(param) {
+      return this.constructor._getPrimitiveFrac(param);
+    };
 
     return Fraction;
 

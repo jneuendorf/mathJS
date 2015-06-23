@@ -707,7 +707,7 @@ mathJS.max = (elems...) ->
 
     return res
 
-mathJS.log = (n, base = 10) ->
+mathJS.log = (n, base=10) ->
     return Math.log(n) / Math.log(base)
 
 mathJS.logBase = mathJS.log
@@ -812,17 +812,22 @@ class _mathJS.Object
 #     toString: () ->
 #         return "#{super()}\n more data: #{@misc.toString()}"
 
+
 class mathJS.Errors.CalculationExceedanceError extends Error
 
-class mathJS.Errors.InvalidVariableError extends Error
+class mathJS.Errors.CycleDetectedError extends Error
 
-class mathJS.Errors.InvalidParametersError extends Error
+class mathJS.Errors.DivisionByZeroError extends Error
 
 class mathJS.Errors.InvalidArityError extends Error
 
+class mathJS.Errors.InvalidParametersError extends Error
+
+class mathJS.Errors.InvalidVariableError extends Error
+
 class mathJS.Errors.NotImplementedError extends Error
 
-class mathJS.Errors.CycleDetectedError extends Error
+class mathJS.Errors.NotParseableError extends Error
 # end js/Errors/SimpleErrors.coffee
 
 # from js/Utils/Hash.coffee
@@ -940,19 +945,25 @@ class mathJS.Utils.Hash
 # from js/Utils/Dispatcher.coffee
 class mathJS.Utils.Dispatcher extends _mathJS.Object
 
+    # map: receiver -> list of dispatchers
     @registeredDispatchers = mathJS.Utils.Hash.new()
 
     # try to detect cyclic dispatching
     @registerDispatcher: (newReceiver, newTargets) ->
-        registrationPossible = true
+        registrationPossible = newTargets.indexOf(newReceiver) is -1
 
-        regReceivers = @registeredDispatchers.keys
-        @registeredDispatchers.each (regReceiver, regTargets, idx) ->
-            for regTarget in regTargets when regTarget is newReceiver
-                for newTarget in newTargets when regReceivers.indexOf(newTarget)
-                    registrationPossible = false
-                    return false
-            return true
+        if registrationPossible
+            regReceivers = @registeredDispatchers.keys
+            # IF
+            # 1. the new receiver is in any of the lists and
+            # 2. any of the registered receivers is in the new-targets list
+            # THEN a cycle would be created
+            @registeredDispatchers.each (regReceiver, regTargets, idx) ->
+                for regTarget in regTargets when regTarget is newReceiver
+                    for newTarget in newTargets when regReceivers.indexOf(newTarget)
+                        registrationPossible = false
+                        return false
+                return true
 
         if registrationPossible
             @registeredDispatchers.put(newReceiver, newTargets)
@@ -960,15 +971,19 @@ class mathJS.Utils.Dispatcher extends _mathJS.Object
 
         throw new mathJS.Errors.CycleDetectedError("Can't register '#{newReceiver}' for dispatching - cycle detected!")
 
+
+
     # CONSTRUCTOR
+    # NOTE: super classes are ignored
     constructor: (receiver, targets=[]) ->
         @constructor.registerDispatcher(receiver, targets)
 
         @receiver = receiver
         @targets = targets
 
-    # needsDispatching: (target) ->
-    #     return (target.constructor or target) in @targets
+        console.log "dispatcher created!"
+
+
 
     dispatch: (target, method, params...) ->
         dispatch = false
@@ -987,8 +1002,6 @@ class mathJS.Utils.Dispatcher extends _mathJS.Object
             throw new mathJS.Errors.NotImplementedError(
                 "Can't call '#{method}' on target '#{target}'"
                 "Dispatcher.coffee"
-                undefined
-                target
             )
 
         return null
@@ -1060,7 +1073,7 @@ class _mathJS.Orderable extends _mathJS.Comparable
     * @return {Boolean}
     *###
     lessThanOrEqualTo: (n) ->
-        throw new mathJS.Errors.NotImplementedError("lessThanOrEqualTo in #{@contructor.name}")
+        return @lessThan(n) or @equals(n)
 
     ###*
     * Alias for `lessThanOrEqualTo`.
@@ -1076,7 +1089,7 @@ class _mathJS.Orderable extends _mathJS.Comparable
     * @return {Boolean}
     *###
     greaterThanOrEqualTo: (n) ->
-        throw new mathJS.Errors.NotImplementedError("greaterThanOrEqualTo in #{@contructor.name}")
+        return @greaterThan(n) or @equals(n)
 
     ###*
     * Alias for `greaterThanOrEqualTo`.
@@ -1135,6 +1148,7 @@ class _mathJS.Evaluable extends _mathJS.Interface
 
 # from js/Numbers/AbstractNumber.coffee
 # This file defines the Number interface.
+# TODO: make number extend expression
 class _mathJS.AbstractNumber extends _mathJS.Object
 
     @implements _mathJS.Orderable, _mathJS.Poolable, _mathJS.Parseable
@@ -1148,13 +1162,11 @@ class _mathJS.AbstractNumber extends _mathJS.Object
         if @_pool.length > 0
             if (val = @_getPrimitive(value))?
                 number = @_pool.pop()
-                number.value = val.value or val
+                number.value = val
                 return number
             throw new mathJS.Errors.InvalidParametersError(
                 "Can't instatiate number from given '#{value}'"
                 "AbstractNumber.coffee"
-                undefined
-                value
             )
         # param check is done in constructor
         return new @(value)
@@ -1178,7 +1190,7 @@ class _mathJS.AbstractNumber extends _mathJS.Object
 
     @dispatcher = new mathJS.Utils.Dispatcher(@, [
         # mathJS.Matrix
-        "string"
+        mathJS.Fraction
     ])
 
     ###*
@@ -1196,8 +1208,6 @@ class _mathJS.AbstractNumber extends _mathJS.Object
     ############################################################################################
     # PROTECTED METHODS
     _setValue: (value) ->
-        # if (val = @_getPrimitive(value))?
-        #     @_value = val
         return @
 
     _getValue: () ->
@@ -1219,16 +1229,26 @@ class _mathJS.AbstractNumber extends _mathJS.Object
     * @return {Boolean}
     *###
     equals: (n) ->
+        if (result = @constructor.dispatcher.dispatch(n, "equals", @))?
+            return result
+
         if (val = @_getPrimitive(n))?
             return @value is val
         return false
+    # END - IMPLEMENTING COMPARABLE
+    ############################################################################################
 
+    ############################################################################################
+    # ORDERABLE INTERFACE
     ###*
     * @Override mathJS.Orderable
     * This method checks for mathmatical "<". This means new mathJS.Double(4.2).lessThan(5.2) is true.
     * @method lessThan
     *###
     lessThan: (n) ->
+        if (result = @constructor.dispatcher.dispatch(n, "lessThan", @))?
+            return result
+
         if (val = @_getPrimitive(n))?
             return @value < val
         return false
@@ -1241,29 +1261,13 @@ class _mathJS.AbstractNumber extends _mathJS.Object
     * @return {Boolean}
     *###
     greaterThan: (n) ->
+        if (result = @constructor.dispatcher.dispatch(n, "greaterThan", @))?
+            return result
+
         if (val = @_getPrimitive(n))?
             return @value > val
         return false
-
-    ###*
-    * @Override mathJS.Orderable
-    * This method checks for mathmatical "<=".
-    * @method lessThanOrEqualTo
-    * @param {Number} n
-    * @return {Boolean}
-    *###
-    lessThanOrEqualTo: (n) ->
-        return @lessThan(n) or @equals(n)
-
-    ###*
-    * This method checks for mathmatical ">=".
-    * @method greaterThanOrEqualTo
-    * @param {Number} n
-    * @return {Boolean}
-    *###
-    greaterThanOrEqualTo: (n) ->
-        return @greaterThan(n) or @equals(n)
-    # END - IMPLEMENTING COMPARABLE
+    # END - IMPLEMENTING ORDERABLE
     ############################################################################################
 
     ###*
@@ -1273,14 +1277,15 @@ class _mathJS.AbstractNumber extends _mathJS.Object
     * @return {mathJS.Number} Calculated Number.
     *###
     plus: (n) ->
+        if (result = @constructor.dispatcher.dispatch(n, "plus", @))?
+            return result
+
         if (val = @_getPrimitive(n))?
             return mathJS.Number.new(@value + val)
 
         throw new mathJS.Errors.InvalidParametersError(
             "Can't instatiate number from given '#{n}'"
             "AbstractNumber.coffee"
-            undefined
-            n
         )
 
     ###*
@@ -1290,14 +1295,15 @@ class _mathJS.AbstractNumber extends _mathJS.Object
     * @return {mathJS.Number} Calculated Number.
     *###
     minus: (n) ->
+        if (result = @constructor.dispatcher.dispatch(n, "minus", @))?
+            return result
+
         if (val = @_getPrimitive(n))?
             return mathJS.Number.new(@value - val)
 
         throw new mathJS.Errors.InvalidParametersError(
             "Can't instatiate number from given '#{n}'"
             "AbstractNumber.coffee"
-            undefined
-            n
         )
 
     ###*
@@ -1310,15 +1316,12 @@ class _mathJS.AbstractNumber extends _mathJS.Object
         if (result = @constructor.dispatcher.dispatch(n, "times", @))?
             return result
 
-
         if (val = @_getPrimitive(n))?
             return mathJS.Number.new(@value * val)
 
         throw new mathJS.Errors.InvalidParametersError(
             "Can't instatiate number from given '#{n}'"
             "AbstractNumber.coffee"
-            undefined
-            n
         )
 
     ###*
@@ -1328,14 +1331,15 @@ class _mathJS.AbstractNumber extends _mathJS.Object
     * @return {Number} Calculated Number.
     *###
     divide: (n) ->
+        if (result = @constructor.dispatcher.dispatch(n, "divide", @))?
+            return result
+
         if (val = @_getPrimitive(n))?
             return mathJS.Number.new(@value / val)
 
         throw new mathJS.Errors.InvalidParametersError(
             "Can't instatiate number from given '#{n}'"
             "AbstractNumber.coffee"
-            undefined
-            n
         )
 
     ###*
@@ -1383,8 +1387,6 @@ class _mathJS.AbstractNumber extends _mathJS.Object
         throw new mathJS.Errors.InvalidParametersError(
             "Can't instatiate number from given '#{exp}'"
             "AbstractNumber.coffee"
-            undefined
-            exp
         )
 
     ###*
@@ -1408,8 +1410,6 @@ class _mathJS.AbstractNumber extends _mathJS.Object
         throw new mathJS.Errors.InvalidParametersError(
             "Can't instatiate number from given '#{n}'"
             "AbstractNumber.coffee"
-            undefined
-            n
         )
 
     ###*
@@ -1469,9 +1469,8 @@ class _mathJS.AbstractNumber extends _mathJS.Object
  * @param {Number} value
  * @extends Object
 *###
-# TODO: make number extend expression
-# class mathJS.Number extends mixOf mathJS.Orderable, mathJS.Poolable, mathJS.Parseable
 class mathJS.Number extends _mathJS.AbstractNumber
+
     ###########################################################################################
     # STATIC
     @_getPrimitive: (param, skipCheck) ->
@@ -1488,40 +1487,6 @@ class mathJS.Number extends _mathJS.AbstractNumber
             return param
 
         return null
-
-    # ###*
-    # * @Override mathJS.Poolable
-    # * @static
-    # * @method _fromPool
-    # *###
-    # @_fromPool: (val) ->
-    #     if @_pool.length > 0
-    #         if @valueIsValid val
-    #             number = @_pool.pop()
-    #             number.value = val.value or val
-    #             return number
-    #         return null
-    #     else
-    #         # param check is done in constructor
-    #         return new @(val)
-
-    # ###*
-    # * @Override mathJS.Parseable
-    # * @static
-    # * @method parse
-    # *###
-    # @parse: (str) ->
-    #     if mathJS.isNum(parsed = parseFloat(str))
-    #         return @_fromPool parsed
-    #     return parsed
-
-    # @random: (max, min) ->
-    #     return @_fromPool mathJS.randNum(max, min)
-
-    # @toNumber: (n) ->
-    #     if n instanceof mathJS.Number
-    #         return n
-    #     return new mathJS.Number(n)
 
     @getSet: () ->
         return mathJS.Domains.R
@@ -1547,8 +1512,6 @@ class mathJS.Number extends _mathJS.AbstractNumber
             throw new mathJS.Errors.InvalidParametersError(
                 "Can't instatiate number from given '#{value}'"
                 "Number.coffee"
-                undefined
-                value
             )
 
     ###########################################################################################
@@ -1602,14 +1565,6 @@ class mathJS.Int extends mathJS.Number
     ###########################################################################
     # STATIC
 
-    # convert return value of inherited method to integer
-    # do () =>
-        # inherited = @_getValueFromParam.bind(@)
-        # @_getValueFromParam = (value) ->
-        #     return ~~inherited(value)
-
-    # _pool, _fromPool are inherited
-
     @parse: (str) ->
         if mathJS.isNum(parsed = parseInt(str, 10))
             return @_fromPool parsed
@@ -1624,6 +1579,7 @@ class mathJS.Int extends mathJS.Number
     ###*
     * @Override mathJS.Poolable
     * @static
+    * @protected
     * @method _fromPool
     *###
     @_fromPool: (value) ->
@@ -1659,17 +1615,25 @@ class mathJS.Int extends mathJS.Number
 
         return null
 
-
     ###########################################################################
     # CONSTRUCTOR
     constructor: (value) ->
-        super
+        super(value)
+        if (val = @_getPrimitiveInt(value))?
+            @_value = val
+        else
+            throw new mathJS.Errors.InvalidParametersError(
+                "Can't instatiate integer from given '#{value}'"
+                "Int.coffee"
+            )
 
     ###########################################################################
     # PRIVATE METHODS
 
     ###########################################################################
     # PROTECTED METHODS
+    _getPrimitiveInt: (param) ->
+        return @constructor._getPrimitiveInt(param)
 
     ###########################################################################
     # PUBLIC METHODS
@@ -1678,53 +1642,6 @@ class mathJS.Int extends mathJS.Number
 
     isOdd: () ->
         return @value %% 2 is 1
-
-
-    # plus: (n) ->
-    #     return @constructor._fromPool ~~(@value + @_getValueFromParam(n))
-    #
-    # increase: (n) ->
-    #     @value += ~~@_getValueFromParam(n)
-    #     return @
-    #
-    # plusSelf: @increase
-    #
-    # minus: (n) ->
-    #     return @constructor._fromPool ~~(@value - n)
-    #
-    # decrease: (n) ->
-    #     @value = ~~(@value - @_getValueFromParam(n)) # when rounding is done matters when substracting (in contrary to addition)
-    #     return @
-    #
-    # minusSelf: @decrease
-    #
-    # times: (n) ->
-    #     return @constructor._fromPool ~~(@value * @_getValueFromParam(n))
-    #
-    # timesSelf: (n) ->
-    #     @value = ~~(@value * @_getValueFromParam(n)) # same as substraction
-    #     return @
-    #
-    # divide: (n) ->
-    #     return @constructor._fromPool ~~(@value / @_getValueFromParam(n))
-    #
-    # divideSelf: (n) ->
-    #     @value = ~~(@value / @_getValueFromParam(n))
-    #     return @
-    #
-    # sqrt: () ->
-    #     return @constructor._fromPool ~~(mathJS.sqrt @value)
-    #
-    # sqrtSelf: () ->
-    #     @value = ~~mathJS.sqrt(@value)
-    #     return @
-    #
-    # pow: (n) ->
-    #     return @constructor._fromPool(mathJS.pow @value, @_getValueFromParam(n))
-    #
-    # powSelf: (n) ->
-    #     @value = mathJS.pow @value, @_getValueFromParam(n)
-    #     return @
 
     toInt: () ->
         return mathJS.Int._fromPool @value
@@ -1741,30 +1658,43 @@ class mathJS.Fraction extends mathJS.Number
     * @static
     * @method _fromPool
     *###
-    @_fromPool: (e, d) ->
+    @_fromPool: (numerator, denominator) ->
         if @_pool.length > 0
-            if @valueIsValid val
+            if (e = @_getPrimitiveFrac(numerator))? and (d = @_getPrimitiveFrac(denominator))?
                 frac = @_pool.pop()
-                frac.enumerator = e.value or e
-                frac.denominator = d.value or d
+                frac.numerator = e
+                frac.denominator = d
                 return frac
-            return null
+            throw new mathJS.Errors.InvalidParametersError(
+                "Can't instatiate fraction from given '#{numerator}, #{denominator}'"
+                "Fraction.coffee"
+            )
         else
             # param check is done in constructor
-            return new @(e, d)
+            return new @(numerator, denominator)
 
     ###*
+    * This method parses strings of the form "x / y" or "x : y".
     * @Override mathJS.Number
     * @static
     * @method parse
     *###
-    # x / y
     @parse: (str) ->
         if "/" in str
             parts = str.split "/"
-        else if ":" in str
-            parts = str.slit ":"
-        return @new parts.first, parts.second
+            return @new parts.first, parts.second
+
+        num = parseFloat(str)
+        if not isNaN(num)
+            # TODO
+            numerator = num
+            denominator = 1
+            # 123.456 = 123456 / 1000
+            while numerator % 1 isnt 0
+                numerator *= 10
+                denominator *= 10
+            return @new(numerator, denominator)
+        throw new mathJS.Errors.NotParseableError("Can't parse '#{str}' as fraction!")
 
     ###*
     * @Override mathJS.Number
@@ -1782,17 +1712,45 @@ class mathJS.Fraction extends mathJS.Number
     @new: (e, d) ->
         return @_fromPool e, d
 
+    @_getPrimitiveFrac: (param, skipCheck) ->
+        return mathJS.Int._getPrimitiveInt(param, skipCheck)
+
     ###########################################################################
     # CONSTRUCTOR
-    constructor: (enumerator, denominator) ->
-        # number objects
-        if enumerator instanceof mathJS.Number and denominator instanceof mathJS.Number
-            @enumerator = enumerator.toInt()
-            @denominator = denominator.toInt()
-        # assume primitives
+    constructor: (numerator, denominator) ->
+        @_numerator = null
+        @_denominator = null
+
+        Object.defineProperties @, {
+            numerator:
+                get: () ->
+                    return @_numerator
+                set: @_setValue
+            denominator:
+                get: () ->
+                    return @_denominator
+                set: @_setValue
+        }
+
+        if (e = @_getPrimitiveFrac(numerator))? and (d = @_getPrimitiveFrac(denominator))?
+            # TODO: when sth. like 12.55 / 0.8 is given => create 12.55*100 / 0.8*100 = 1255 / 80
+            if d is 0
+                throw new mathJS.Error.DivisionByZeroError("Denominator is 0 (when creating fraction)!")
+            @_numerator = e
+            @_denominator = d
         else
-            @enumerator = ~~enumerator
-            @denominator = ~~denominator
+            throw new mathJS.Errors.InvalidParametersError(
+                "Can't instatiate fraction from given '#{numerator}, #{denominator}'"
+                "Fraction.coffee"
+            )
+
+    ############################################################################################
+    # PROTECTED METHODS
+    _getPrimitiveFrac: (param) ->
+        return @constructor._getPrimitiveFrac(param)
+
+    ############################################################################################
+    # PUBLIC METHODS
 # end js/Numbers/Fraction.coffee
 
 # from js/Numbers/Complex.coffee
